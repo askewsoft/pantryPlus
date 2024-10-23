@@ -4,7 +4,7 @@ export const styles = StyleSheet.create({
   container: {
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'white',
     height: '100%',
     width: '100%',
     alignSelf: 'center',
@@ -13,41 +13,38 @@ export const styles = StyleSheet.create({
     padding: '10%',
     justifyContent: 'center'
   },
+  logoContainer: {
+    marginTop: 50,
+    flex: 1
+  },
   pantryLogo: {
     color: '#841584',
     fontSize: 60,
+    fontWeight: 'bold',
     padding: 20
-  },
-  plusLogo: {
-    fontSize: 80,
-    padding: '0%',
-    color: '#841584'
-  },
-  logoContainer: {
-    marginTop: 100,
-    flex: 1
   },
   introContainer: {
     display: 'flex',
     flex: 3,
     flexDirection: 'column',
-    width: '95%'
   },
   introTextContainer: {
     padding: 10,
     flex: 4,
-    borderColor: 'lightgray',
-    borderWidth: 2,
-    borderRadius: 10,
   },
   introText: {
     color: 'darkgray',
     fontSize: 20,
-    padding: '0%',
   },
   carouselControlsContainer: {
     flex: 1,
-    width: '95%',
     alignItems: 'center'
+  },
+  carouselItem: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'lightgray',
+    margin: 0,
   }
 });

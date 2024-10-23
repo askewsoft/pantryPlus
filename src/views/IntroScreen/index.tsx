@@ -3,8 +3,12 @@ import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { useSharedValue } from 'react-native-reanimated';
 import { styles } from './style';
 
+import FeatureHighlightTemplate, { carouselData } from 'src/components/NewFeatures/featureHighlightTemplate';
+
 export default function IntroScreen() {
   const { width, height } = Dimensions.get('window');
+  const carouselWidth = width * 0.8;
+  const carouselHeight = height * 0.4;
   const progress = useSharedValue(0);
 
   return (
@@ -13,17 +17,24 @@ export default function IntroScreen() {
         <Text style={styles.pantryLogo}>Pantry+</Text>
       </View>
       <View style={styles.introContainer}>
-        <Carousel
-          width={width}
-          height={height}
-          mode="parallax"
-          modeConfig={{
-            parallaxScrollingScale: 0.9,
-            parallaxScrollingOffset: 40
-          }}
-        />
         <View style={styles.introTextContainer}>
           <Text style={styles.introText}>Explain some features</Text>
+          <Carousel
+            width={carouselWidth}
+            height={carouselHeight}
+            mode="parallax"
+            modeConfig={{
+              parallaxScrollingScale: 0.85,
+              parallaxScrollingOffset: 40
+            }}
+            data={carouselData}
+            renderItem={({ item }) => (
+              <FeatureHighlightTemplate title={item.title} description={item.description} image={null} />
+            )}
+            onProgressChange={(offsetProgress, absoluteProgress) => {
+              progress.value = absoluteProgress;
+            }}
+          />
         </View>
         <View style={styles.carouselControlsContainer}>
           <Button title="Let's begin!" />
