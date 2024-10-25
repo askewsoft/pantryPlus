@@ -1,8 +1,8 @@
 import { View, Text, Button, Dimensions } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { useSharedValue } from 'react-native-reanimated';
-import { styles } from './style';
 
+import { styles } from './style';
 import FeatureHighlightTemplate from 'src/components/NewFeatures/featureHighlightTemplate';
 import { carouselData } from 'src/components/NewFeatures/carouselData';
 
