@@ -1,9 +1,10 @@
 import { View, Text, Button, Dimensions } from 'react-native';
-import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
+import Carousel from 'react-native-reanimated-carousel';
 import { useSharedValue } from 'react-native-reanimated';
 import { styles } from './style';
 
-import FeatureHighlightTemplate, { carouselData } from 'src/components/NewFeatures/featureHighlightTemplate';
+import FeatureHighlightTemplate from 'src/components/NewFeatures/featureHighlightTemplate';
+import { carouselData } from 'src/components/NewFeatures/carouselData';
 
 export default function IntroScreen() {
   const { width, height } = Dimensions.get('window');
