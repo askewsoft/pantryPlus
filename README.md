@@ -66,16 +66,28 @@ Follow these steps to get the project running:
 ### Running the app
 The app can be built for a variety of contexts. Builds can be **local** or **cloud-based**.
 
-1. Local builds
-    - these can take a while to complete
-    - `npm run ios` to build and run the app for your iOS device emulator
-1. Cloud builds
-    - these are compiled using the EAS (i.e., Expo Application Services) build service
-
-The following contexts are supported:
-* `dev-simulator` - development on an iOS simulator
-* `dev-ios` - development on an iOS device
-* `preview` - preview build for testing
-* `production` - production build for release
-
-To build the app for a specific context, run `eas build --context <context>`.
+#### Local builds
+- these can take a while to complete
+- have the iOS emulator already running (XCode -> Open Developer Tool -> Simulator)
+- `npm run ios` to build and run the app for your iOS device emulator
+- If this fails, you may need to:
+    - `cd ios`
+    - `pod install`
+    - `cd ..`
+    - `npm run ios` again
+- If you continue to experience issues, you may need to:
+    - open XCode
+    - open the pantryPlus project from `./ios/pantryPlus.xcworkspace`
+    - select the "Target" from below the project name
+    - click on the "Build Settings" tab along the top
+    - ensure that the `> Build Options > User Scripting Sandbox` setting is set to `No`
+    - you may close XCode at this point
+    - `npm run ios` again
+#### Cloud builds
+- these are compiled using the EAS (i.e., Expo Application Services) build service
+- the following contexts are supported:
+    - `dev-simulator` - development on an iOS simulator
+    - `dev-ios` - development on an iOS device
+    - `preview` - preview build for testing
+    - `production` - production build for release
+- to build the app for a specific context, run `eas build --context <context>`.
