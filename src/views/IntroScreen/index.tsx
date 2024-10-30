@@ -6,7 +6,7 @@ import { styles } from './style';
 import FeatureHighlightTemplate from 'src/components/NewFeatures/featureHighlightTemplate';
 import { carouselData } from 'src/components/NewFeatures/carouselData';
 
-export default function IntroScreen() {
+export default function IntroScreen({...props}) {
   const { width, height } = Dimensions.get('window');
   const carouselWidth = width * 0.8;
   const carouselHeight = height * 0.4;
@@ -25,8 +25,8 @@ export default function IntroScreen() {
             height={carouselHeight}
             mode="parallax"
             modeConfig={{
-              parallaxScrollingScale: 0.85,
-              parallaxScrollingOffset: 40
+              parallaxScrollingScale: 0.80,
+              parallaxScrollingOffset: 80
             }}
             data={carouselData}
             renderItem={({ item }) => (
@@ -38,7 +38,7 @@ export default function IntroScreen() {
           />
         </View>
         <View style={styles.carouselControlsContainer}>
-          <Button title="Let's begin!" />
+          <Button title="Let's begin!" onPress={() => props.disableIntroScreen(true)} color="#841584" />
         </View>
       </View>
     </View>

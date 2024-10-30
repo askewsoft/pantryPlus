@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button } from 'react-native';
+import { Button, SafeAreaView } from 'react-native';
 import { Amplify } from "aws-amplify";
 import { useAuthenticator, Authenticator } from '@aws-amplify/ui-react-native';
 
@@ -13,6 +13,8 @@ function SignOutButton() {
   const { signOut } = useAuthenticator();
   return <Button onPress={signOut} title="Sign Out" />;
 }
+
+
 
 export default function App() {
   const [hideSplashScreen, setHideSplashScreen] = useState(false);
@@ -31,8 +33,10 @@ export default function App() {
   return (
     <Authenticator.Provider>
       <Authenticator>
-        <IntroScreen />
-        <SignOutButton />
+        <SafeAreaView>
+          {!hideIntroScreen && <IntroScreen disableIntroScreen={setHideIntroScreen} />}
+          {hideIntroScreen && <SignOutButton />}
+        </SafeAreaView>
       </Authenticator>
     </Authenticator.Provider>
   );

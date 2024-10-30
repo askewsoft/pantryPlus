@@ -33,18 +33,18 @@ export const styles = StyleSheet.create({
     flex: 4,
   },
   introText: {
-    color: 'darkgray',
+    color: '#841584',
     fontSize: 20,
-  },
-  carouselControlsContainer: {
-    flex: 1,
-    alignItems: 'center'
   },
   carouselItem: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'lightgray',
+    backgroundColor: '#841584',
     margin: 0,
+  },
+  carouselControlsContainer: {
+    flex: 1,
+    alignItems: 'center',
   }
 });

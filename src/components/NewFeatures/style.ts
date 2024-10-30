@@ -5,7 +5,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'lightgray',
+    backgroundColor: '#841584',
   },
   carouselTitle: {
     fontSize: 36,
