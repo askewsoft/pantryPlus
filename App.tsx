@@ -28,12 +28,10 @@ export default function App() {
   if (!hideSplashScreen) {
     return <SplashScreen />;
   }
-  // if (!hideIntroScreen) {
-  //   return <IntroScreen />;
-  // }
   return (
     <Authenticator.Provider>
       <Authenticator>
+        <IntroScreen />
         <SignOutButton />
       </Authenticator>
     </Authenticator.Provider>
