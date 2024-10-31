@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, SafeAreaView } from 'react-native';
+import { Button, SafeAreaView, View, Text } from 'react-native';
 import { Amplify } from "aws-amplify";
 import { useAuthenticator, Authenticator } from '@aws-amplify/ui-react-native';
 
@@ -9,33 +9,48 @@ import amplifyConfig from 'src/config/amplify';
 
 Amplify.configure(amplifyConfig);
 
-function SignOutButton() {
+function SignOutButton(){
   const { signOut } = useAuthenticator();
-  return <Button onPress={signOut} title="Sign Out" />;
+  return <Button onPress={signOut} title={`Sign Out`} />;
 }
 
-
+function WelcomeMessage() {
+  const { user } = useAuthenticator();
+  const userEmail = user.signInDetails?.loginId;
+  const userId = user.userId;
+  return (
+    <View>
+      <View style={{ padding: 30, marginBottom: 60, marginTop: 60 }}>
+        <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 50 }}>Welcome {userEmail}</Text>
+        <Text style={{ fontSize: 16, fontWeight: 'normal' }}>Your ID is {userId}</Text>
+      </View>
+      <View style={{ padding: 30 }}>
+        <SignOutButton />
+      </View>
+    </View>
+  );
+}
 
 export default function App() {
-  const [hideSplashScreen, setHideSplashScreen] = useState(false);
-  const [hideIntroScreen, setHideIntroScreen] = useState(false);
+  const [showSplashScreen, setShowSplashScreen] = useState(true);
+  const [showIntroScreen, setShowIntroScreen] = useState(true);
 
   useEffect(() => {
-    setHideSplashScreen(false);
+    setShowSplashScreen(true);
     setTimeout(() => {
-      setHideSplashScreen(true);
+      setShowSplashScreen(false);
     }, 2500);
   }, []);
 
-  if (!hideSplashScreen) {
+  if (showSplashScreen) {
     return <SplashScreen />;
   }
   return (
     <Authenticator.Provider>
       <Authenticator>
         <SafeAreaView>
-          {!hideIntroScreen && <IntroScreen disableIntroScreen={setHideIntroScreen} />}
-          {hideIntroScreen && <SignOutButton />}
+          {showIntroScreen && <IntroScreen startWithIntroScreen={setShowIntroScreen} />}
+          {!showIntroScreen && <WelcomeMessage />}
         </SafeAreaView>
       </Authenticator>
     </Authenticator.Provider>

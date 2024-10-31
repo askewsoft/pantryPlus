@@ -38,7 +38,7 @@ export default function IntroScreen({...props}) {
           />
         </View>
         <View style={styles.carouselControlsContainer}>
-          <Button title="Let's begin!" onPress={() => props.disableIntroScreen(true)} color="#841584" />
+          <Button title="Let's begin!" onPress={() => props.startWithIntroScreen(false)} color="#841584" />
         </View>
       </View>
     </View>
