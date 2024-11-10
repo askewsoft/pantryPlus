@@ -1,37 +1,26 @@
-import { useState, useEffect } from 'react';
-import { Button, SafeAreaView, View, Text } from 'react-native';
-import { Amplify } from "aws-amplify";
-import { useAuthenticator, Authenticator } from '@aws-amplify/ui-react-native';
+import { useState, useEffect, useContext } from 'react';
+import { SafeAreaView } from 'react-native';
+import { observer } from 'mobx-react';
+/* TODO: use this to render the splash screen while the user is loading
+    * https://docs.expo.dev/versions/latest/sdk/splash-screen/
+    // import * as SplashScreen from 'expo-splash-screen';
+    // SplashScreen.preventAutoHideAsync();
+ */
 
-import SplashScreen from 'src/views/SplashScreen/index';
-import IntroScreen from 'src/views/IntroScreen/index';
+import { Amplify } from "aws-amplify";
+import { fetchUserAttributes } from "aws-amplify/auth";
+import { Authenticator } from '@aws-amplify/ui-react-native';
+
+import { ContextProvider, rootStore, RootStoreContext, UserType } from 'src/models/RootStore';
+
+import SplashScreen from 'src/screens/SplashScreen/index';
+import IntroScreen from 'src/screens/IntroScreen/index';
+import WelcomeMessage from 'src/screens/WelcomeMessage/index';
 import amplifyConfig from 'src/config/amplify';
 
 Amplify.configure(amplifyConfig);
 
-function SignOutButton(){
-  const { signOut } = useAuthenticator();
-  return <Button onPress={signOut} title={`Sign Out`} />;
-}
-
-function WelcomeMessage() {
-  const { user } = useAuthenticator();
-  const userEmail = user.signInDetails?.loginId;
-  const userId = user.userId;
-  return (
-    <View>
-      <View style={{ padding: 30, marginBottom: 60, marginTop: 60 }}>
-        <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 50 }}>Welcome {userEmail}</Text>
-        <Text style={{ fontSize: 16, fontWeight: 'normal' }}>Your ID is {userId}</Text>
-      </View>
-      <View style={{ padding: 30 }}>
-        <SignOutButton />
-      </View>
-    </View>
-  );
-}
-
-export default function App() {
+const App = () => {
   const [showSplashScreen, setShowSplashScreen] = useState(true);
   const [showIntroScreen, setShowIntroScreen] = useState(true);
 
@@ -40,19 +29,25 @@ export default function App() {
     setTimeout(() => {
       setShowSplashScreen(false);
     }, 2500);
+    setShowIntroScreen(false);
   }, []);
 
   if (showSplashScreen) {
     return <SplashScreen />;
   }
   return (
-    <Authenticator.Provider>
-      <Authenticator>
-        <SafeAreaView>
-          {showIntroScreen && <IntroScreen startWithIntroScreen={setShowIntroScreen} />}
-          {!showIntroScreen && <WelcomeMessage />}
-        </SafeAreaView>
-      </Authenticator>
-    </Authenticator.Provider>
+    <ContextProvider value={rootStore}>
+      <Authenticator.Provider>
+        <Authenticator>
+          <SafeAreaView>
+            <WelcomeMessage />
+            {/* {showIntroScreen && <IntroScreen startWithIntroScreen={setShowIntroScreen} />}
+            {!showIntroScreen && <WelcomeMessage />} */}
+          </SafeAreaView>
+        </Authenticator>
+      </Authenticator.Provider>
+    </ContextProvider>
   );
 }
+
+export default observer(App);
