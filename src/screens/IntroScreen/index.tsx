@@ -1,4 +1,5 @@
 import { View, Text, Button, Dimensions } from 'react-native';
+import { observer } from 'mobx-react-lite';
 import Carousel from 'react-native-reanimated-carousel';
 import { useSharedValue } from 'react-native-reanimated';
 
@@ -6,7 +7,7 @@ import { styles } from './style';
 import FeatureHighlightTemplate from 'src/components/NewFeatures/featureHighlightTemplate';
 import { carouselData } from 'src/components/NewFeatures/carouselData';
 
-export default function IntroScreen({...props}) {
+const IntroScreen = ({...props}) => {
   const { width, height } = Dimensions.get('window');
   const carouselWidth = width * 0.8;
   const carouselHeight = height * 0.4;
@@ -38,9 +39,11 @@ export default function IntroScreen({...props}) {
           />
         </View>
         <View style={styles.carouselControlsContainer}>
-          <Button title="Let's begin!" onPress={() => props.startWithIntroScreen(false)} color="#841584" />
+          <Button title="Let's begin!" onPress={() => props.setShowIntroScreen(false)} color="#841584" />
         </View>
       </View>
     </View>
   );
 }
+
+export default observer(IntroScreen);

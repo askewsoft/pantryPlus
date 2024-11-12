@@ -1,55 +1,49 @@
 import { useContext, useEffect, useState } from 'react';
 import { Button, View, Text } from 'react-native';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { useAuthenticator } from '@aws-amplify/ui-react-native';
 import { RootStoreContext, UserType } from 'src/models/RootStore';
-// import { fetchUserAttributes, FetchUserAttributesOutput } from "aws-amplify/auth";
 
 function SignOutButton() {
   const { signOut } = useAuthenticator();
   return <Button onPress={signOut} title={`Sign Out`} />;
 }
 
-const WelcomeMessage = () => {
-  const rootStore = useContext(RootStoreContext);
-  const [userIsReady, setUserIsReady] = useState(false);
-  const { route } = useAuthenticator();
+const WelcomeMessage = ({...props}) => {
+  //console.log('#1 WelcomeMessage');
   const [currUser, setCurrUser] = useState<UserType | null>(null);
+  const rootStore = useContext(RootStoreContext);
 
   useEffect(() => {
-    console.log('route:', route);
-    function* getCurrUser() {
-      console.log('inside getCurrUser(), route is:', route);
-      console.log('userIsReady:', userIsReady);
-      const authenticatedUser = (yield rootStore?.user.getUser()) as UserType;
-      console.log('authenticatedUser:', authenticatedUser);
-      setCurrUser(authenticatedUser);
-      setUserIsReady(true);
-      console.log('userIsReady:', userIsReady);
+    const getUser = async () => {
+      //console.log('#3 inside getUser()');
+      const authUser = await rootStore?.getAuthenticatedUser();
+      //console.log('#9 User Returned from Action');
+      setCurrUser(authUser || null);
+      //console.log('#10 User Set');
     };
-    if (route === 'authenticated') {
-      console.log('inside useEffect, route is:', route);
-      getCurrUser();
-    }
-  }, [route, rootStore]);
+    //console.log('#2 calling getUser()');
+    getUser();
+  }, []);
 
   return (
-    userIsReady && currUser && (
+    currUser && (
       <View>
         <View style={{ padding: 30, marginBottom: 60, marginTop: 60 }}>
           <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 50 }}>Welcome {currUser.nickname}!</Text>
           <Text style={{ fontSize: 16, fontWeight: 'normal' }}>Your ID is {currUser.sub}</Text>
           <Text style={{ fontSize: 16, fontWeight: 'normal' }}>Your email is {currUser.email}</Text>
         </View>
-        <View style={{ padding: 30 }}>
+        <View style={{ padding: 30, flexDirection: 'row' }}>
+          <Button title="Cancel" onPress={() => props.setShowIntroScreen(true)} />
           <SignOutButton />
         </View>
       </View>
     )
     || <View style={{ padding: 30, marginBottom: 60, marginTop: 60 }}>
         <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 50 }}>Loading...</Text>
-        <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 50 }}>User:{rootStore?.user?.nickname}</Text>
-        <View style={{ padding: 30 }}>
+        <View style={{ padding: 30, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Button title="Cancel" onPress={() => props.setShowIntroScreen(true)} />
           <SignOutButton />
         </View>
       </View>
