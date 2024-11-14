@@ -8,7 +8,7 @@ import FeatureHighlightTemplate from '@/components/NewFeatures/featureHighlightT
 import { carouselData } from '@/components/NewFeatures/carouselData';
 import { uiStore } from '@/models/UIStore';
 
-const IntroScreen = ({...props}) => {
+const IntroScreen = () => {
   const { width, height } = Dimensions.get('window');
   const carouselWidth = width * 0.8;
   const carouselHeight = height * 0.4;

@@ -10,7 +10,7 @@ function SignOutButton() {
   return <Button onPress={signOut} title={`Sign Out`} />;
 }
 
-const WelcomeMessage = ({...props}) => {
+const WelcomeMessage = () => {
   const [currUser, setCurrUser] = useState<UserType | null>(null);
 
   useEffect(() => {
