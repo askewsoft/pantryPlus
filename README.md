@@ -70,6 +70,7 @@ The app can be built for a variety of contexts. Builds can be **local** or **clo
 - these can take a while to complete
 - have the iOS emulator already running (XCode -> Open Developer Tool -> Simulator)
 - `npm run ios` to build and run the app for your iOS device emulator
+    - **NOTE** if you install new expo packages, you need to build the app using this command, `npm start` will not work
 - If this fails, you may need to:
     - `cd ios`
     - `pod install`
