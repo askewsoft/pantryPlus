@@ -4,8 +4,9 @@ import Carousel from 'react-native-reanimated-carousel';
 import { useSharedValue } from 'react-native-reanimated';
 
 import { styles } from './style';
-import FeatureHighlightTemplate from 'src/components/NewFeatures/featureHighlightTemplate';
-import { carouselData } from 'src/components/NewFeatures/carouselData';
+import FeatureHighlightTemplate from '@/components/NewFeatures/featureHighlightTemplate';
+import { carouselData } from '@/components/NewFeatures/carouselData';
+import { uiStore } from '@/models/UIStore';
 
 const IntroScreen = ({...props}) => {
   const { width, height } = Dimensions.get('window');
@@ -39,7 +40,7 @@ const IntroScreen = ({...props}) => {
           />
         </View>
         <View style={styles.carouselControlsContainer}>
-          <Button title="Let's begin!" onPress={() => props.setShowIntroScreen(false)} color="#841584" />
+          <Button title="Let's begin!" onPress={() => uiStore.setLastScreen('WelcomeMessage')} color="#841584" />
         </View>
       </View>
     </View>
