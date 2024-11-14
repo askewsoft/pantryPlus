@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { Amplify } from "aws-amplify";
 import { Authenticator } from '@aws-amplify/ui-react-native';
+// import * as SplashScreen from 'expo-splash-screen';
 
 import { DataStoreContextProvider, domainStore } from '@/models/DataStore';
 import { UIStoreContextProvider, uiStore } from '@/models/UIStore';
@@ -13,6 +14,12 @@ import WelcomeMessage from '@/screens/WelcomeMessage/index';
 import amplifyConfig from '@/config/amplify';
 
 Amplify.configure(amplifyConfig);
+
+// SplashScreen.preventAutoHideAsync();
+// SplashScreen.setOptions({
+//   duration: 1000,
+//   fade: true,
+// });
 
 interface IAuthenticatorProps {
   initialState: 'signIn' | 'signUp' | 'forgotPassword';
