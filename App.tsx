@@ -1,18 +1,22 @@
 import { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native';
 import { observer } from 'mobx-react-lite';
-
 import { Amplify } from "aws-amplify";
 import { Authenticator } from '@aws-amplify/ui-react-native';
 
-import { ContextProvider, rootStore } from 'src/models/RootStore';
+import { DataStoreContextProvider, domainStore } from '@/models/DataStore';
+import { UIStoreContextProvider, uiStore } from '@/models/UIStore';
 
-import SplashScreen from 'src/screens/SplashScreen/index';
-import IntroScreen from 'src/screens/IntroScreen/index';
-import WelcomeMessage from 'src/screens/WelcomeMessage/index';
-import amplifyConfig from 'src/config/amplify';
+import SplashScreen from '@/screens/SplashScreen/index';
+import IntroScreen from '@/screens/IntroScreen/index';
+import WelcomeMessage from '@/screens/WelcomeMessage/index';
+import amplifyConfig from '@/config/amplify';
 
 Amplify.configure(amplifyConfig);
+
+interface IAuthenticatorProps {
+  initialState: 'signIn' | 'signUp' | 'forgotPassword';
+}
 
 const App = () => {
   const [showSplashScreen, setShowSplashScreen] = useState(true);
@@ -28,16 +32,18 @@ const App = () => {
     return <SplashScreen />;
   }
   return (
+    <UIStoreContextProvider value={uiStore}>
       <Authenticator.Provider>
-        <Authenticator>
-          <ContextProvider value={rootStore}>
-            <SafeAreaView>
-              {showIntroScreen && <IntroScreen setShowIntroScreen={setShowIntroScreen} />}
-              {!showIntroScreen && <WelcomeMessage setShowIntroScreen={setShowIntroScreen} />}
-            </SafeAreaView>
-          </ContextProvider>
+        <Authenticator initialState={uiStore.signInOrUp as IAuthenticatorProps['initialState']}>
+          <DataStoreContextProvider value={domainStore}>
+              <SafeAreaView>
+                {showIntroScreen && <IntroScreen setShowIntroScreen={setShowIntroScreen} />}
+                {!showIntroScreen && <WelcomeMessage setShowIntroScreen={setShowIntroScreen} />}
+              </SafeAreaView>
+          </DataStoreContextProvider>
         </Authenticator>
       </Authenticator.Provider>
+    </UIStoreContextProvider>
   );
 }
 

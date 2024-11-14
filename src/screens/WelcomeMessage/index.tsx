@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Button, View, Text } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { useAuthenticator } from '@aws-amplify/ui-react-native';
-import { RootStoreContext, UserType } from 'src/models/RootStore';
+import { DomainStoreContext, UserType } from '@/models/DataStore';
 
 function SignOutButton() {
   const { signOut } = useAuthenticator();
@@ -10,19 +10,14 @@ function SignOutButton() {
 }
 
 const WelcomeMessage = ({...props}) => {
-  //console.log('#1 WelcomeMessage');
   const [currUser, setCurrUser] = useState<UserType | null>(null);
-  const rootStore = useContext(RootStoreContext);
+  const domainStore = useContext(DomainStoreContext);
 
   useEffect(() => {
     const getUser = async () => {
-      //console.log('#3 inside getUser()');
-      const authUser = await rootStore?.getAuthenticatedUser();
-      //console.log('#9 User Returned from Action');
+      const authUser = await domainStore?.getAuthenticatedUser();
       setCurrUser(authUser || null);
-      //console.log('#10 User Set');
     };
-    //console.log('#2 calling getUser()');
     getUser();
   }, []);
 
@@ -31,7 +26,7 @@ const WelcomeMessage = ({...props}) => {
       <View>
         <View style={{ padding: 30, marginBottom: 60, marginTop: 60 }}>
           <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 50 }}>Welcome {currUser.nickname}!</Text>
-          <Text style={{ fontSize: 16, fontWeight: 'normal' }}>Your ID is {currUser.sub}</Text>
+          <Text style={{ fontSize: 16, fontWeight: 'normal' }}>Your ID is {currUser.id}</Text>
           <Text style={{ fontSize: 16, fontWeight: 'normal' }}>Your email is {currUser.email}</Text>
         </View>
         <View style={{ padding: 30, flexDirection: 'row' }}>
