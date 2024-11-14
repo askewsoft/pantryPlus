@@ -24,6 +24,9 @@ const amplifyConfig = {
         email: {
           required: true,
         },
+        nickname: {
+          required: true,
+        },
       },
       allowGuestAccess: true,
       passwordFormat: {
