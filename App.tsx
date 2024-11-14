@@ -5,7 +5,12 @@ import { Amplify } from "aws-amplify";
 import { Authenticator } from '@aws-amplify/ui-react-native';
 // import * as SplashScreen from 'expo-splash-screen';
 
-import { DataStoreContextProvider, domainStore } from '@/models/DataStore';
+/* TODO:
+* - figure out if we need an AppContainer react component as child of Authenticator component
+* - store new user in DB during signup
+* - replace SplashScreen component with expo-splash-screen
+*/
+import { DomainStoreContextProvider, domainStore } from '@/models/DomainStore';
 import { UIStoreContextProvider, uiStore } from '@/models/UIStore';
 
 import SplashScreen from '@/screens/SplashScreen/index';
@@ -27,12 +32,11 @@ interface IAuthenticatorProps {
 
 const App = () => {
   const [showSplashScreen, setShowSplashScreen] = useState(true);
-  const [showIntroScreen, setShowIntroScreen] = useState(true);
 
   useEffect(() => {
     setTimeout(() => {
       setShowSplashScreen(false);
-    }, 2500);
+    }, 3000);
   }, []);
 
   if (showSplashScreen) {
@@ -42,12 +46,14 @@ const App = () => {
     <UIStoreContextProvider value={uiStore}>
       <Authenticator.Provider>
         <Authenticator initialState={uiStore.signInOrUp as IAuthenticatorProps['initialState']}>
-          <DataStoreContextProvider value={domainStore}>
+          <DomainStoreContextProvider value={domainStore}>
               <SafeAreaView>
-                {showIntroScreen && <IntroScreen setShowIntroScreen={setShowIntroScreen} />}
-                {!showIntroScreen && <WelcomeMessage setShowIntroScreen={setShowIntroScreen} />}
+                {uiStore.lastScreen === 'IntroScreen' ?
+                  <IntroScreen /> :
+                  <WelcomeMessage />
+                }
               </SafeAreaView>
-          </DataStoreContextProvider>
+          </DomainStoreContextProvider>
         </Authenticator>
       </Authenticator.Provider>
     </UIStoreContextProvider>

@@ -2,7 +2,8 @@ import { useContext, useEffect, useState } from 'react';
 import { Button, View, Text } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { useAuthenticator } from '@aws-amplify/ui-react-native';
-import { DomainStoreContext, UserType } from '@/models/DataStore';
+import { domainStore, UserType } from '@/models/DomainStore';
+import { uiStore } from '@/models/UIStore';
 
 function SignOutButton() {
   const { signOut } = useAuthenticator();
@@ -11,7 +12,6 @@ function SignOutButton() {
 
 const WelcomeMessage = ({...props}) => {
   const [currUser, setCurrUser] = useState<UserType | null>(null);
-  const domainStore = useContext(DomainStoreContext);
 
   useEffect(() => {
     const getUser = async () => {
@@ -30,7 +30,7 @@ const WelcomeMessage = ({...props}) => {
           <Text style={{ fontSize: 16, fontWeight: 'normal' }}>Your email is {currUser.email}</Text>
         </View>
         <View style={{ padding: 30, flexDirection: 'row' }}>
-          <Button title="Cancel" onPress={() => props.setShowIntroScreen(true)} />
+          <Button title="Cancel" onPress={() => uiStore.setLastScreen('IntroScreen')} />
           <SignOutButton />
         </View>
       </View>
@@ -38,7 +38,7 @@ const WelcomeMessage = ({...props}) => {
     || <View style={{ padding: 30, marginBottom: 60, marginTop: 60 }}>
         <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 50 }}>Loading...</Text>
         <View style={{ padding: 30, flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Button title="Cancel" onPress={() => props.setShowIntroScreen(true)} />
+          <Button title="Cancel" onPress={() => uiStore.setLastScreen('IntroScreen')} />
           <SignOutButton />
         </View>
       </View>
