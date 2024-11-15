@@ -22,7 +22,7 @@ const DomainStoreModel = t
     })
     .actions(self => ({
         getAuthenticatedUser: flow(function* getAuthenticatedUser() {
-            if (self.user?.email && self.user?.id && self.user?.nickname) {
+            if (self.user?.email) {
                 return self.user;
             } else {
                 try {
