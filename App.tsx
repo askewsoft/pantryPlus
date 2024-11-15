@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { Amplify } from "aws-amplify";
+import { SignUpInput, SignUpOutput, signUp } from 'aws-amplify/auth';
 import { Authenticator } from '@aws-amplify/ui-react-native';
 // import * as SplashScreen from 'expo-splash-screen';
 
@@ -30,6 +31,16 @@ interface IAuthenticatorProps {
   initialState: 'signIn' | 'signUp' | 'forgotPassword';
 }
 
+const handleSignUp = (input: SignUpInput): Promise<SignUpOutput> => {
+  console.log('handleSignUp:', JSON.stringify(input));
+  // TODO: store new user in DB
+  return signUp(input);
+}
+
+const authenticatorServices = {
+  handleSignUp: handleSignUp
+}
+
 const App = () => {
   const [showSplashScreen, setShowSplashScreen] = useState(true);
 
@@ -45,7 +56,7 @@ const App = () => {
   return (
     <UIStoreContextProvider value={uiStore}>
       <Authenticator.Provider>
-        <Authenticator initialState={uiStore.signInOrUp as IAuthenticatorProps['initialState']}>
+        <Authenticator services={authenticatorServices} initialState={uiStore.signInOrUp as IAuthenticatorProps['initialState']}>
           <DomainStoreContextProvider value={domainStore}>
               <SafeAreaView>
                 {uiStore.lastScreen === 'IntroScreen' ?
