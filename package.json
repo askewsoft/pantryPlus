@@ -20,6 +20,7 @@
     "mobx-react": "^9.1.1",
     "mobx-state-tree": "6.0.1",
     "mst-persist": "^0.1.4",
+    "pantryPlusApiClient": "github:askewsoft/pantryPlusApiClient",
     "react": "18.2.0",
     "react-native": "0.74.5",
     "react-native-gesture-handler": "2.16.2",

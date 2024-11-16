@@ -11,6 +11,7 @@ import { Authenticator } from '@aws-amplify/ui-react-native';
 * - store new user in DB during signup
 * - replace SplashScreen component with expo-splash-screen
 */
+import { ShoppersApi, Configuration } from 'pantryPlusApiClient';
 import { DomainStoreContextProvider, domainStore } from '@/models/DomainStore';
 import { UIStoreContextProvider, uiStore } from '@/models/UIStore';
 
@@ -27,13 +28,25 @@ Amplify.configure(amplifyConfig);
 //   fade: true,
 // });
 
+const configuration = new Configuration({
+  basePath: process.env.EXPO_PUBLIC_API_URL,
+});
+
+const shoppersApi = new ShoppersApi(configuration);
+
 interface IAuthenticatorProps {
   initialState: 'signIn' | 'signUp' | 'forgotPassword';
 }
 
-const handleSignUp = (input: SignUpInput): Promise<SignUpOutput> => {
+const handleSignUp = async (input: SignUpInput): Promise<SignUpOutput> => {
   console.log('handleSignUp:', JSON.stringify(input));
-  // TODO: store new user in DB
+  // store new user in DB
+  try {
+    const response = await shoppersApi.createShopper(input);
+    console.log('response:', JSON.stringify(response));
+  } catch (error) {
+    console.error('error:', error);
+  }
   return signUp(input);
 }
 
