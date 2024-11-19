@@ -29,7 +29,7 @@ type UIStoreType = Instance<typeof UIStoreModel>;
 export const uiStore = UIStoreModel.create({
     lastScreen: 'IntroScreen',
     lastUsedVersion: '1.0.0',
-    signInOrUp: 'signUp',
+    signInOrUp: 'signIn',
 });
 
 // saves to and loads from device storage
