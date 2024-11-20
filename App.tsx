@@ -2,11 +2,7 @@ import { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Amplify } from "aws-amplify";
 import { Authenticator } from '@aws-amplify/ui-react-native';
-// import * as SplashScreen from 'expo-splash-screen';
 
-/* TODO:
-* - replace SplashScreen component with expo-splash-screen
-*/
 import { DomainStoreContextProvider, domainStore } from '@/models/DomainStore';
 import { UIStoreContextProvider, uiStore } from '@/models/UIStore';
 
@@ -15,12 +11,6 @@ import SplashScreen from '@/screens/SplashScreen';
 import amplifyConfig from '@/config/amplify';
 
 Amplify.configure(amplifyConfig);
-
-// SplashScreen.preventAutoHideAsync();
-// SplashScreen.setOptions({
-//   duration: 1000,
-//   fade: true,
-// });
 
 interface IAuthenticatorProps {
   initialState: 'signIn' | 'signUp' | 'forgotPassword';
