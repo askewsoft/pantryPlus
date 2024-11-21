@@ -16,21 +16,21 @@ const menuItems = [
     },
     {
         name: 'Groups',
-        icon: 'group',
+        icon: 'groups',
         onPress: () => {
             // navigation.navigate('Groups');
         }
     },
     {
         name: 'Locations',
-        icon: 'location-city',
+        icon: 'store',
         onPress: () => {
             // navigation.navigate('Locations');
         }
     },
     {
-        name: 'Profile',
-        icon: 'person',
+        name: 'Settings',
+        icon: 'settings',
         onPress: () => {
             // navigation.navigate('Profile');
         }
