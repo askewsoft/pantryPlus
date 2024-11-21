@@ -40,7 +40,7 @@ const IntroScreen = () => {
           />
         </View>
         <View style={styles.carouselControlsContainer}>
-          <Button title="Let's begin!" onPress={() => uiStore.setLastScreen('WelcomeMessage')} color="#841584" />
+          <Button title="Let's begin!" onPress={() => uiStore.setLastScreen('MyLists')} color="#841584" />
         </View>
       </View>
     </View>

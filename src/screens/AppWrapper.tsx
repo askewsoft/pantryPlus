@@ -6,6 +6,7 @@ import { fetchUserAttributes } from 'aws-amplify/auth';
 // screens
 import IntroScreen from '@/screens/IntroScreen';
 import WelcomeMessage from '@/screens/WelcomeMessage';
+import MyListsScreen from '@/screens/MyLists';
 
 // models
 import { domainStore } from '@/models/DomainStore';
@@ -16,18 +17,26 @@ import api from '@/api';
 
 const registerUser = async () => {
     // Persist new users to the DB via the API
+    let authenticatedUser;
+    let userAttributes;
     try {
-        const attributes = await fetchUserAttributes();
-        const authenticatedUser = {
-          email: attributes.email || '',
-          id: attributes.sub || '',
-          nickName: attributes.nickname || ''
-        };
-        const response = await api.shopper.createShopper(authenticatedUser);
-        domainStore.initUser(authenticatedUser);
+        userAttributes = await fetchUserAttributes();
+    } catch(error) {
+        console.error('Unable to fetch user attributes:', error);
+        throw error;
     }
-    catch(error) {
-        console.error('Unable to fetchUserAttributes:', error);
+
+    authenticatedUser = {
+      email: userAttributes.email || '',
+      id: userAttributes.sub || '',
+      nickName: userAttributes.nickname || ''
+    };
+
+    try {
+        await api.shopper.createShopper(authenticatedUser);
+        domainStore.initUser(authenticatedUser);
+    } catch(error) {
+        console.error('Unable to create shopper:', error);
         throw error;
     }
 };
@@ -41,7 +50,7 @@ const AppWrapper = () => {
     <SafeAreaView>
       {uiStore.lastScreen === 'IntroScreen' ?
         <IntroScreen /> :
-        <WelcomeMessage />
+        <MyListsScreen />
       }
     </SafeAreaView>
   );
