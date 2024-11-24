@@ -3,6 +3,8 @@ import { observer } from 'mobx-react-lite';
 // import { useNavigation } from '@react-navigation/native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
+import colors from '@/colors';
+
 const CategoryFolder = ({title, open, children}: {title: string, open: boolean, children: React.ReactNode}) => {
   return (
     <View style={styles.container}>
@@ -11,7 +13,7 @@ const CategoryFolder = ({title, open, children}: {title: string, open: boolean, 
               name={open ? "folderopen" : "folder1"}
               size={24}
               backgroundColor="white"
-              color="purple"
+              color={colors.brandColor}
               iconStyle={{ padding: 0, margin: 0 }}
               onPress={() => {}}
             />
@@ -30,7 +32,7 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
   },
   title: {
-    color: 'purple',
+    color: colors.brandColor,
     fontSize: 20,
     fontWeight: 'bold',
   },

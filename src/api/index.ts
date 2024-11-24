@@ -6,9 +6,10 @@ import {
     ShoppersApi,
     Configuration
 } from 'pantryPlusApiClient';
+import cognitoConfig from '@/config/cognito';
 
 const configuration = new Configuration({
-  basePath: process.env.EXPO_PUBLIC_API_URL,
+  basePath: cognitoConfig.apiUrl,
 });
 
 const listsApi = new ListsApi(configuration);

@@ -4,6 +4,7 @@ import Carousel from 'react-native-reanimated-carousel';
 import { useSharedValue } from 'react-native-reanimated';
 
 import { styles } from './style';
+import colors from '@/colors';
 import FeatureHighlightTemplate from '@/components/NewFeatures/featureHighlightTemplate';
 import { carouselData } from '@/components/NewFeatures/carouselData';
 import { uiStore } from '@/models/UIStore';
@@ -40,7 +41,7 @@ const IntroScreen = () => {
           />
         </View>
         <View style={styles.carouselControlsContainer}>
-          <Button title="Let's begin!" onPress={() => uiStore.setLastScreen('MyLists')} color="#841584" />
+          <Button title="Let's begin!" onPress={() => uiStore.setLastScreen('MyLists')} color={colors.brandColor} />
         </View>
       </View>
     </View>

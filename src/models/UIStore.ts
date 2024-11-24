@@ -5,7 +5,7 @@ import { persist } from 'mst-persist';
 
 export const UIStoreModel = t.model('UIStoreModel', {
     showIntroScreen: false,
-    lastScreen: t.enumeration('lastScreen', ['IntroScreen', 'WelcomeMessage', 'MyLists']),
+    lastScreen: t.enumeration('lastScreen', ['IntroScreen', 'WelcomeScreen', 'MyLists']),
     lastUsedVersion: t.string,
     signInOrUp: t.enumeration('signInOrUp', ['signIn', 'signUp']),
 })
@@ -16,7 +16,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
     setShowIntroScreen(showIntroScreen: boolean) {
         self.showIntroScreen = showIntroScreen;
     },
-    setLastScreen(lastScreen: 'IntroScreen' | 'WelcomeMessage' | 'MyLists') {
+    setLastScreen(lastScreen: 'IntroScreen' | 'WelcomeScreen' | 'MyLists') {
         self.lastScreen = cast(lastScreen);
     },
     setLastUsedVersion(lastUsedVersion: string) {

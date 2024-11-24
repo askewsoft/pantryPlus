@@ -1,59 +1,76 @@
-import { SafeAreaView } from 'react-native';
-import React, { useEffect } from 'react';
-import { observer } from 'mobx-react-lite';
-import { fetchUserAttributes } from 'aws-amplify/auth';
+import React from 'react';
+import { View, StyleSheet, Dimensions } from 'react-native';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator, BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
+import { StatusBar } from 'expo-status-bar';
+import { observer } from 'mobx-react';
 
-// screens
-import IntroScreen from '@/screens/IntroScreen';
-import WelcomeMessage from '@/screens/WelcomeMessage';
-import MyListsScreen from '@/screens/MyLists';
+import { RootTabParamList } from '@/types/NavigationTypes';
+import ListsNavigation from './ListsNavigation';
+import SettingsNavigation from './SettingsNavigation';
+import GroupsNavigation from './GroupsNavigation';
+import LocationsNavigation from './LocationsNavigation';
+import colors from '@/colors';
 
-// models
-import { domainStore } from '@/models/DomainStore';
-import { uiStore } from '@/models/UIStore';
+const { Navigator, Screen } = createBottomTabNavigator<RootTabParamList>();
 
-// api
-import api from '@/api';
+const AppWrapper = () => {
+  return (
+    // View is needed to push the status bar to the bottom of the screen
+    // This should not be needed.
+    <View style={styles.container}>
+      <StatusBar style="auto" />
+      <NavigationContainer>
+        <Navigator initialRouteName="MyLists" screenOptions={screenOptions} backBehavior="history" >
+          <Screen name="MyLists" component={ListsNavigation} options={tabOptions({iconName: 'list-alt', title: 'My Lists'})} />
+          <Screen name="Groups" component={GroupsNavigation} options={tabOptions({iconName: 'groups', title: 'Groups'})} />
+          <Screen name="Locations" component={LocationsNavigation} options={tabOptions({iconName: 'store', title: 'Stores'})} />
+          <Screen name="Settings" component={SettingsNavigation} options={tabOptions({iconName: 'settings', title: 'Profile'})} />
+        </Navigator>
+      </NavigationContainer>
+    </View>
+  );
+}
 
-const registerUser = async () => {
-    // Persist new users to the DB via the API
-    let authenticatedUser;
-    let userAttributes;
-    try {
-        userAttributes = await fetchUserAttributes();
-    } catch(error) {
-        console.error('Unable to fetch user attributes:', error);
-        throw error;
-    }
+type MaterialIconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
-    authenticatedUser = {
-      email: userAttributes.email || '',
-      id: userAttributes.sub || '',
-      nickName: userAttributes.nickname || ''
-    };
-
-    try {
-        await api.shopper.createShopper(authenticatedUser);
-        domainStore.initUser(authenticatedUser);
-    } catch(error) {
-        console.error('Unable to create shopper:', error);
-        throw error;
+const tabBarIconCreator = (name: MaterialIconName) => {
+    return function ({ color, size }: { color: string, size: number }) {
+        return <MaterialIcons name={name} color={color} size={size} />;
     }
 };
 
-const AppWrapper = () => {
-  useEffect(() => {
-    registerUser();
-  }, []);
+// Shared tab options
+const tabOptions = ({iconName, title}: {iconName: MaterialIconName, title: string}): BottomTabNavigationOptions => {
+  return {
+    title: title,
+    tabBarIcon: tabBarIconCreator(iconName),
+    tabBarShowLabel: true,
+    tabBarLabelPosition: 'below-icon',
+    tabBarLabelStyle: { fontWeight: 'bold', fontSize: 14 },
+    tabBarActiveTintColor: colors.white,
+    tabBarInactiveTintColor: colors.inactiveButtonColor,
+    tabBarInactiveBackgroundColor: colors.brandColor,
+    tabBarStyle: { backgroundColor: colors.brandColor, height: 90, paddingBottom: 20, paddingTop: 10 },
+    tabBarItemStyle: { backgroundColor: colors.lightBrandColor },
+    tabBarPosition: 'bottom',
+  }
+};
 
-  return (
-    <SafeAreaView>
-      {uiStore.lastScreen === 'IntroScreen' ?
-        <IntroScreen /> :
-        <MyListsScreen />
-      }
-    </SafeAreaView>
-  );
+const screenOptions: BottomTabNavigationOptions = {
+  headerShown: true,
+  headerTitleAlign: 'left',
+  headerStyle: { height: 40, backgroundColor: colors.brandColor },
+  headerTintColor: colors.white,
+  headerTitleStyle: { fontWeight: 'bold' },
+  lazy: false,
 }
+
+const styles = StyleSheet.create({
+  container: {
+    minHeight: Dimensions.get('window').height - 58
+  },
+});
 
 export default observer(AppWrapper);

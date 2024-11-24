@@ -1,21 +1,18 @@
 import { Amplify } from "aws-amplify";
 import type { ResourcesConfig } from "aws-amplify";
+import cognitoConfig from '@/config/cognito';
 
-const EXPO_PUBLIC_USER_POOL_ID = process.env.EXPO_PUBLIC_USER_POOL_ID;
-const EXPO_PUBLIC_APP_CLIENT_ID = process.env.EXPO_PUBLIC_APP_CLIENT_ID;
-const EXPO_PUBLIC_REGION = process.env.EXPO_PUBLIC_REGION;
-
-if (!EXPO_PUBLIC_USER_POOL_ID || !EXPO_PUBLIC_APP_CLIENT_ID) {
+if (!cognitoConfig.userPoolId || !cognitoConfig.userPoolClientId) {
   throw new Error("Required environment variables are not set");
 }
 
 const amplifyConfig = {
   Auth: {
     Cognito: {
-      userPoolId: EXPO_PUBLIC_USER_POOL_ID,
-      userPoolClientId: EXPO_PUBLIC_APP_CLIENT_ID,
+      userPoolId: cognitoConfig.userPoolId,
+      userPoolClientId: cognitoConfig.userPoolClientId,
       identityPoolId: "",
-      region: EXPO_PUBLIC_REGION,
+      region: cognitoConfig.userPoolRegion,
       loginWith: {
         email: true,
       },
