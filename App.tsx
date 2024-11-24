@@ -6,9 +6,11 @@ import { Authenticator } from '@aws-amplify/ui-react-native';
 import { DomainStoreContextProvider, domainStore } from '@/models/DomainStore';
 import { UIStoreContextProvider, uiStore } from '@/models/UIStore';
 
-import AppWrapper from '@/screens/AppWrapper';
+import UserContext from '@/screens/UserContext';
 import SplashScreen from '@/screens/SplashScreen';
 import amplifyConfig from '@/config/amplify';
+import IntroScreen from '@/screens/IntroScreen';
+import AppWrapper from '@/screens/AppWrapper';
 
 Amplify.configure(amplifyConfig);
 
@@ -33,7 +35,12 @@ const App = () => {
       <Authenticator.Provider>
         <Authenticator initialState={uiStore.signInOrUp as IAuthenticatorProps['initialState']}>
           <DomainStoreContextProvider value={domainStore}>
-            <AppWrapper />
+            <UserContext>
+              {uiStore.lastScreen === 'IntroScreen' ?
+                <IntroScreen /> :
+                <AppWrapper />
+              }
+            </UserContext>
           </DomainStoreContextProvider>
         </Authenticator>
       </Authenticator.Provider>
