@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useAuthenticator } from '@aws-amplify/ui-react-native';
 import { domainStore, UserType } from '@/models/DomainStore';
 import { uiStore } from '@/models/UIStore';
-import { BottomTabPropsGroups } from '@/types/NavigationTypes';
+import { BottomTabPropsGroups } from '@/types/ListNavTypes';
 
 function SignOutButton() {
   const { signOut } = useAuthenticator();

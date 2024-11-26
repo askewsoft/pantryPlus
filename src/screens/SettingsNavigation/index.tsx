@@ -1,11 +1,31 @@
-import { View, Text } from 'react-native';
 import { observer } from 'mobx-react-lite';
+import { createStackNavigator } from '@react-navigation/stack';
 
-import { BottomTabPropsSettings } from '@/types/NavigationTypes';
+import { SettingsStackParamList } from '@/types/SettingsNavTypes';
 
-const SettingsNavigation = ({route, navigation}: BottomTabPropsSettings) => {
+import MySettings from './MySettings';
+
+import colors from '@/colors';
+
+const { Navigator, Screen } = createStackNavigator<SettingsStackParamList>();
+
+const SettingsNavigation = () => {
   return (
-    <View><Text>Settings</Text></View>
+    <Navigator
+      initialRouteName="MySettings"
+      screenOptions={{
+        headerStyle: {
+          height: 40,
+          backgroundColor: colors.brandColor,
+        },
+        headerTitleAlign: 'left',
+        headerTintColor: colors.white,
+        headerTitleStyle: { fontWeight: 'bold' },
+        headerShown: true
+      }}
+    >
+      <Screen name="MySettings" component={MySettings} options={{ title: 'My Settings' }} />
+    </Navigator>
   );
 }
 

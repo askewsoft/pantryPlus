@@ -1,11 +1,33 @@
-import { View, Text } from 'react-native';
 import { observer } from 'mobx-react-lite';
+import { createStackNavigator } from '@react-navigation/stack';
 
-import { BottomTabPropsLocations } from '@/types/NavigationTypes';
+import { LocationsStackParamList } from '@/types/LocationNavTypes';
 
-const LocationsNavigation = ({route, navigation}: BottomTabPropsLocations) => {
+import MyLocations from './MyLocations';
+import LocationDetails from './LocationDetails';
+
+import colors from '@/colors';
+
+const { Navigator, Screen } = createStackNavigator<LocationsStackParamList>();
+
+const LocationsNavigation = () => {
   return (
-    <View><Text>Locations</Text></View>
+    <Navigator
+      initialRouteName="MyLocations"
+      screenOptions={{
+        headerStyle: {
+          height: 40,
+          backgroundColor: colors.brandColor,
+        },
+        headerTitleAlign: 'left',
+        headerTintColor: colors.white,
+        headerTitleStyle: { fontWeight: 'bold' },
+        headerShown: true
+      }}
+    >
+      <Screen name="MyLocations" component={MyLocations} options={{ title: 'My Locations' }} />
+      <Screen name="LocationDetails" component={LocationDetails} />
+    </Navigator>
   );
 }
 

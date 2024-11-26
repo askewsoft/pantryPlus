@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native';
 import { observer } from 'mobx-react-lite';
 
-import { StackPropsPurchaseHistory } from '@/types/NavigationTypes';
+import { StackPropsPurchaseHistory } from '@/types/ListNavTypes';
 
 const PurchaseHistory = ({route, navigation}: StackPropsPurchaseHistory) => {
   return (

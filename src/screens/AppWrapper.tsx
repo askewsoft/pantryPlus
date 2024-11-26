@@ -6,14 +6,14 @@ import { createBottomTabNavigator, BottomTabNavigationOptions } from '@react-nav
 import { StatusBar } from 'expo-status-bar';
 import { observer } from 'mobx-react';
 
-import { RootTabParamList } from '@/types/NavigationTypes';
+import { AppTabParamList } from '@/types/AppNavTypes';
 import ListsNavigation from './ListsNavigation';
 import SettingsNavigation from './SettingsNavigation';
 import GroupsNavigation from './GroupsNavigation';
 import LocationsNavigation from './LocationsNavigation';
 import colors from '@/colors';
 
-const { Navigator, Screen } = createBottomTabNavigator<RootTabParamList>();
+const { Navigator, Screen } = createBottomTabNavigator<AppTabParamList>();
 
 const AppWrapper = () => {
   return (
@@ -22,11 +22,11 @@ const AppWrapper = () => {
     <View style={styles.container}>
       <StatusBar style="auto" />
       <NavigationContainer>
-        <Navigator initialRouteName="MyLists" screenOptions={screenOptions} backBehavior="history" >
-          <Screen name="MyLists" component={ListsNavigation} options={tabOptions({iconName: 'list-alt', title: 'My Lists'})} />
-          <Screen name="Groups" component={GroupsNavigation} options={tabOptions({iconName: 'groups', title: 'Groups'})} />
-          <Screen name="Locations" component={LocationsNavigation} options={tabOptions({iconName: 'store', title: 'Stores'})} />
-          <Screen name="Settings" component={SettingsNavigation} options={tabOptions({iconName: 'settings', title: 'Profile'})} />
+        <Navigator initialRouteName="Lists" screenOptions={screenOptions} >
+          <Screen name="Lists" component={ListsNavigation} options={tabOptions({iconName: 'list-alt'})} />
+          <Screen name="Groups" component={GroupsNavigation} options={tabOptions({iconName: 'groups'})} />
+          <Screen name="Locations" component={LocationsNavigation} options={tabOptions({iconName: 'store'})} />
+          <Screen name="Settings" component={SettingsNavigation} options={tabOptions({iconName: 'settings'})} />
         </Navigator>
       </NavigationContainer>
     </View>
@@ -42,9 +42,8 @@ const tabBarIconCreator = (name: MaterialIconName) => {
 };
 
 // Shared tab options
-const tabOptions = ({iconName, title}: {iconName: MaterialIconName, title: string}): BottomTabNavigationOptions => {
+const tabOptions = ({iconName}: {iconName: MaterialIconName}): BottomTabNavigationOptions => {
   return {
-    title: title,
     tabBarIcon: tabBarIconCreator(iconName),
     tabBarShowLabel: true,
     tabBarLabelPosition: 'below-icon',
@@ -59,11 +58,7 @@ const tabOptions = ({iconName, title}: {iconName: MaterialIconName, title: strin
 };
 
 const screenOptions: BottomTabNavigationOptions = {
-  headerShown: true,
-  headerTitleAlign: 'left',
-  headerStyle: { height: 40, backgroundColor: colors.brandColor },
-  headerTintColor: colors.white,
-  headerTitleStyle: { fontWeight: 'bold' },
+  headerShown: false,
   lazy: false,
 }
 
