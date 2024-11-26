@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
+import 'react-native-gesture-handler';
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Amplify } from "aws-amplify";
 import { Authenticator } from '@aws-amplify/ui-react-native';
 
@@ -31,8 +33,9 @@ const App = () => {
     return <SplashScreen />;
   }
   return (
-    <UIStoreContextProvider value={uiStore}>
-      <Authenticator.Provider>
+    <GestureHandlerRootView>
+      <UIStoreContextProvider value={uiStore}>
+        <Authenticator.Provider>
         <Authenticator initialState={uiStore.signInOrUp as IAuthenticatorProps['initialState']}>
           <DomainStoreContextProvider value={domainStore}>
             <UserContext>
@@ -42,9 +45,10 @@ const App = () => {
               }
             </UserContext>
           </DomainStoreContextProvider>
-        </Authenticator>
-      </Authenticator.Provider>
-    </UIStoreContextProvider>
+          </Authenticator>
+        </Authenticator.Provider>
+      </UIStoreContextProvider>
+    </GestureHandlerRootView>
   );
 }
 
