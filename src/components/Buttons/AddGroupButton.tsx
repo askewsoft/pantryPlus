@@ -1,7 +1,7 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { observer } from 'mobx-react-lite';
 
-const AddListButton = () => {
+const AddGroupButton = () => {
   return (
     <MaterialIcons.Button
       name="add-circle"
@@ -15,4 +15,4 @@ const AddListButton = () => {
   )
 }
 
-export default observer(AddListButton);
+export default observer(AddGroupButton);
