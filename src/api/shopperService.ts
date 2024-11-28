@@ -6,7 +6,8 @@ import {
 import cognitoConfig from '@/config/cognito';
 import { fetchUserAttributes } from 'aws-amplify/auth';
 
-import { ShopperType } from '@/models/DomainStore';
+import { UserType } from '@/models/DomainStore';
+import { ListModel } from '@/models/List';
 
 const configuration = new Configuration({
   basePath: cognitoConfig.apiUrl,
@@ -39,6 +40,27 @@ const registerUser = async () => {
     }
 };
 
+const getUserLists = async (user: UserType) => {
+    const xAuthUser = user.email!;
+    const shopperId = user.id!;
+    try {
+        const listData = await shopperApi.getLists(xAuthUser, shopperId);
+        const lists = listData.data.map(
+            (list) => {
+                const { id, name, ownerId } = list;
+                const userIsOwner = ownerId === shopperId;
+                return ListModel.create({ id, name, userIsOwner });
+            }
+        );
+        return lists;
+    } catch (error) {
+        console.error('Unable to get user lists:', error);
+        // TODO: do we ignore the error vs throw?
+        throw error;
+    }
+};
+
 export default {
     registerUser,
+    getUserLists,
 };

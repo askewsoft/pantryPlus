@@ -7,7 +7,7 @@ import { domainStore, ListType } from '@/models/DomainStore';
 import colors from '@/colors';
 
 const ListItem = ({id, drag, navigation}: {id: string, drag: () => void, navigation: any}) => {
-  // const list = domainStore.lists.find(list => list.id === id);
+  const list = domainStore.lists.find(list => list.id === id);
 
   const handlePress = ({ id }: { id: string }) => {
     navigation.navigate('ShoppingList', { id });
@@ -17,7 +17,7 @@ const ListItem = ({id, drag, navigation}: {id: string, drag: () => void, navigat
     <View style={styles.container}>
       <Pressable style={styles.titleContainer} onPress={() => handlePress({ id })}>
         <MaterialIcons name="format-list-bulleted" size={18} color={colors.brandColor} />
-        <Text style={styles.title}>{id}</Text>
+        <Text style={styles.title}>{list?.name}</Text>
       </Pressable>
       <MaterialIcons.Button
         name="drag-handle"

@@ -35,12 +35,16 @@ const DomainStoreModel = t
             self.groups.replace([]);
             self.locations.replace([]);
         },
-        addList: async (list: ListType) => {
+        addList: flow(function* (list: ListType) {
             const xAuthUser = self.user?.email!;
             const ownerId = self.user?.id!;
-            await api.list.createList(list, ownerId, xAuthUser!);
+            yield api.list.createList(list, ownerId, xAuthUser!);
             self.lists.push(list);
-        }
+        }),
+        loadLists: flow(function* () {
+            const lists = yield api.shopper.getUserLists(self.user!);
+            self.lists.replace(lists);
+        })
     }));
 
 type DomainStoreType = Instance<typeof DomainStoreModel>;
