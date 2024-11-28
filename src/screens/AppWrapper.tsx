@@ -20,7 +20,7 @@ const AppWrapper = () => {
     // View is needed to push the status bar to the bottom of the screen
     // This should not be needed.
     <View style={styles.container}>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
       <NavigationContainer>
         <Navigator initialRouteName="Lists" screenOptions={screenOptions} >
           <Screen name="Lists" component={ListsNavigation} options={tabOptions({iconName: 'list-alt'})} />
@@ -62,9 +62,18 @@ const screenOptions: BottomTabNavigationOptions = {
   lazy: false,
 }
 
+/* TODO:
+* statusBarHeight is specific to iPhone 15 and will likely look bad on other devices
+* not sure why this is needed and why SafeAreaView doesn't work
+* consider using react-native-status-bar-height
+* my guess is that this is somehow related to the way NavigationContainer handles the status bar
+*/
+const statusBarHeight = 58;
 const styles = StyleSheet.create({
   container: {
-    minHeight: Dimensions.get('window').height - 58
+    minHeight: Dimensions.get('window').height,
+    paddingTop: statusBarHeight,
+    backgroundColor: colors.brandColor,
   },
 });
 

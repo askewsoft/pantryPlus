@@ -8,6 +8,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
     lastScreen: t.enumeration('lastScreen', ['IntroScreen', 'WelcomeScreen', 'MyLists']),
     lastUsedVersion: t.string,
     signInOrUp: t.enumeration('signInOrUp', ['signIn', 'signUp']),
+    addListModalVisible: false,
 })
 .actions(self => ({
     setSignInOrUp(signInOrUp: 'signIn' | 'signUp') {
@@ -21,6 +22,9 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setLastUsedVersion(lastUsedVersion: string) {
         self.lastUsedVersion = cast(lastUsedVersion);
+    },
+    setAddListModalVisible(addListModalVisible: boolean) {
+        self.addListModalVisible = addListModalVisible;
     }
 }));
 
@@ -30,6 +34,7 @@ export const uiStore = UIStoreModel.create({
     lastScreen: 'IntroScreen',
     lastUsedVersion: '1.0.0',
     signInOrUp: 'signIn',
+    addListModalVisible: false,
 });
 
 // saves to and loads from device storage

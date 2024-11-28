@@ -1,37 +1,43 @@
 import { observer } from 'mobx-react-lite';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-// import AddListButton from '@/components/Buttons/AddListButton';
-import { StackPropsMyLists } from '@/types/ListNavTypes';
+import { StackPropsListsMyLists } from '@/types/ListNavTypes';
 import ListItem from '@/components/ListItem';
+import AddListModal from '@/modals/AddListModal';
 
 import { domainStore, ListType } from '@/models/DomainStore';
+import { uiStore } from '@/models/UIStore';
 // TODO: remove dummy data backend integration
 import { listsDummyData } from './listsDummyData';
 
 import colors from '@/colors';
 
-const MyLists = ({route, navigation}: StackPropsMyLists) => {
+const MyLists = ({route, navigation}: StackPropsListsMyLists) => {
   return (
     /* IFF DraggableFlatList creates problems,
      * investigate https://github.com/fivecar/react-native-draglist
     */
-    <DraggableFlatList
-      contentContainerStyle={styles.draggableFlatListStyle}
-      data={listsDummyData}
-      renderItem={renderListItem}
-      keyExtractor={keyExtractor}
-    />
+    <View>
+      <DraggableFlatList
+        contentContainerStyle={styles.draggableFlatListStyle}
+        data={listsDummyData}
+        renderItem={renderListItem(navigation)}
+        keyExtractor={keyExtractor}
+      />
+      <AddListModal />
+    </View>
   );
 }
 
-const renderListItem = ({ item, drag }: { item: ListType, drag: () => void }) => {
-  return (
-    <ScaleDecorator activeScale={1.04}>
-      <ListItem title={item.name} id={item.id} drag={drag} />
-    </ScaleDecorator>
-  );
+const renderListItem = (navigation: any) => {
+  return ({ item, drag }: { item: ListType, drag: () => void }) => {
+    return (
+      <ScaleDecorator activeScale={1.04}>
+        <ListItem id={item.id} drag={drag} navigation={navigation}/>
+      </ScaleDecorator>
+    );
+  }
 }
 
 const keyExtractor = (item: ListType) => item.id;

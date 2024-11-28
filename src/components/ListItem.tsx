@@ -6,13 +6,18 @@ import { domainStore, ListType } from '@/models/DomainStore';
 
 import colors from '@/colors';
 
-const ListItem = ({title, id, drag}: {title: string, id: string, drag: () => void}) => {
+const ListItem = ({id, drag, navigation}: {id: string, drag: () => void, navigation: any}) => {
   // const list = domainStore.lists.find(list => list.id === id);
+
+  const handlePress = ({ id }: { id: string }) => {
+    navigation.navigate('ShoppingList', { id });
+  }
+
   return (
-    // TODO: replace w/ SwipeableItem
     <View style={styles.container}>
-      <Pressable style={styles.titleContainer}>
-        <Text style={styles.title}>{title}</Text>
+      <Pressable style={styles.titleContainer} onPress={() => handlePress({ id })}>
+        <MaterialIcons name="format-list-bulleted" size={18} color={colors.brandColor} />
+        <Text style={styles.title}>{id}</Text>
       </Pressable>
       <MaterialIcons.Button
         name="drag-handle"
@@ -36,12 +41,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.itemBackground,
   },
   titleContainer: {
+    display: 'flex',
+    flexDirection: 'row',
     width: '80%',
+    padding: 5,
   },
   title: {
     fontSize: 16,
     fontWeight: 'bold',
     color: colors.brandColor,
+    marginLeft: 5,
   }
 });
 

@@ -24,7 +24,8 @@ const DomainStoreModel = t
         locations: t.optional(t.array(LocationModel), []),
     })
     .actions(self => ({
-        initUser: (authenticatedUser: UserType) => {
+        initUser: async () => {
+            const authenticatedUser = await api.shopper.registerUser();
             self.user = authenticatedUser;
         },
         initialize: () => {
@@ -33,6 +34,12 @@ const DomainStoreModel = t
             self.lists.replace([]);
             self.groups.replace([]);
             self.locations.replace([]);
+        },
+        addList: async (list: ListType) => {
+            const xAuthUser = self.user?.email!;
+            const ownerId = self.user?.id!;
+            await api.list.createList(list, ownerId, xAuthUser!);
+            self.lists.push(list);
         }
     }));
 

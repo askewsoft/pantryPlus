@@ -9,10 +9,15 @@ import PurchaseHistory from './PurchaseHistory';
 
 import AddListButton from '@/components/Buttons/AddListButton';
 import colors from '@/colors';
+import { uiStore } from '@/models/UIStore';
 
 const { Navigator, Screen } = createStackNavigator<ListsStackParamList>();
 
 const ListsNavigation = () => {
+  const onPressAddList = () => {
+    uiStore.setAddListModalVisible(true);
+  };
+
   return (
     <Navigator
       initialRouteName="MyLists"
@@ -27,7 +32,7 @@ const ListsNavigation = () => {
         headerShown: true
       }}
     >
-      <Screen name="MyLists" component={MyLists} options={{ title: 'My Lists', headerRight: () => <AddListButton /> }} />
+      <Screen name="MyLists" component={MyLists} options={{ title: 'My Lists', headerRight: () => <AddListButton onPress={onPressAddList} /> }} />
       <Screen name="ShoppingList" component={ShoppingList} />
       <Screen name="PurchaseHistory" component={PurchaseHistory} />
     </Navigator>

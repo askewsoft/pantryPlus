@@ -2,8 +2,8 @@ import { StackScreenProps } from '@react-navigation/stack';
 
 export type ListsStackParamList = {
   MyLists: undefined;
-  ShoppingList: { listId: string };
-  PurchaseHistory: { listId: string };
+  ShoppingList: { id: string, name: string };
+  PurchaseHistory: { id: string, name: string };
 };
 
 export type StackPropsListsMyLists = StackScreenProps<ListsStackParamList, 'MyLists'>;

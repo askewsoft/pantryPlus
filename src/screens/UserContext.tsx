@@ -1,18 +1,21 @@
-import { SafeAreaView } from 'react-native';
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 
-import { registerUser } from '@/utils/registerUser';
+import { domainStore } from '@/models/DomainStore';
 
 const UserContext = ({children}: {children: React.ReactNode}) => {
   useEffect(() => {
-    registerUser();
+    try {
+        domainStore.initUser();
+    } catch (error) {
+        console.error('Unable to initialize user:', error);
+    }
   }, []);
 
   return (
-    <SafeAreaView>
+    <>
       {children}
-    </SafeAreaView>
+    </>
   );
 }
 

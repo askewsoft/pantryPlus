@@ -5,7 +5,8 @@ import { StackPropsShoppingList } from '@/types/ListNavTypes';
 import CategoryFolder from '@/components/CategoryFolder';
 import ProductItems from '@/components/ProductItems';
 
-const ShoppingList = ({route, navigation}: StackPropsShoppingList) => {
+const ShoppingList = ({ route, navigation }: StackPropsShoppingList) => {
+  const { id } = route.params;
   return (
     <View style={styles.container}>
       <View style={styles.listsContainer}>
