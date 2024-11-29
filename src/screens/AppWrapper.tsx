@@ -11,7 +11,7 @@ import ListsNavigation from './ListsNavigation';
 import SettingsNavigation from './SettingsNavigation';
 import GroupsNavigation from './GroupsNavigation';
 import LocationsNavigation from './LocationsNavigation';
-import colors from '@/colors';
+import colors from '@/consts/colors';
 
 const { Navigator, Screen } = createBottomTabNavigator<AppTabParamList>();
 

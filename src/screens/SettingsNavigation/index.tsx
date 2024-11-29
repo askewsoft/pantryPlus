@@ -5,7 +5,7 @@ import { SettingsStackParamList } from '@/types/SettingsNavTypes';
 
 import MySettings from './MySettings';
 
-import colors from '@/colors';
+import colors from '@/consts/colors';
 
 const { Navigator, Screen } = createStackNavigator<SettingsStackParamList>();
 

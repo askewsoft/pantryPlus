@@ -4,7 +4,7 @@ import Carousel from 'react-native-reanimated-carousel';
 import { useSharedValue } from 'react-native-reanimated';
 
 import { styles } from './style';
-import colors from '@/colors';
+import colors from '@/consts/colors';
 import FeatureHighlightTemplate from '@/components/NewFeatures/featureHighlightTemplate';
 import { carouselData } from '@/components/NewFeatures/carouselData';
 import { uiStore } from '@/stores/UIStore';

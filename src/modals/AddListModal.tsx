@@ -4,7 +4,7 @@ import { randomUUID } from 'expo-crypto';
 import { uiStore } from '@/stores/UIStore';
 import { observer } from 'mobx-react';
 import { domainStore, ListType } from '@/stores/DomainStore';
-import colors from '@/colors';
+import colors from '@/consts/colors';
 import { ListModel } from '@/stores/models/List';
 
 const AddListModal = () => {

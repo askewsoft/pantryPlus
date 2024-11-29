@@ -6,7 +6,7 @@ import { LocationsStackParamList } from '@/types/LocationNavTypes';
 import MyLocations from './MyLocations';
 import LocationDetails from './LocationDetails';
 
-import colors from '@/colors';
+import colors from '@/consts/colors';
 
 const { Navigator, Screen } = createStackNavigator<LocationsStackParamList>();
 

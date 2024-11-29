@@ -4,7 +4,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import { domainStore } from '@/stores/DomainStore';
 
-import colors from '@/colors';
+import colors from '@/consts/colors';
 
 const ListItem = ({id, drag, navigation}: {id: string, drag: () => void, navigation: any}) => {
   const list = domainStore.lists.find(list => list.id === id);

@@ -9,7 +9,7 @@ import AddListModal from '@/modals/AddListModal';
 
 import { domainStore, ListType } from '@/stores/DomainStore';
 
-import colors from '@/colors';
+import colors from '@/consts/colors';
 import { uiStore } from '@/stores/UIStore';
 
 const keyExtractor = (item: ListType) => item.id;

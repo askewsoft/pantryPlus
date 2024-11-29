@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 // import { useNavigation } from '@react-navigation/native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
-import colors from '@/colors';
+import colors from '@/consts/colors';
 
 const CategoryFolder = ({title, open, children}: {title: string, open: boolean, children: React.ReactNode}) => {
   return (

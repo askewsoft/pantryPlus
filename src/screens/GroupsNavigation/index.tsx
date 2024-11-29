@@ -7,7 +7,7 @@ import MyGroups from './MyGroups';
 import GroupDetails from './GroupDetails';
 
 import AddGroupButton from '@/components/Buttons/AddGroupButton';
-import colors from '@/colors';
+import colors from '@/consts/colors';
 
 const { Navigator, Screen } = createStackNavigator<GroupsStackParamList>();
 
