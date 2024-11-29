@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import { domainStore } from '@/stores/DomainStore';
-
+import fonts from '@/consts/fonts';
 import colors from '@/consts/colors';
 
 const ListItem = ({id, drag, navigation}: {id: string, drag: () => void, navigation: any}) => {
@@ -16,12 +16,12 @@ const ListItem = ({id, drag, navigation}: {id: string, drag: () => void, navigat
   return (
     <View style={styles.container}>
       <Pressable style={styles.titleContainer} onPress={() => handlePress({ id })}>
-        <MaterialIcons name="format-list-bulleted" size={18} color={colors.brandColor} />
+        <MaterialIcons name="format-list-bulleted" size={fonts.listItemIconSize} color={colors.brandColor} />
         <Text style={styles.title}>{list?.name}</Text>
       </Pressable>
       <MaterialIcons.Button
         name="drag-handle"
-        size={18}
+        size={fonts.listItemIconSize}
         backgroundColor={colors.itemBackground}
         color={colors.brandColor}
         iconStyle={{ padding: 0, margin: 0 }}
@@ -43,11 +43,12 @@ const styles = StyleSheet.create({
   titleContainer: {
     display: 'flex',
     flexDirection: 'row',
+    alignItems: 'center',
     width: '80%',
     padding: 5,
   },
   title: {
-    fontSize: 16,
+    fontSize: fonts.listItemTextSize,
     fontWeight: 'bold',
     color: colors.brandColor,
     marginLeft: 5,
