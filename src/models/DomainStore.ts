@@ -24,10 +24,10 @@ const DomainStoreModel = t
         locations: t.optional(t.array(LocationModel), []),
     })
     .actions(self => ({
-        initUser: async () => {
-            const authenticatedUser = await api.shopper.registerUser();
+        initUser: flow(function* () {
+            const authenticatedUser = yield api.shopper.registerUser();
             self.user = authenticatedUser;
-        },
+        }),
         initialize: () => {
             AsyncStorage.removeItem('pantryPlusDomain');
             self.user = undefined;
