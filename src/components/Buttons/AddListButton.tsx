@@ -1,7 +1,6 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { observer } from 'mobx-react-lite';
 import colors from '@/colors';
-import { uiStore } from '@/models/UIStore';
 
 const AddListButton = ({onPress, dark}: {onPress: () => void, dark?: boolean}) => {
   return (

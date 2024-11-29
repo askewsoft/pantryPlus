@@ -6,8 +6,8 @@ import {
 import cognitoConfig from '@/config/cognito';
 import { fetchUserAttributes } from 'aws-amplify/auth';
 
-import { UserType } from '@/models/DomainStore';
-import { ListModel } from '@/models/List';
+import { UserType } from '@/stores/DomainStore';
+import { ListModel } from '@/stores/models/List';
 
 const configuration = new Configuration({
   basePath: cognitoConfig.apiUrl,

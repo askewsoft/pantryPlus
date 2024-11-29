@@ -1,11 +1,11 @@
 import { Modal, View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { randomUUID } from 'expo-crypto';
 
-import { uiStore } from '@/models/UIStore';
+import { uiStore } from '@/stores/UIStore';
 import { observer } from 'mobx-react';
-import { domainStore, ListType } from '@/models/DomainStore';
+import { domainStore, ListType } from '@/stores/DomainStore';
 import colors from '@/colors';
-import { ListModel } from '@/models/List';
+import { ListModel } from '@/stores/models/List';
 
 const AddListModal = () => {
   return (

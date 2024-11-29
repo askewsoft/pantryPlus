@@ -7,10 +7,10 @@ import { StackPropsListsMyLists } from '@/types/ListNavTypes';
 import ListItem from '@/components/ListItem';
 import AddListModal from '@/modals/AddListModal';
 
-import { domainStore, ListType } from '@/models/DomainStore';
+import { domainStore, ListType } from '@/stores/DomainStore';
 
 import colors from '@/colors';
-import { uiStore } from '@/models/UIStore';
+import { uiStore } from '@/stores/UIStore';
 
 const keyExtractor = (item: ListType) => item.id;
 

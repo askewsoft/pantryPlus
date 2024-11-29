@@ -2,7 +2,7 @@ import { Text, View, StyleSheet, Pressable } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-import { domainStore, ListType } from '@/models/DomainStore';
+import { domainStore } from '@/stores/DomainStore';
 
 import colors from '@/colors';
 

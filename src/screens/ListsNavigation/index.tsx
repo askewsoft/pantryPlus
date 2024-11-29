@@ -9,7 +9,7 @@ import PurchaseHistory from './PurchaseHistory';
 
 import AddListButton from '@/components/Buttons/AddListButton';
 import colors from '@/colors';
-import { uiStore } from '@/models/UIStore';
+import { uiStore } from '@/stores/UIStore';
 
 const { Navigator, Screen } = createStackNavigator<ListsStackParamList>();
 

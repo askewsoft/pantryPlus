@@ -1,6 +1,6 @@
 import { ListsApi, Configuration } from 'pantryPlusApiClient';
 import cognitoConfig from '@/config/cognito';
-import { ListType } from '@/models/DomainStore';
+import { ListType } from '@/stores/DomainStore';
 
 const configuration = new Configuration({
   basePath: cognitoConfig.apiUrl,

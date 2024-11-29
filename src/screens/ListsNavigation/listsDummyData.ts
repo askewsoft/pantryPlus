@@ -1,4 +1,4 @@
-import { ListType } from '@/models/DomainStore';
+import { ListType } from '@/stores/DomainStore';
 
 export const listsDummyData: ListType[] = [
   {

@@ -5,8 +5,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Amplify } from "aws-amplify";
 import { Authenticator } from '@aws-amplify/ui-react-native';
 
-import { DomainStoreContextProvider, domainStore } from '@/models/DomainStore';
-import { UIStoreContextProvider, uiStore } from '@/models/UIStore';
+import { DomainStoreContextProvider, domainStore } from '@/stores/DomainStore';
+import { UIStoreContextProvider, uiStore } from '@/stores/UIStore';
 
 import UserContext from '@/screens/UserContext';
 import SplashScreen from '@/screens/SplashScreen';

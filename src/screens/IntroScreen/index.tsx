@@ -7,7 +7,7 @@ import { styles } from './style';
 import colors from '@/colors';
 import FeatureHighlightTemplate from '@/components/NewFeatures/featureHighlightTemplate';
 import { carouselData } from '@/components/NewFeatures/carouselData';
-import { uiStore } from '@/models/UIStore';
+import { uiStore } from '@/stores/UIStore';
 
 const IntroScreen = () => {
   const { width, height } = Dimensions.get('window');

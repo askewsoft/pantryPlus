@@ -3,11 +3,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { t, Instance, flow } from 'mobx-state-tree';
 import { persist } from 'mst-persist';
 
-import { UserModel } from './User';
-import { ListModel } from './List';
-import { ShopperModel } from './Shopper';
-import { GroupModel } from './Group';
-import { LocationModel } from './Location';
+import { UserModel } from './models/User';
+import { ListModel } from './models/List';
+import { ShopperModel } from './models/Shopper';
+import { GroupModel } from './models/Group';
+import { LocationModel } from './models/Location';
 import api from '@/api';
 
 export type UserType = Instance<typeof UserModel>;
