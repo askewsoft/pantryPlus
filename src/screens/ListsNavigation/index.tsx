@@ -32,7 +32,7 @@ const ListsNavigation = () => {
         headerShown: true
       }}
     >
-      <Screen name="MyLists" component={MyLists} options={{ title: 'My Lists', headerRight: () => <AddListButton onPress={onPressAddList} /> }} />
+      <Screen name="MyLists" component={MyLists} options={{ title: 'My Lists', headerRight: () => <AddListButton dark={true} onPress={onPressAddList} /> }} />
       <Screen name="ShoppingList" component={ShoppingList} />
       <Screen name="PurchaseHistory" component={PurchaseHistory} />
     </Navigator>
