@@ -5,7 +5,7 @@ import { toJS } from 'mobx';
 
 import { StackPropsListsMyLists } from '@/types/ListNavTypes';
 import ListItem from '@/components/ListItem';
-import AddListModal from '@/modals/AddListModal';
+import AddListModal from './modals/AddListModal';
 
 import { domainStore, ListType } from '@/stores/DomainStore';
 
