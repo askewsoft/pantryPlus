@@ -45,11 +45,17 @@ export const authTheme: Theme = {
             container: {
                 backgroundColor: colors.lightBrandColor,
             },
+            icon: {
+                tintColor: colors.inactiveButtonColor,
+            },
             label: {
-                color: colors.white,
+                color: colors.inactiveButtonColor,
             }
         },
         textField: {
+            field: {
+                color: colors.brandColor,
+            },
             fieldContainer: {
                 borderRadius: 20,
                 borderColor: colors.white,
