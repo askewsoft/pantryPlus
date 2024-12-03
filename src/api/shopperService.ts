@@ -40,10 +40,11 @@ const registerUser = async () => {
     }
 };
 
-const getUserLists = async (user: UserType) => {
+const getUserLists = async ({ user }: { user: UserType }) => {
     const xAuthUser = user.email!;
     const shopperId = user.id!;
     try {
+        // TODO: consider moving the ListModel creation to the called API
         const listData = await shopperApi.getLists(xAuthUser, shopperId);
         const lists = listData.data.map(
             (list) => {

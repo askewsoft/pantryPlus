@@ -8,7 +8,9 @@ export const UIStoreModel = t.model('UIStoreModel', {
     lastScreen: t.enumeration('lastScreen', ['IntroScreen', 'WelcomeScreen', 'MyLists']),
     lastUsedVersion: t.string,
     signInOrUp: t.enumeration('signInOrUp', ['signIn', 'signUp']),
+    selectedShoppingList: t.maybeNull(t.string),
     addListModalVisible: false,
+    addCategoryModalVisible: false,
 })
 .actions(self => ({
     setSignInOrUp(signInOrUp: 'signIn' | 'signUp') {
@@ -25,6 +27,12 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setAddListModalVisible(addListModalVisible: boolean) {
         self.addListModalVisible = addListModalVisible;
+    },
+    setSelectedShoppingList(selectedShoppingList: string) {
+        self.selectedShoppingList = cast(selectedShoppingList);
+    },
+    setAddCategoryModalVisible(addCategoryModalVisible: boolean) {
+        self.addCategoryModalVisible = addCategoryModalVisible;
     }
 }));
 
@@ -35,6 +43,8 @@ export const uiStore = UIStoreModel.create({
     lastUsedVersion: '1.0.0',
     signInOrUp: 'signIn',
     addListModalVisible: false,
+    selectedShoppingList: null,
+    addCategoryModalVisible: false,
 });
 
 // saves to and loads from device storage

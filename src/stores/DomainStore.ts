@@ -9,6 +9,7 @@ import { ShopperModel } from './models/Shopper';
 import { GroupModel } from './models/Group';
 import { LocationModel } from './models/Location';
 import api from '@/api';
+import { randomUUID } from 'expo-crypto';
 
 export type UserType = Instance<typeof UserModel>;
 export type ShopperType = Instance<typeof ShopperModel>;
@@ -35,16 +36,28 @@ const DomainStoreModel = t
             self.groups.replace([]);
             self.locations.replace([]);
         },
-        addList: flow(function* (list: ListType) {
+        addList: flow(function* (name: string) {
+            const newList: ListType = ListModel.create({
+                id: randomUUID(),
+                name: name,
+                userIsOwner: true,
+                groupId: undefined,
+                categories: [],
+            });
             const xAuthUser = self.user?.email!;
             const ownerId = self.user?.id!;
-            yield api.list.createList(list, ownerId, xAuthUser!);
-            self.lists.push(list);
+            yield api.list.createList({ list: newList, ownerId, xAuthUser });
+            self.lists.push(newList);
         }),
         loadLists: flow(function* () {
-            const lists = yield api.shopper.getUserLists(self.user!);
+            const lists = yield api.shopper.getUserLists({ user: self.user! });
             self.lists.replace(lists);
         })
+    }))
+    .views(self => ({
+        getListCategories(id: string) {
+            return self.lists.find(list => list.id === id)?.categories;
+        },
     }));
 
 type DomainStoreType = Instance<typeof DomainStoreModel>;
