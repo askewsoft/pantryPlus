@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import { domainStore } from '@/stores/DomainStore';
+import { uiStore } from '@/stores/UIStore';
 import fonts from '@/consts/fonts';
 import colors from '@/consts/colors';
 
@@ -10,7 +11,8 @@ const ListItem = ({id, drag, navigation}: {id: string, drag: () => void, navigat
   const list = domainStore.lists.find(list => list.id === id);
 
   const handlePress = ({ id }: { id: string }) => {
-    navigation.navigate('ShoppingList', { id });
+    uiStore.setSelectedShoppingList(id);
+    navigation.navigate('ShoppingList');
   }
 
   return (

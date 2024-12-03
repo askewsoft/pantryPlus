@@ -11,7 +11,7 @@ const AddListModal = () => {
   return (
     <Modal
       visible={uiStore.addListModalVisible}
-      transparent={true}
+      transparent={false}
       animationType="slide"
     >
       <View style={styles.modalContainer}>
@@ -41,14 +41,7 @@ const AddListModal = () => {
 }
 
 const onSubmit = async (evt: any) => {
-    const newList: ListType = ListModel.create({
-        id: randomUUID(),
-        name: evt.nativeEvent.text,
-        userIsOwner: true,
-        groupId: undefined,
-        categories: [],
-    });
-    domainStore.addList(newList);
+    domainStore.addList(evt.nativeEvent.text);
     uiStore.setAddListModalVisible(false);
 }
 
@@ -60,7 +53,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.brandColor,
     opacity: 0.9,
-    marginVertical: 50,
+    paddingVertical: 50,
   },
   modalTitle: {
     fontSize: 20,

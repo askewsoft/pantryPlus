@@ -4,34 +4,36 @@ import { observer } from 'mobx-react-lite';
 import { StackPropsShoppingList } from '@/types/ListNavTypes';
 import CategoryFolder from '@/components/CategoryFolder';
 import ProductItems from '@/components/ProductItems';
+import AddCategoryModal from './modals/AddCategoryModal';
+
+import { uiStore } from '@/stores/UIStore';
+import { domainStore, ListType } from '@/stores/DomainStore';
 
 const ShoppingList = ({ route, navigation }: StackPropsShoppingList) => {
-  const { id } = route.params;
+  const { selectedShoppingList: listId } = uiStore;
+  const { user } = domainStore;
+  const currList = domainStore.lists.find((list) => list.id === listId);
+  /*
+  * TODO: see if there is a better way to set the title
+  * Results in this error:
+  * Warning: Cannot update a component (`StackNavigator`) while rendering a different component (`ShoppingList`)
+  */
+  navigation.setOptions({ title: currList?.name });
+
   return (
     <View style={styles.container}>
-      <View style={styles.listsContainer}>
-        <CategoryFolder title="Produce" open={true}>
-          <ProductItems />
+      {currList?.categories?.map((category) => (
+        <CategoryFolder key={category.id} title={category.name} open={true}>
+          <ProductItems listId={listId!} categoryId={category.id} />
         </CategoryFolder>
-      </View>
+      ))}
+      <AddCategoryModal />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
-    height: '100%',
-    width: '100%',
-    alignSelf: 'center',
-    alignItems: 'center',
-    margin: 0,
-    padding: 0,
-    justifyContent: 'center'
-  },
-  listsContainer: {
     flex: 1,
     flexDirection: 'column',
   }

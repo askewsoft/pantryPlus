@@ -2,14 +2,14 @@ import { StyleSheet, View, Text, FlatList } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import CheckBoxButton from './Buttons/CheckBoxButton';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-// import { useNavigation } from '@react-navigation/native';
 
-const ProductItems = () => {
+import { domainStore } from '@/stores/DomainStore';
+
+const ProductItems = ({ listId, categoryId }: { listId: string, categoryId: string }) => {
   return <FlatList style={styles.container}
     data={[{ name: 'Light Wheat Bread' }, { name: 'Orange Juice' }]}
     keyExtractor={(item) => item.name}
     renderItem={({ item }) => (
-      // TODO: use SectionList
       <View style={styles.itemLine}>
         <View style={styles.itemContainer}>
           <CheckBoxButton />
@@ -26,7 +26,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     width: '100%',
-    height: '100%',
   },
   itemLine: {
     display: 'flex',

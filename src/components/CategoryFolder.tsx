@@ -26,7 +26,7 @@ const CategoryFolder = ({title, open, children}: {title: string, open: boolean, 
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
+    // display: 'flex',
     flexDirection: 'column',
     width: '100%',
     paddingLeft: 5,
