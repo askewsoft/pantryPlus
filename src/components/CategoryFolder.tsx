@@ -1,24 +1,30 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { observer } from 'mobx-react-lite';
-// import { useNavigation } from '@react-navigation/native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
+import { uiStore } from '@/stores/UIStore';
 import colors from '@/consts/colors';
+import fonts from '@/consts/fonts';
 
-const CategoryFolder = ({title, open, children}: {title: string, open: boolean, children: React.ReactNode}) => {
+const CategoryFolder = ({categoryId, title, children}: {categoryId: string, title: string, children: React.ReactNode}) => {
+  console.log({categoryId});
+  const open = uiStore.openCategories.get(categoryId)?.open ?? false;
   return (
     <View style={styles.container}>
-        <View style={styles.titleContainer}>
-            <AntDesign.Button
-              name={open ? "folderopen" : "folder1"}
-              size={24}
-              backgroundColor="white"
-              color={colors.brandColor}
-              iconStyle={{ padding: 0, margin: 0 }}
-              onPress={() => {}}
-            />
+        <Pressable onPress={() => {
+          uiStore.setOpenCategory(categoryId, !open);
+        }}>
+          <View style={styles.titleContainer}>
+              <AntDesign.Button
+                name={open ? "folderopen" : "folder1"}
+                size={fonts.listItemIconSize}
+                backgroundColor={colors.lightBrandColor}
+                color={colors.white}
+                iconStyle={{ padding: 0, margin: 0 }}
+              />
             <Text style={styles.title}>{title}</Text>
-        </View>
+          </View>
+        </Pressable>
       {children}
     </View>
   );
@@ -26,20 +32,19 @@ const CategoryFolder = ({title, open, children}: {title: string, open: boolean, 
 
 const styles = StyleSheet.create({
   container: {
-    // display: 'flex',
     flexDirection: 'column',
-    width: '100%',
-    paddingLeft: 5,
   },
   title: {
-    color: colors.brandColor,
-    fontSize: 20,
+    color: colors.white,
+    fontSize: fonts.listItemTextSize,
     fontWeight: 'bold',
   },
   titleContainer: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: colors.lightBrandColor,
+    marginTop: 2,
   }
 });
 

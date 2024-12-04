@@ -23,8 +23,8 @@ const ShoppingList = ({ route, navigation }: StackPropsShoppingList) => {
   return (
     <View style={styles.container}>
       {currList?.categories?.map((category) => (
-        <CategoryFolder key={category.id} title={category.name} open={true}>
-          <ProductItems listId={listId!} categoryId={category.id} />
+        <CategoryFolder key={category.id} categoryId={category.id} title={category.name}>
+          <ProductItems categoryId={category.id} />
         </CategoryFolder>
       ))}
       <AddCategoryModal />

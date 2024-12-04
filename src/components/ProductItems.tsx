@@ -4,10 +4,12 @@ import CheckBoxButton from './Buttons/CheckBoxButton';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import { domainStore } from '@/stores/DomainStore';
+import { uiStore } from '@/stores/UIStore';
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 
-const ProductItems = ({ listId, categoryId, open }: { listId: string, categoryId: string, open: boolean }) => {
+const ProductItems = ({ categoryId }: { categoryId: string }) => {
+  const open = uiStore.openCategories.get(categoryId)?.open ?? false;
   return <FlatList style={styles.container}
     data={[{ name: 'Light Wheat Bread' }, { name: 'Orange Juice' }]}
     keyExtractor={(item) => item.name}

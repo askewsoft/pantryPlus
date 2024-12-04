@@ -3,6 +3,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { cast, Instance, t } from 'mobx-state-tree';
 import { persist } from 'mst-persist';
 
+const OpenCategory = t.model('OpenCategory', {
+    id: t.identifier,
+    open: t.boolean,
+});
+
 export const UIStoreModel = t.model('UIStoreModel', {
     showIntroScreen: false,
     lastScreen: t.enumeration('lastScreen', ['IntroScreen', 'WelcomeScreen', 'MyLists']),
@@ -11,6 +16,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
     selectedShoppingList: t.maybeNull(t.string),
     addListModalVisible: false,
     addCategoryModalVisible: false,
+    openCategories: t.map(OpenCategory),
 })
 .actions(self => ({
     setSignInOrUp(signInOrUp: 'signIn' | 'signUp') {
@@ -33,6 +39,9 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setAddCategoryModalVisible(addCategoryModalVisible: boolean) {
         self.addCategoryModalVisible = addCategoryModalVisible;
+    },
+    setOpenCategory(categoryId: string, open: boolean) {
+        self.openCategories.put({ id: categoryId, open });
     }
 }));
 
@@ -45,6 +54,7 @@ export const uiStore = UIStoreModel.create({
     addListModalVisible: false,
     selectedShoppingList: null,
     addCategoryModalVisible: false,
+    openCategories: {}
 });
 
 // saves to and loads from device storage
