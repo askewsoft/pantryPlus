@@ -10,6 +10,7 @@ import AddListModal from './modals/AddListModal';
 import { domainStore, ListType } from '@/stores/DomainStore';
 
 import colors from '@/consts/colors';
+import fonts from '@/consts/fonts';
 import { uiStore } from '@/stores/UIStore';
 
 const keyExtractor = (item: ListType) => item.id;
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   noListsText: {
-    fontSize: 24,
+    fontSize: fonts.missingItemsTextSize,
     fontStyle: 'italic',
     color: colors.brandColor,
     marginBottom: 20,
