@@ -1,9 +1,9 @@
+import { Button, Modal, Text, TextInput, View, StyleSheet } from 'react-native';
+import { observer } from 'mobx-react';
 
 import { uiStore } from '@/stores/UIStore';
-import { observer } from 'mobx-react';
 import { domainStore, ListType } from '@/stores/DomainStore';
 import colors from '@/consts/colors';
-import { Button, Modal, Text, TextInput, View, StyleSheet } from 'react-native';
 
 const AddCategoryModal = () => {
   return (
@@ -41,7 +41,9 @@ const AddCategoryModal = () => {
 const onSubmit = async (evt: any) => {
     const { selectedShoppingList: listId } = uiStore; 
     const currList = domainStore.lists.find((list) => list.id === listId);
-    currList?.addCategory(evt.nativeEvent.text);
+    const user = domainStore.user;
+
+    currList?.addCategory({ name: evt.nativeEvent.text, xAuthUser: user?.email! });
     uiStore.setAddCategoryModalVisible(false);
 }
 

@@ -1,8 +1,9 @@
-import { ListsApi, Configuration } from 'pantryPlusApiClient';
+import { ListsApi, Configuration, Category } from 'pantryPlusApiClient';
 import cognitoConfig from '@/config/cognito';
 import { ListType } from '@/stores/DomainStore';
 import { CategoryModel } from '@/stores/models/Category';
 import { ItemModel } from '@/stores/models/Item';
+import { CategoryType } from '@/stores/models/List';
 
 const configuration = new Configuration({
   basePath: cognitoConfig.apiUrl,
@@ -21,23 +22,42 @@ const createList = async ({ list, ownerId, xAuthUser }: { list: ListType, ownerI
 }
 
 const getListCategories = async ({ listId, xAuthUser }: { listId: string, xAuthUser: string }) => {
-    const categoriesData = await listsApi.getCategories(listId, xAuthUser);
-    const categories = categoriesData.data.map(
-        (category) => CategoryModel.create(category)
-    );
-    return categories;
+    try {
+        const categoriesData = await listsApi.getCategories(xAuthUser, listId);
+        const categories = categoriesData.data.map(
+            (category) => {
+                const { id, name } = category;
+                return CategoryModel.create({ id, name, items: [] });
+            }
+        );
+        return categories;
+    } catch (error) {
+        console.error(`Failed to getListCategories in DB: ${error}`);
+        throw error;
+    }
 }
 
 const getListCategoryItems = async ({ listId, categoryId, xAuthUser }: { listId: string, categoryId: string, xAuthUser: string }) => {
-    const itemsData = await listsApi.getItems(listId, categoryId, xAuthUser);
+    const itemsData = await listsApi.getItems(xAuthUser, listId, categoryId);
     const items = itemsData.data.map(
         (item) => ItemModel.create(item)
     );
     return items;
 }
 
+const addListCategory = async ({ listId, category, xAuthUser }: { listId: string, category: Category, xAuthUser: string }) => {
+    try {
+        const { id, name } = category;
+        await listsApi.addCategory({ id, name, listId }, xAuthUser, listId);
+    } catch (error) {
+        console.error(`Failed to addListCategory in DB: ${error}`);
+        throw error;
+    }
+}
+
 export default {
     createList,
     getListCategories,
     getListCategoryItems,
+    addListCategory,
 };

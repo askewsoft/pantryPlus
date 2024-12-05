@@ -16,10 +16,11 @@ export const ListModel = t.model('ListModel', {
     updateListName(name: string): void {
         self.name = name;
     },
-    addCategory(name: string): void {
+    addCategory: flow(function*({ name, xAuthUser }: { name: string, xAuthUser: string }): Generator<any, any, any> {
         const newCategory = CategoryModel.create({ id: randomUUID(), name });
+        yield api.list.addListCategory({ listId: self.id, category: {...newCategory, listId: self.id}, xAuthUser });
         self.categories.push(newCategory);
-    },
+    }),
     removeCategory(categoryId: string): void {
         const index = self.categories?.findIndex(c => c.id === categoryId);
         if (index !== undefined && index !== -1) {
@@ -36,14 +37,11 @@ export const ListModel = t.model('ListModel', {
         self.groupId = groupId;
     },
     loadCategories: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
-        const response = yield api.list.getListCategories({ listId: self.id, xAuthUser });
-        if (!self.categories) {
-            self.categories = t.array(CategoryModel).create([]);
-        }
-        self.categories.replace(response.data.map(cat => CategoryModel.create(cat)));
+        const categories = yield api.list.getListCategories({ listId: self.id, xAuthUser });
+        self.categories.replace(categories);
     }),
-    loadCategoryItems: flow(function*({ listId, categoryId, xAuthUser }: { listId: string, categoryId: string, xAuthUser: string }): Generator<any, any, any> {
-        const response = yield api.list.getListCategoryItems({ listId, categoryId, xAuthUser });
+    loadCategoryItems: flow(function*({ categoryId, xAuthUser }: { categoryId: string, xAuthUser: string }): Generator<any, any, any> {
+        const response = yield api.list.getListCategoryItems({ listId: self.id, categoryId, xAuthUser });
         const category = self.categories?.find(c => c.id === categoryId);
         if (category?.items) {
             category.items.replace(response.data);

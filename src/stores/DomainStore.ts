@@ -21,8 +21,8 @@ const DomainStoreModel = t
     .model("DomainStoreModel", {
         user: t.maybe(UserModel),
         lists: t.array(ListModel),
-        groups: t.optional(t.array(GroupModel), []),
-        locations: t.optional(t.array(LocationModel), []),
+        groups: t.array(GroupModel),
+        locations: t.array(LocationModel),
     })
     .actions(self => ({
         initUser: flow(function* () {
@@ -53,11 +53,6 @@ const DomainStoreModel = t
             const lists = yield api.shopper.getUserLists({ user: self.user! });
             self.lists.replace(lists);
         })
-    }))
-    .views(self => ({
-        getListCategories(id: string) {
-            return self.lists.find(list => list.id === id)?.categories;
-        },
     }));
 
 type DomainStoreType = Instance<typeof DomainStoreModel>;

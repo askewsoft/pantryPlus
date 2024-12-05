@@ -22,7 +22,7 @@ const ListItem = ({id, drag, navigation}: {id: string, drag: () => void, navigat
         <Text style={styles.title}>{list?.name}</Text>
       </Pressable>
       <MaterialIcons.Button
-        name="drag-handle"
+        name="drag-indicator"
         size={fonts.listItemIconSize}
         backgroundColor={colors.itemBackground}
         color={colors.brandColor}

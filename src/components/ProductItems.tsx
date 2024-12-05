@@ -19,7 +19,14 @@ const ProductItems = ({ categoryId }: { categoryId: string }) => {
           <CheckBoxButton />
           <Text style={styles.item}>{item.name}</Text>
         </View>
-        <MaterialIcons.Button name="drag-handle" size={fonts.listItemIconSize} backgroundColor={colors.itemBackground} color={colors.brandColor} iconStyle={{ padding: 0, margin: 0 }} />
+        <MaterialIcons.Button
+          name="drag-indicator"
+          size={fonts.listItemIconSize}
+          backgroundColor={colors.itemBackground}
+          color={colors.brandColor}
+          iconStyle={{ padding: 0, margin: 0 }}
+          style={{ alignSelf: 'flex-end' }}
+        />
       </View>
     )}
   />;
@@ -36,10 +43,11 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   itemContainer: {
+    flex: 1,
     flexDirection: 'row',
     alignContent: 'flex-start',
     alignItems: 'center',
-    marginLeft: 20,
+    paddingLeft: 30,
   },
   item: {
     color: colors.brandColor,
