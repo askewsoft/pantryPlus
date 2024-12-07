@@ -1,10 +1,10 @@
 import shopperService from './shopperService';
 import listService from './listService';
+import categoryService from './categoryService';
 
 import {
     LocationsApi,
     GroupsApi,
-    CategoriesApi,
     Configuration
 } from 'pantryPlusApiClient';
 import cognitoConfig from '@/config/cognito';
@@ -15,14 +15,13 @@ const configuration = new Configuration({
 
 const locationsApi = new LocationsApi(configuration);
 const groupsApi = new GroupsApi(configuration);
-const categoriesApi = new CategoriesApi(configuration);
 
 const api = {
     shopper: shopperService,
     list: listService,
     location: locationsApi,
     group: groupsApi,
-    category: categoriesApi,
+    category: categoryService,
 };
 
 export default api;
