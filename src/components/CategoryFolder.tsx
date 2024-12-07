@@ -1,19 +1,38 @@
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { useState } from 'react';
+import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
-import { uiStore } from '@/stores/UIStore';
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 
+import { uiStore } from '@/stores/UIStore';
+import { domainStore } from '@/stores/DomainStore';
+import logging from '@/config/logging';
+
 const CategoryFolder = ({categoryId, title, children}: {categoryId: string, title: string, children: React.ReactNode}) => {
   const open = uiStore.openCategories.get(categoryId)?.open ?? false;
+  const currList = domainStore.lists.find(l => l.categories.find(c => c.id === categoryId));
+  const currCategory = currList?.categories.find(c => c.id === categoryId);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(title);
+
+
+  const onSubmit = async (evt: any) => {
+    const user = domainStore.user;
+    logging.debug ? console.log(`onSubmit Edited Title: ${editedTitle}`) : null;
+    logging.debug ? console.log(`currCategory: ${currCategory?.name}`) : null;
+    await currCategory?.setName(editedTitle, user?.email!);
+    setIsEditing(false)
+  }
+
   return (
     <View style={styles.container}>
-        <Pressable onPress={() => {
-          uiStore.setOpenCategory(categoryId, !open);
-        }}>
+        <Pressable
+          onPress={() =>  uiStore.setOpenCategory(categoryId, !open)}
+          onLongPress={() => setIsEditing(true)}
+        >
           <View style={styles.titleContainer}>
             <AntDesign
               name={open ? "folderopen" : "folder1"}
@@ -22,7 +41,17 @@ const CategoryFolder = ({categoryId, title, children}: {categoryId: string, titl
               color={colors.white}
               iconStyle={{ padding: 0, margin: 0 }}
             />
-            <Text style={styles.title}>{title}</Text>
+            {isEditing ? (
+              <TextInput
+                style={[styles.title, styles.titleInput]}
+                value={editedTitle}
+                onSubmitEditing={onSubmit}
+                onChangeText={(text) => setEditedTitle(text)}
+                autoFocus={true}
+              />
+            ) : (
+              <Text style={styles.title}>{title}</Text>
+            )}
             <MaterialIcons.Button
               name="drag-indicator"
               size={fonts.listItemIconSize}
@@ -58,6 +87,11 @@ const styles = StyleSheet.create({
     fontSize: fonts.listItemTextSize,
     fontWeight: 'bold',
     marginLeft: 20,
+  },
+  titleInput: {
+    backgroundColor: colors.detailsBackground,
+    color: colors.lightBrandColor,
+    paddingVertical: 7,
   }
 });
 
