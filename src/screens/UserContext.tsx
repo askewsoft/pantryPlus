@@ -6,8 +6,9 @@ import { domainStore } from '@/stores/DomainStore';
 const UserContext = ({children}: {children: React.ReactNode}) => {
   useEffect(() => {
     try {
-        domainStore.initUser();
-        domainStore.loadLists();
+        domainStore.initUser().then(() => {
+            domainStore.loadLists();
+        });
     } catch (error) {
         console.error('Unable to initialize user:', error);
     }
