@@ -1,11 +1,10 @@
 import { Modal, View, Text, TextInput, Button, StyleSheet } from 'react-native';
-import { randomUUID } from 'expo-crypto';
+import { observer } from 'mobx-react';
 
 import { uiStore } from '@/stores/UIStore';
-import { observer } from 'mobx-react';
 import { domainStore, ListType } from '@/stores/DomainStore';
 import colors from '@/consts/colors';
-import { ListModel } from '@/stores/models/List';
+import logging from '@/config/logging';
 
 const AddListModal = () => {
   return (
@@ -41,6 +40,7 @@ const AddListModal = () => {
 }
 
 const onSubmit = async (evt: any) => {
+    logging.debug ? console.log(`onSubmit: ${evt.nativeEvent.text}`) : null;
     domainStore.addList(evt.nativeEvent.text);
     uiStore.setAddListModalVisible(false);
 }

@@ -10,6 +10,7 @@ import { GroupModel } from './models/Group';
 import { LocationModel } from './models/Location';
 import api from '@/api';
 import { randomUUID } from 'expo-crypto';
+import logging from '@/config/logging';
 
 export type UserType = Instance<typeof UserModel>;
 export type ShopperType = Instance<typeof ShopperModel>;
@@ -37,6 +38,7 @@ const DomainStoreModel = t
             self.locations.replace([]);
         },
         addList: flow(function* (name: string) {
+            logging.debug ? console.log(`addList: ${name}`) : null;
             const newList: ListType = ListModel.create({
                 id: randomUUID(),
                 name: name,
@@ -46,7 +48,9 @@ const DomainStoreModel = t
             });
             const xAuthUser = self.user?.email!;
             const ownerId = self.user?.id!;
+            logging.debug ? console.log(`addList: ${newList} ${ownerId} ${xAuthUser}`) : null;
             yield api.list.createList({ list: newList, ownerId, xAuthUser });
+            logging.debug ? console.log(`addList: ${newList}`) : null;
             self.lists.push(newList);
         }),
         loadLists: flow(function* () {
