@@ -41,10 +41,10 @@ export const ListModel = t.model('ListModel', {
         self.categories.replace(categories);
     }),
     loadCategoryItems: flow(function*({ categoryId, xAuthUser }: { categoryId: string, xAuthUser: string }): Generator<any, any, any> {
-        const response = yield api.list.getListCategoryItems({ listId: self.id, categoryId, xAuthUser });
+        const categoryItems = yield api.list.getListCategoryItems({ listId: self.id, categoryId, xAuthUser });
         const category = self.categories?.find(c => c.id === categoryId);
         if (category?.items) {
-            category.items.replace(response.data);
+            category.items.replace(categoryItems);
         }
     })
 }));
