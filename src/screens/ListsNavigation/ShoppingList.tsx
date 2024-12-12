@@ -5,10 +5,12 @@ import { observer } from 'mobx-react-lite';
 import { StackPropsShoppingList } from '@/types/ListNavTypes';
 import CategoryFolder from '@/components/CategoryFolder';
 import CategoryItems from '@/components/CategoryItems';
+import ListItems from '@/components/ListItems';
+import ItemInput from '@/components/ItemInput';
 import AddCategoryModal from './modals/AddCategoryModal';
 
 import { uiStore } from '@/stores/UIStore';
-import { domainStore, ListType } from '@/stores/DomainStore';
+import { domainStore } from '@/stores/DomainStore';
 
 const ShoppingList = ({ route, navigation }: StackPropsShoppingList) => {
   const { selectedShoppingList: listId } = uiStore;
@@ -22,10 +24,13 @@ const ShoppingList = ({ route, navigation }: StackPropsShoppingList) => {
 
   return (
     <View style={styles.container}>
-      {/* TODO: add a draggable flat list for the categories */}
+      {/* TODO: add a draggable flat list around the listitems and categories */}
       {/* Look at MyLists.tsx for reference */}
+      <ItemInput listId={listId!} />
+      <ListItems listId={listId!} />
       {currList?.categories?.map((category) => (
         <CategoryFolder key={category.id} categoryId={category.id} title={category.name}>
+          <ItemInput categoryId={category.id} />
           <CategoryItems listId={currList.id} categoryId={category.id} />
         </CategoryFolder>
       ))}
@@ -36,8 +41,9 @@ const ShoppingList = ({ route, navigation }: StackPropsShoppingList) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     flexDirection: 'column',
+    borderWidth: 3,
+    borderColor: 'blue',
   }
 });
 
