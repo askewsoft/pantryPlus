@@ -14,7 +14,7 @@ const MySettings = ({ navigation }: StackPropsMySettings) => {
       <Pressable style={styles.buttonContainer} onPress={() => navigation.navigate('Profile')}>
         <MaterialIcons
           name="person"
-          size={fonts.listItemIconSize}
+          size={fonts.rowIconSize}
           color={colors.brandColor}
         />
         <Text style={styles.buttonText}>Profile</Text>
@@ -22,7 +22,7 @@ const MySettings = ({ navigation }: StackPropsMySettings) => {
       <Pressable style={styles.buttonContainer} onPress={() => navigation.navigate('Permissions')}>
         <MaterialIcons
           name="security"
-          size={fonts.listItemIconSize}
+          size={fonts.rowIconSize}
           color={colors.brandColor}
         />
         <Text style={styles.buttonText}>Permissions</Text>
@@ -30,7 +30,7 @@ const MySettings = ({ navigation }: StackPropsMySettings) => {
       <Pressable style={styles.buttonContainer} onPress={() => signOut()}>
         <MaterialIcons
           name="logout"
-          size={fonts.listItemIconSize}
+          size={fonts.rowIconSize}
           color={colors.brandColor}
         />
         <Text style={styles.buttonText}>Log Out</Text>
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     marginLeft: 10,
-    fontSize: fonts.listItemTextSize,
+    fontSize: fonts.rowTextSize,
     fontWeight: 'bold',
     color: colors.brandColor,
   }

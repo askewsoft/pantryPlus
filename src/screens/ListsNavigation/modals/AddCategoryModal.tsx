@@ -2,14 +2,14 @@ import { Button, Modal, Text, TextInput, View, StyleSheet } from 'react-native';
 import { observer } from 'mobx-react';
 
 import { uiStore } from '@/stores/UIStore';
-import { domainStore, ListType } from '@/stores/DomainStore';
+import { domainStore } from '@/stores/DomainStore';
 import colors from '@/consts/colors';
 
 const AddCategoryModal = () => {
   return (
     <Modal
       visible={uiStore.addCategoryModalVisible}
-      transparent={false}
+      transparent={true}
       animationType="slide"
     >
       <View style={styles.modalContainer}>
@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: colors.brandColor,
-    opacity: 0.9,
     paddingVertical: 50,
+    marginTop: '60%',
   },
   modalTitle: {
     fontSize: 20,

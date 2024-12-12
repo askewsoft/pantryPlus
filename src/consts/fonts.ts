@@ -1,5 +1,5 @@
 export default {
-    listItemTextSize: 18,
-    listItemIconSize: 22,
-    missingItemsTextSize: 24,
+    rowTextSize: 18,
+    rowIconSize: 22,
+    missingRowsTextSize: 24,
 }

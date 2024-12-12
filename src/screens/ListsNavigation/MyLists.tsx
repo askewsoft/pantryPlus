@@ -4,7 +4,7 @@ import { StyleSheet, View, Text, Button } from 'react-native';
 import { toJS } from 'mobx';
 
 import { StackPropsListsMyLists } from '@/types/ListNavTypes';
-import ListItem from '@/components/ListItem';
+import ListItem from '@/components/ListElement';
 import AddListModal from './modals/AddListModal';
 
 import { domainStore, ListType } from '@/stores/DomainStore';
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   noListsText: {
-    fontSize: fonts.missingItemsTextSize,
+    fontSize: fonts.missingRowsTextSize,
     fontStyle: 'italic',
     color: colors.brandColor,
     marginBottom: 20,
