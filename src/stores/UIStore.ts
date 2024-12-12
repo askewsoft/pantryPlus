@@ -17,6 +17,8 @@ export const UIStoreModel = t.model('UIStoreModel', {
     addListModalVisible: false,
     addCategoryModalVisible: false,
     openCategories: t.map(OpenCategory),
+    addItemToCategoryID: t.optional(t.string, ''),
+    addItemToListID: t.optional(t.string, ''),
 })
 .actions(self => ({
     setSignInOrUp(signInOrUp: 'signIn' | 'signUp') {
@@ -42,6 +44,12 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setOpenCategory(categoryId: string, open: boolean) {
         self.openCategories.put({ id: categoryId, open });
+    },
+    setAddItemToCategoryID(categoryID: string) {
+        self.addItemToCategoryID = categoryID;
+    },
+    setAddItemToListID(listID: string) {
+        self.addItemToListID = listID;
     }
 }));
 

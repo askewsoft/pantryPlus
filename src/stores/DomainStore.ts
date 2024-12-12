@@ -2,13 +2,16 @@ import { createContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { t, Instance, flow } from 'mobx-state-tree';
 import { persist } from 'mst-persist';
+import { List } from 'pantryPlusApiClient';
+
+import api from '@/api';
 
 import { UserModel } from './models/User';
 import { ListModel } from './models/List';
 import { ShopperModel } from './models/Shopper';
 import { GroupModel } from './models/Group';
 import { LocationModel } from './models/Location';
-import api from '@/api';
+
 import { randomUUID } from 'expo-crypto';
 import logging from '@/config/logging';
 
@@ -39,22 +42,29 @@ const DomainStoreModel = t
         },
         addList: flow(function* (name: string) {
             logging.debug ? console.log(`addList: ${name}`) : null;
+            const xAuthUser = self.user?.email!;
+            const ownerId = self.user?.id!;
+            const newListId = randomUUID();
             const newList: ListType = ListModel.create({
-                id: randomUUID(),
+                id: newListId,
                 name: name,
                 userIsOwner: true,
                 groupId: undefined,
                 categories: [],
             });
-            const xAuthUser = self.user?.email!;
-            const ownerId = self.user?.id!;
-            logging.debug ? console.log(`addList: ${newList} ${ownerId} ${xAuthUser}`) : null;
-            yield api.list.createList({ list: newList, ownerId, xAuthUser });
+            yield api.list.createList({ list: {name, id: newListId, ownerId}, xAuthUser });
             logging.debug ? console.log(`addList: ${newList}`) : null;
             self.lists.push(newList);
         }),
         loadLists: flow(function* () {
-            const lists = yield api.shopper.getUserLists({ user: self.user! });
+            const listsData = yield api.shopper.getUserLists({ user: self.user! });
+            const lists = listsData.map(
+                (list: List) => {
+                    const { id, name, ownerId, groupId } = list;
+                    const userIsOwner = ownerId === self.user?.id;
+                    return ListModel.create({ id, name, userIsOwner, groupId });
+                }
+            );
             self.lists.replace(lists);
         })
     }));
