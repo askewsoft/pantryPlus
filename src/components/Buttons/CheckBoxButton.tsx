@@ -12,7 +12,7 @@ const CheckBoxButton = () => {
   return (
     <MaterialIcons.Button
       name="check-box-outline-blank"
-      size={fonts.listItemIconSize}
+      size={fonts.rowIconSize}
       backgroundColor={colors.itemBackground}
       color={colors.brandColor}
       iconStyle={{ padding: 0, margin: 0 }}
