@@ -9,6 +9,7 @@ import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 
 import { uiStore } from '@/stores/UIStore';
 import { domainStore } from '@/stores/DomainStore';
+
 import logging from '@/config/logging';
 import AddProductButton from './Buttons/AddProductButton';
 
@@ -16,12 +17,13 @@ const CategoryFolder = ({categoryId, title, children}: {categoryId: string, titl
   const open = uiStore.openCategories.get(categoryId)?.open ?? false;
   const currList = domainStore.lists.find(l => l.categories.find(c => c.id === categoryId));
   const currCategory = currList?.categories.find(c => c.id === categoryId);
+  const xAuthUser = domainStore.user?.email!;
+
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
 
-  const onSubmit = async (evt: any) => {
-    const user = domainStore.user;
-    await currCategory?.setName(editedTitle, user?.email!);
+  const onSubmit = async () => {
+    await currCategory?.setName(editedTitle, xAuthUser);
     setIsEditing(false)
   }
 
@@ -29,20 +31,27 @@ const CategoryFolder = ({categoryId, title, children}: {categoryId: string, titl
     logging.debug ? console.log(`onDrag`) : null;
   }
 
-  const onAddProduct = () => {
-    logging.debug ? console.log(`onAddProduct`) : null;
+  const toggleFolderOpenClose = () => {
+    /* We only ever want one input box for adding an item.
+       If we're closing the folder and we're adding an item to this category,
+       then clear the addItemToCategoryID
+    */
+    if (open && uiStore.addItemToCategoryID === categoryId) {
+      uiStore.setAddItemToCategoryID('');
+    }
+    uiStore.setOpenCategory(categoryId, !open);
   }
 
   return (
     <View style={styles.container}>
         <Pressable
-          onPress={() =>  uiStore.setOpenCategory(categoryId, !open)}
+          onPress={toggleFolderOpenClose}
           onLongPress={() => setIsEditing(true)}
         >
           <View style={styles.titleContainer}>
             <AntDesign
               name={open ? "folderopen" : "folder1"}
-              size={fonts.listItemIconSize}
+              size={fonts.rowIconSize}
               backgroundColor={colors.lightBrandColor}
               color={colors.white}
               iconStyle={{ padding: 0, margin: 0 }}
@@ -60,10 +69,10 @@ const CategoryFolder = ({categoryId, title, children}: {categoryId: string, titl
             )}
             {/* TODO: encapsulate drag-indicator in a custom button */}
             <View style={styles.buttonContainer}>
-              <AddProductButton dark={true} onPress={onAddProduct} />
+              <AddProductButton categoryId={categoryId} dark={true} />
               <MaterialIcons.Button
                 name="drag-indicator"
-                size={fonts.listItemIconSize}
+                size={fonts.rowIconSize}
                 color={colors.white}
                 backgroundColor={colors.lightBrandColor}
                 onLongPress={onDrag}
@@ -92,7 +101,7 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     color: colors.white,
-    fontSize: fonts.listItemTextSize,
+    fontSize: fonts.rowTextSize,
     fontWeight: 'bold',
     marginLeft: 20,
   },

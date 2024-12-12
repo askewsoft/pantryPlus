@@ -4,23 +4,23 @@ import { observer } from 'mobx-react-lite';
 
 import { domainStore } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
-import ProductItem from './ProductItem';
-import { randomUUID } from 'expo-crypto';
+import Item from './Item';
 
 const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: string }) => {
   const open = uiStore.openCategories.get(categoryId)?.open ?? false;
   const currList = domainStore.lists.find((list) => list.id === listId);
+  const xAuthUser = domainStore.user?.email!;
+  const currCategory = currList?.categories.find((category) => category.id === categoryId);
 
   useEffect(() => {
-    currList?.loadCategoryItems({ categoryId, xAuthUser: domainStore.user?.email! });
-  }, [categoryId, domainStore.user?.email]);
+    currCategory?.loadCategoryItems({ xAuthUser });
+  }, [categoryId, xAuthUser]);
 
   return <FlatList style={[styles.container, { display: open ? 'flex' : 'none' }]}
-    // data={currList?.categories.find((category) => category.id === categoryId)?.items}
-    data={[{ name: 'Pepperoni', id: randomUUID(), upc: undefined }, { name: 'Cheese', id: randomUUID(), upc: undefined }]}
+    data={currList?.categories.find((category) => category.id === categoryId)?.items}
     keyExtractor={(item) => item.id}
     renderItem={({ item }) => (
-      <ProductItem item={item} isEditing={false} />
+      <Item item={item} />
     )}
   />;
 };
@@ -28,6 +28,8 @@ const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: str
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
+    borderWidth: 3,
+    borderColor: 'green',
   }
 });
 
