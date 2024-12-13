@@ -4,17 +4,22 @@ import { TextInput, View, StyleSheet } from "react-native"
 import colors from "@/consts/colors";
 import fonts from "@/consts/fonts";
 import { uiStore } from "@/stores/UIStore";
-import { domainStore } from "@/stores/DomainStore";
+import { domainStore, ListType } from "@/stores/DomainStore";
+import { CategoryType } from "@/stores/models/List";
 
 type ItemInputProps = {
-  listId?: string;
-  categoryId?: string;
-} & ({listId: string} | {categoryId: string});
+  list?: ListType;
+  category?: CategoryType;
+} & ({list: ListType} | {category: CategoryType});
 
-const ItemInput = ({ listId, categoryId }: ItemInputProps) => {
+const ItemInput = ({ list, category }: ItemInputProps) => {
+    const { id: categoryId } = category || {};
+    const { id: listId } = list || {};
     const [editedName, setEditedName] = useState('enter item name here');
     const [isAddingItem, setIsAddingItem] = useState(false);
     const {addItemToCategoryID, addItemToListID} = uiStore;
+    const { user } = domainStore;
+    const xAuthUser = user?.email || '';
 
     useEffect(() => {
         if (!addItemToCategoryID && !addItemToListID) {
@@ -26,14 +31,17 @@ const ItemInput = ({ listId, categoryId }: ItemInputProps) => {
         } else {
             setIsAddingItem(false);
         }
-    }, [categoryId, listId, addItemToCategoryID, addItemToListID]);
+        console.log(`isAddingItem: ${isAddingItem}`);
+    }, [addItemToCategoryID, addItemToListID]);
 
     const onSubmit = () => {
-        if (editedName !== '') {
+        if (editedName !== '' && (categoryId || listId)) {
             if (categoryId) {
-                alert(`Submitting item: '${editedName}' to categoryId: '${categoryId}'`);
-            } else if (listId) {
+                alert(`Submitting item: '${editedName}' to categoryId: '${category?.id}'`);
+                category?.addItem({ item: { name: editedName, upc: '' }, xAuthUser });
+            } else if (list?.id) {
                 alert(`Submitting item: '${editedName}' to listId: '${listId}'`);
+                list?.addItem({ item: { name: editedName, upc: '' }, xAuthUser });
             }
         }
         setIsAddingItem(false);

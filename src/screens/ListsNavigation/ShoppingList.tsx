@@ -26,11 +26,11 @@ const ShoppingList = ({ route, navigation }: StackPropsShoppingList) => {
     <View style={styles.container}>
       {/* TODO: add a draggable flat list around the listitems and categories */}
       {/* Look at MyLists.tsx for reference */}
-      <ItemInput listId={listId!} />
+      <ItemInput list={currList!} />
       <ListItems listId={listId!} />
       {currList?.categories?.map((category) => (
         <CategoryFolder key={category.id} categoryId={category.id} title={category.name}>
-          <ItemInput categoryId={category.id} />
+          <ItemInput category={category} />
           <CategoryItems listId={currList.id} categoryId={category.id} />
         </CategoryFolder>
       ))}
@@ -42,8 +42,6 @@ const ShoppingList = ({ route, navigation }: StackPropsShoppingList) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
-    borderWidth: 3,
-    borderColor: 'blue',
   }
 });
 
