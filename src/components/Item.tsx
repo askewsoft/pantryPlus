@@ -40,8 +40,6 @@ const styles = StyleSheet.create({
     borderColor: 'blue',
   },
   itemContainer: {
-    // flex: 1,
-    // height: 50,
     flexDirection: 'row',
     alignContent: 'flex-start',
     alignItems: 'center',

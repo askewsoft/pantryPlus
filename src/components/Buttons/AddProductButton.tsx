@@ -6,7 +6,6 @@ import { uiStore } from '@/stores/UIStore';
 
 const AddProductButton = ({categoryId, dark}: {categoryId: string, dark?: boolean}) => {
   const onPress = () => {
-    // alert(`onPress AddProductButton categoryId: '${categoryId}'`);
     uiStore.setOpenCategory(categoryId, true);
     uiStore.setAddItemToCategoryID(categoryId);
   }
