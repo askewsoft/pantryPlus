@@ -1,11 +1,24 @@
-import { t } from 'mobx-state-tree';
+import { t, flow } from 'mobx-state-tree';
+import api from '@/api';
 
 export const ItemModel = t.model('ItemModel', {
     id: t.identifier,
     name: t.string,
     upc: t.maybe(t.string)
 }).actions(self => ({
-    setName: (name: string) => {
-        self.name = name;
-    }
+    setName: flow(function*(name: string, xAuthUser: string): Generator<any, any, any> {
+        try {
+            yield api.item.updateItem({ item: { name, upc: self.upc || '', itemId: self.id }, xAuthUser });
+            self.name = name;
+        } catch (error) {
+            console.error(`Error setting item name for itemId: ${self.id} to name: ${name} with error: ${error}`);
+        }
+    }),
+    saveItem: flow(function*(xAuthUser: string): Generator<any, any, any> {
+        try {
+            yield api.item.createItem({ item: { name: self.name, upc: self.upc ?? '', itemId: self.id }, xAuthUser });
+        } catch (error) {
+            console.error(`Error creating item with name: ${self.name} and upc: ${self.upc} with error: ${error}`);
+        }
+    })
 }));

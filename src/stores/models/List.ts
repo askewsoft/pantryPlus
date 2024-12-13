@@ -8,6 +8,7 @@ import { ItemModel } from './Item';
 import { randomUUID } from 'expo-crypto';
 import { Category, Item } from 'pantryPlusApiClient';
 
+export type ItemType = Instance<typeof ItemModel>;
 export type CategoryType = Instance<typeof CategoryModel>;
 
 export const ListModel = t.model('ListModel', {
@@ -57,7 +58,15 @@ export const ListModel = t.model('ListModel', {
         );
         self.items.replace(items);
     }),
-    associateItemToList: flow(function*({ itemId, xAuthUser }: { itemId: string, xAuthUser: string }): Generator<any, any, any> {
-        yield api.list.associateListItem({ listId: self.id, itemId, xAuthUser });
+    addItem: flow(function*({ item, xAuthUser }: { item: Pick<ItemType, 'name' | 'upc'>, xAuthUser: string }): Generator<any, any, any> {
+        const newItemId = randomUUID();
+        const newItem = ItemModel.create({ id: newItemId, name: item.name, upc: item.upc });
+        yield newItem.saveItem(xAuthUser);
+        yield api.list.associateListItem({ listId: self.id, itemId: newItemId, xAuthUser });
+        self.items.push(newItem);
+    }),
+    associateItemToList: flow(function*({ item, xAuthUser }: { item: Item, xAuthUser: string }): Generator<any, any, any> {
+        yield api.list.associateListItem({ listId: self.id, itemId: item.id, xAuthUser });
+        self.items.push(item);
     })
 }));
