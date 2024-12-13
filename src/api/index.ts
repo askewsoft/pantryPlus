@@ -1,6 +1,7 @@
 import shopperService from './shopperService';
 import listService from './listService';
 import categoryService from './categoryService';
+import itemService from './itemService';
 
 import {
     LocationsApi,
@@ -19,6 +20,7 @@ const groupsApi = new GroupsApi(configuration);
 const api = {
     shopper: shopperService,
     list: listService,
+    item: itemService,
     location: locationsApi,
     group: groupsApi,
     category: categoryService,
