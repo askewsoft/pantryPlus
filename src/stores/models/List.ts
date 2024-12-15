@@ -46,7 +46,7 @@ export const ListModel = t.model('ListModel', {
                 return CategoryModel.create({ id, name });
             }
         );
-        self.categories.replace(categories);
+        self.categories.spliceWithArray(0, self.categories.length, categories);
     }),
     loadListItems: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
         const itemsData = yield api.list.getListItems({ listId: self.id, xAuthUser });

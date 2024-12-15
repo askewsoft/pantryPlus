@@ -36,6 +36,6 @@ export const CategoryModel = t.model('CategoryModel', {
                 return ItemModel.create({ id, name, upc });
             }
         );
-        self.items.replace(items);
+        self.items.spliceWithArray(0, self.items.length, items);
     })
 }));
