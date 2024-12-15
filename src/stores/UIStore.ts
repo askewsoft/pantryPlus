@@ -68,7 +68,8 @@ export const uiStore = UIStoreModel.create({
 // saves to and loads from device storage
 persist('pantryPlusUI', uiStore, {
     storage: AsyncStorage,
-    jsonify: true
+    jsonify: true,
+    blacklist: ['addItemToCategoryID', 'addItemToListID']
 });
 
 export const UIStoreContext = createContext<UIStoreType | null>(null);
