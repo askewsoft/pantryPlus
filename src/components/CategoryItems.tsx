@@ -11,10 +11,7 @@ const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: str
   const currList = domainStore.lists.find((list) => list.id === listId);
   const xAuthUser = domainStore.user?.email!;
   const currCategory = currList?.categories.find((category) => category.id === categoryId);
-
-  useEffect(() => {
-    currCategory?.loadCategoryItems({ xAuthUser });
-  }, [categoryId, xAuthUser]);
+  currCategory?.loadCategoryItems({ xAuthUser });
 
   return <FlatList style={[styles.container, { display: open ? 'flex' : 'none' }]}
     data={currList?.categories.find((category) => category.id === categoryId)?.items}
@@ -28,8 +25,6 @@ const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: str
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
-    borderWidth: 3,
-    borderColor: 'green',
   }
 });
 
