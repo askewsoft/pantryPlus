@@ -15,7 +15,7 @@ type ItemInputProps = {
 const ItemInput = ({ list, category }: ItemInputProps) => {
     const { id: categoryId } = category || {};
     const { id: listId } = list || {};
-    const [editedName, setEditedName] = useState('enter item name here');
+    const [editedName, setEditedName] = useState('');
     const [isAddingItem, setIsAddingItem] = useState(false);
     const {addItemToCategoryID, addItemToListID} = uiStore;
     const { user } = domainStore;
@@ -31,13 +31,11 @@ const ItemInput = ({ list, category }: ItemInputProps) => {
         } else {
             setIsAddingItem(false);
         }
-        console.log(`isAddingItem: ${isAddingItem}`);
     }, [addItemToCategoryID, addItemToListID]);
 
     const onSubmit = () => {
         if (editedName !== '' && (categoryId || listId)) {
             if (categoryId) {
-                alert(`Submitting item: '${editedName}' to categoryId: '${category?.id}'`);
                 category?.addItem({ item: { name: editedName, upc: '' }, xAuthUser });
             } else if (list?.id) {
                 alert(`Submitting item: '${editedName}' to listId: '${listId}'`);
@@ -45,6 +43,7 @@ const ItemInput = ({ list, category }: ItemInputProps) => {
             }
         }
         setIsAddingItem(false);
+        setEditedName('');
     }
 
     return (
@@ -53,6 +52,7 @@ const ItemInput = ({ list, category }: ItemInputProps) => {
           <TextInput
             style={styles.item}
             value={editedName}
+            placeholder="enter item name here"
             onChangeText={(text) => setEditedName(text)}
             onSubmitEditing={onSubmit}
             autoFocus={true}

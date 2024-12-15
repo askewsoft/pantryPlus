@@ -36,8 +36,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: colors.itemBackground,
     marginTop: 2,
-    borderWidth: 3,
-    borderColor: 'blue',
   },
   itemContainer: {
     flexDirection: 'row',
@@ -48,8 +46,6 @@ const styles = StyleSheet.create({
   item: {
     color: colors.brandColor,
     fontSize: fonts.rowTextSize,
-    borderWidth: 1,
-    borderColor: 'red',
   }
 });
 

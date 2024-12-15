@@ -27,8 +27,6 @@ const ListItems = ({ listId }: { listId: string }) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
-    borderWidth: 3,
-    borderColor: 'orange',
   }
 });
 
