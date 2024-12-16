@@ -34,15 +34,17 @@ const ItemInput = ({ list, category }: ItemInputProps) => {
     }, [addItemToCategoryID, addItemToListID]);
 
     const onSubmit = () => {
-        if (editedName !== '' && (categoryId || listId)) {
+        const trimmedName = editedName.trim();
+        if (trimmedName !== '' && (categoryId || listId)) {
             if (categoryId) {
-                category?.addItem({ item: { name: editedName, upc: '' }, xAuthUser });
+                category?.addItem({ item: { name: trimmedName, upc: '' }, xAuthUser });
             } else if (list?.id) {
-                alert(`Submitting item: '${editedName}' to listId: '${listId}'`);
-                list?.addItem({ item: { name: editedName, upc: '' }, xAuthUser });
+                list?.addItem({ item: { name: trimmedName, upc: '' }, xAuthUser });
             }
         }
         setIsAddingItem(false);
+        uiStore.setAddItemToCategoryID('');
+        uiStore.setAddItemToListID('');
         setEditedName('');
     }
 
@@ -53,7 +55,7 @@ const ItemInput = ({ list, category }: ItemInputProps) => {
             style={styles.item}
             value={editedName}
             placeholder="enter item name here"
-            onChangeText={(text) => setEditedName(text)}
+            onChangeText={(text) => setEditedName(text.toLowerCase())}
             onSubmitEditing={onSubmit}
             autoFocus={true}
           />
