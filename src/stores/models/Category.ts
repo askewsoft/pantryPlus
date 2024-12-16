@@ -29,6 +29,7 @@ export const CategoryModel = t.model('CategoryModel', {
         self.items.push(newItem);
     }),
     loadCategoryItems: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
+        // TODO: figure out how to load from local storage first, then from server & reconcile
         const itemsData = yield api.category.loadCategoryItems({ categoryId: self.id, xAuthUser });
         const items = itemsData.map(
             (item: Item) => {
