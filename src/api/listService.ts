@@ -16,7 +16,6 @@ const createList = async ({ list, xAuthUser }: { list: List, xAuthUser: string }
         logging.debug ? console.log(`createList response: ${JSON.stringify(response)}`) : null;
     } catch (error) {
         console.error(`Failed to createList in DB: ${error}`);
-        // throw error;
     }
 }
 
@@ -26,7 +25,7 @@ const getListCategories = async ({ listId, xAuthUser }: { listId: string, xAuthU
         return categoriesData.data;
     } catch (error) {
         console.error(`Failed to getListCategories in DB: ${error}`);
-        // throw error;
+        return [];
     }
 }
 
@@ -36,7 +35,6 @@ const addListCategory = async ({ listId, category, xAuthUser }: { listId: string
         await listsApi.createCategory({ id, name, listId }, xAuthUser, listId);
     } catch (error) {
         console.error(`Failed to addListCategory in DB: ${error}`);
-        // throw error;
     }
 }
 
@@ -46,16 +44,15 @@ const getListItems = async ({ listId, xAuthUser }: { listId: string, xAuthUser: 
         return itemsData.data;
     } catch (error) {
         console.error(`Failed to getListItems in DB: ${error}`);
-        // throw error;
+        return [];
     }
 }
 
 const associateListItem= async ({ listId, itemId, xAuthUser }: { listId: string, itemId: string, xAuthUser: string }) => {
     try {
-        await listsApi.addItem(itemId, xAuthUser, listId);
+        await listsApi.addItem(xAuthUser, listId, itemId);
     } catch (error) {
         console.error(`Failed to addListItem in DB: ${error}`);
-        // throw error;
     }
 }
 
