@@ -37,6 +37,7 @@ const CategoryFolder = ({categoryId, title, children}: {categoryId: string, titl
        then clear the addItemToCategoryID
     */
     if (open && uiStore.addItemToCategoryID === categoryId) {
+      logging.debug ? console.log(`toggleFolderOpenClose - clearing addItemToCategoryID: ${uiStore.addItemToCategoryID}`) : null;
       uiStore.setAddItemToCategoryID('');
     }
     uiStore.setOpenCategory(categoryId, !open);
@@ -69,7 +70,7 @@ const CategoryFolder = ({categoryId, title, children}: {categoryId: string, titl
             )}
             {/* TODO: encapsulate drag-indicator in a custom button */}
             <View style={styles.buttonContainer}>
-              <AddProductButton categoryId={categoryId} dark={true} />
+              <AddProductButton categoryId={categoryId} foreground={colors.white} background={colors.lightBrandColor} />
               <MaterialIcons.Button
                 name="drag-indicator"
                 size={fonts.rowIconSize}

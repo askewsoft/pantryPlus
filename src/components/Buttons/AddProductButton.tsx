@@ -4,18 +4,30 @@ import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { uiStore } from '@/stores/UIStore';
 
-const AddProductButton = ({categoryId, dark}: {categoryId: string, dark?: boolean}) => {
+type AddProductButtonProps = {
+  categoryId?: string;
+  listId?: string;
+  foreground?: string;
+  background?: string;
+} & ({categoryId: string} | {listId: string});
+
+const AddProductButton = ({categoryId, listId, foreground, background}: AddProductButtonProps) => {
   const onPress = () => {
-    uiStore.setOpenCategory(categoryId, true);
-    uiStore.setAddItemToCategoryID(categoryId);
+    if (categoryId) {
+      uiStore.setOpenCategory(categoryId, true);
+      uiStore.addItemToCategoryID !== categoryId ? uiStore.setAddItemToCategoryID(categoryId) : uiStore.setAddItemToCategoryID('');
+    } else if (listId) {
+      uiStore.setSelectedShoppingList(listId);
+      uiStore.addItemToListID !== listId ? uiStore.setAddItemToListID(listId) : uiStore.setAddItemToListID('');
+    }
   }
 
   return (
     <MaterialIcons.Button
       name="add-task"
       size={fonts.rowIconSize}
-      color={dark ? colors.white : colors.brandColor}
-      backgroundColor={dark ? colors.lightBrandColor : colors.detailsBackground}
+      color={foreground}
+      backgroundColor={background}
       onPress={onPress}
     />
   )
