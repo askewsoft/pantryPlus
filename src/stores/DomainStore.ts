@@ -36,18 +36,20 @@ const DomainStoreModel = t
         initialize: () => {
             AsyncStorage.removeItem('pantryPlusDomain');
             self.user = undefined;
-            self.lists.replace([]);
-            self.groups.replace([]);
-            self.locations.replace([]);
+            self.lists.spliceWithArray(0, self.lists.length, []);
+            self.groups.spliceWithArray(0, self.groups.length, []);
+            self.locations.spliceWithArray(0, self.locations.length, []);
         },
         addList: flow(function* (name: string) {
             logging.debug ? console.log(`addList: ${name}`) : null;
+            const ordinal = self.lists.length;
             const xAuthUser = self.user?.email!;
             const ownerId = self.user?.id!;
             const newListId = randomUUID();
             const newList: ListType = ListModel.create({
                 id: newListId,
                 name: name,
+                ordinal: ordinal,
                 userIsOwner: true,
                 groupId: undefined,
                 categories: [],
@@ -59,14 +61,27 @@ const DomainStoreModel = t
         loadLists: flow(function* () {
             const listsData = yield api.shopper.getUserLists({ user: self.user! });
             const lists = listsData.map(
-                (list: List) => {
+                (list: List, index: number) => {
                     const { id, name, ownerId, groupId } = list;
                     const userIsOwner = ownerId === self.user?.id;
-                    return ListModel.create({ id, name, userIsOwner, groupId });
+                    // TODO: get ordinal from backend
+                    return ListModel.create({ id, name, userIsOwner, groupId, ordinal: index });
                 }
             );
-            self.lists.replace(lists);
-        })
+            self.lists.spliceWithArray(0, self.lists.length, lists);
+        }),
+        updateListOrder: ({ data, from, to }: { data: ListType[], from: number, to: number }) => {
+            data.forEach((list, index) => {
+                if (list.ordinal !== index) {
+                    /* each list in data is a copy of the ListModel's properties only
+                    * It is not an instance of ListModel and lacks actions & views
+                    * We must find the ListModel instance to execute the self-mutating action
+                    */
+                    const updatedList = self.lists.find(l => l.id === list.id);
+                    updatedList!.setOrdinal(index);
+                }
+            });
+        }
     }));
 
 type DomainStoreType = Instance<typeof DomainStoreModel>;

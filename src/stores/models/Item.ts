@@ -4,7 +4,8 @@ import api from '@/api';
 export const ItemModel = t.model('ItemModel', {
     id: t.identifier,
     name: t.string,
-    upc: t.maybe(t.string)
+    upc: t.maybe(t.string),
+    ordinal: t.maybe(t.number)
 }).actions(self => ({
     setName: flow(function*(name: string, xAuthUser: string): Generator<any, any, any> {
         try {
@@ -20,5 +21,8 @@ export const ItemModel = t.model('ItemModel', {
         } catch (error) {
             console.error(`Error creating item with name: ${self.name} and upc: ${self.upc} with error: ${error}`);
         }
-    })
+    }),
+    setOrdinal: (ordinal: number) => {
+        self.ordinal = ordinal;
+    }
 }));

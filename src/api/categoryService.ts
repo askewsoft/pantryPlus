@@ -8,14 +8,12 @@ const configuration = new Configuration({
 
 const categoriesApi = new CategoriesApi(configuration);
 
-const updateCategory = async ({ categoryId, name, xAuthUser }: { categoryId: string, name: string, xAuthUser: string }) => {
-    logging.debug ? console.log(`updateCategory: ${categoryId} ${name} ${xAuthUser}`) : null;
+const updateCategory = async ({ categoryId, name, ordinal, xAuthUser }: { categoryId: string, name: string, ordinal: number, xAuthUser: string }) => {
+    logging.debug ? console.log(`updateCategory: ${categoryId} ${name} ${ordinal} ${xAuthUser}`) : null;
     try {
-        const results = await categoriesApi.updateCategory({ name }, xAuthUser, categoryId);
-        logging.debug ? console.log(`updateCategory results: ${JSON.stringify(results)}`) : null;
+        await categoriesApi.updateCategory({ name, ordinal }, xAuthUser, categoryId);
     } catch (error) {
         console.error(`Error updating category: ${error}`);
-        // throw error;
     }
 }
 
@@ -24,18 +22,20 @@ const associateCategoryItem = async ({ categoryId, itemId, xAuthUser }: { catego
         await categoriesApi.addItemToCategory(xAuthUser, categoryId, itemId);
     } catch (error) {
         console.error(`Error adding category item: ${error}`);
-        // throw error;
     }
 }
 
 const loadCategoryItems = async ({ categoryId, xAuthUser }: { categoryId: string, xAuthUser: string }): Promise<Array<Item>> => {
+    let returnItems: Array<Item> = [];
     try {
+        logging.debug ? console.log(`categoryService fetching Items: ${categoryId} ${xAuthUser}`) : null;
         const itemsData = await categoriesApi.getCategoryItems(xAuthUser, categoryId);
-        return itemsData.data;
+        returnItems = itemsData.data;
+        logging.debug ? console.log(`categoryService Items received: ${JSON.stringify(returnItems)}`) : null;
     } catch (error) {
         console.error(`Error loading category items: ${error}`);
-        // throw error;
     }
+    return returnItems;
 }
 
 export default {

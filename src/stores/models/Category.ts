@@ -1,4 +1,4 @@
-import { flow, Instance, t } from 'mobx-state-tree';
+import { cast, flow, Instance, t } from 'mobx-state-tree';
 import { randomUUID } from 'expo-crypto';
 
 import api from '@/api';
@@ -11,11 +11,12 @@ import logging from '@/config/logging';
 export const CategoryModel = t.model('CategoryModel', {
     id: t.identifier,
     name: t.string,
+    ordinal: t.number, // zero-based index
     items: t.array(ItemModel),
 }).actions(self => ({
     setName: flow(function*(name: string, xAuthUser: string): Generator<any, any, any> {
         try {
-            yield api.category.updateCategory({ categoryId: self.id, name, xAuthUser });
+            yield api.category.updateCategory({ categoryId: self.id, name, ordinal: self.ordinal, xAuthUser });
             self.name = name;
         } catch (error) {
             console.error(`Error setting name: ${error}`);
@@ -23,20 +24,44 @@ export const CategoryModel = t.model('CategoryModel', {
     }),
     addItem: flow(function*({ item, xAuthUser }: { item: Pick<ItemType, 'name' | 'upc'>, xAuthUser: string }): Generator<any, any, any> {
         const newItemId = randomUUID(); 
-        const newItem = ItemModel.create({ id: newItemId, name: item.name, upc: item.upc });
-        yield newItem.saveItem(xAuthUser);
-        yield api.category.associateCategoryItem({ categoryId: self.id, itemId: newItemId, xAuthUser });
-        self.items.push(newItem);
+        const newItem = ItemModel.create({ id: newItemId, name: item.name, upc: item.upc, ordinal: self.items.length });
+        try {
+            yield newItem.saveItem(xAuthUser);
+            yield api.category.associateCategoryItem({ categoryId: self.id, itemId: newItemId, xAuthUser });
+            self.items.push(newItem);
+        } catch (error) {
+            console.error(`Error adding item to category: ${error}`);
+        }
     }),
     loadCategoryItems: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
-        // TODO: figure out how to load from local storage first, then from server & reconcile
-        const itemsData = yield api.category.loadCategoryItems({ categoryId: self.id, xAuthUser });
-        const items = itemsData.map(
-            (item: Item) => {
-                const { id, name, upc } = item;
-                return ItemModel.create({ id, name, upc });
+        try {
+            const itemsData = yield api.category.loadCategoryItems({ categoryId: self.id, xAuthUser });
+            const items = itemsData.map(
+                (item: Item, index: number) => {
+                    const { id, name, upc } = item;
+                    return ItemModel.create({ id, name, upc, ordinal: index });
+                }
+            );
+            self.items.replace(items);
+        } catch (error) {
+            console.error(`Error loading category items: ${error}`);
+        }
+    }),
+    updateItemOrder: ({ data, from, to }: { data: ItemType[], from: number, to: number }) => {
+        data.forEach((item, index) => {
+            if (item.ordinal !== index) {
+                const updatedItem = self.items.find(i => i.id === item.id);
+                updatedItem!.setOrdinal(index);
             }
-        );
-        self.items.spliceWithArray(0, self.items.length, items);
-    })
+        });
+    },
+    setOrdinal: flow(function* (ordinal: number, xAuthUser: string): Generator<any, any, any> {
+        self.ordinal = ordinal;
+        try {
+            yield api.category.updateCategory({ categoryId: self.id, name: self.name, ordinal, xAuthUser });
+        } catch (error) {
+            console.error(`Error setting Category ordinal: ${error}`);
+        }
+    }),
 }));
+

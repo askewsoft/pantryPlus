@@ -22,6 +22,7 @@ const createList = async ({ list, xAuthUser }: { list: List, xAuthUser: string }
 const getListCategories = async ({ listId, xAuthUser }: { listId: string, xAuthUser: string }): Promise<Array<PickCategoryIdOrName_>> => {
     try {
         const categoriesData = await listsApi.getCategories(xAuthUser, listId);
+        logging.debug ? console.log(`getListCategories response: ${JSON.stringify(categoriesData)}`) : null;
         return categoriesData.data;
     } catch (error) {
         console.error(`Failed to getListCategories in DB: ${error}`);
@@ -31,8 +32,8 @@ const getListCategories = async ({ listId, xAuthUser }: { listId: string, xAuthU
 
 const addListCategory = async ({ listId, category, xAuthUser }: { listId: string, category: PickCategoryIdOrName_, xAuthUser: string }) => {
     try {
-        const { id, name } = category;
-        await listsApi.createCategory({ id, name, listId }, xAuthUser, listId);
+        const { id, name, ordinal } = category;
+        await listsApi.createCategory({ id, name, listId, ordinal }, xAuthUser, listId);
     } catch (error) {
         console.error(`Failed to addListCategory in DB: ${error}`);
     }
