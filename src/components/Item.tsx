@@ -10,7 +10,7 @@ import fonts from '@/consts/fonts';
 import logging from '@/config/logging';
 
 
-const Item = ({ item }: { item: ItemType }) => {
+const Item = ({ item, drag }: { item: ItemType, drag: () => void }) => {
 
   return (
     <View style={styles.itemLine}>
@@ -25,6 +25,7 @@ const Item = ({ item }: { item: ItemType }) => {
         color={colors.brandColor}
         iconStyle={{ padding: 0, margin: 0 }}
         style={{ alignSelf: 'flex-end' }}
+        onLongPress={drag}
       />
     </View>
   );

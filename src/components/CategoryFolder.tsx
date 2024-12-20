@@ -13,7 +13,7 @@ import { domainStore } from '@/stores/DomainStore';
 import logging from '@/config/logging';
 import AddProductButton from './Buttons/AddProductButton';
 
-const CategoryFolder = ({categoryId, title, children}: {categoryId: string, title: string, children: React.ReactNode}) => {
+const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string, title: string, drag: () => void, children: React.ReactNode}) => {
   const open = uiStore.openCategories.get(categoryId)?.open ?? false;
   const currList = domainStore.lists.find(l => l.categories.find(c => c.id === categoryId));
   const currCategory = currList?.categories.find(c => c.id === categoryId);
@@ -25,10 +25,6 @@ const CategoryFolder = ({categoryId, title, children}: {categoryId: string, titl
   const onSubmit = async () => {
     await currCategory?.setName(editedTitle, xAuthUser);
     setIsEditing(false)
-  }
-
-  const onDrag = () => {
-    logging.debug ? console.log(`onDrag`) : null;
   }
 
   const toggleFolderOpenClose = () => {
@@ -76,7 +72,7 @@ const CategoryFolder = ({categoryId, title, children}: {categoryId: string, titl
                 size={fonts.rowIconSize}
                 color={colors.white}
                 backgroundColor={colors.lightBrandColor}
-                onLongPress={onDrag}
+                onLongPress={drag}
               />
             </View>
           </View>

@@ -37,9 +37,9 @@ const ItemInput = ({ list, category }: ItemInputProps) => {
         const trimmedName = editedName.trim();
         if (trimmedName !== '' && (categoryId || listId)) {
             if (categoryId) {
-                category?.addItem({ item: { name: trimmedName, upc: '' }, xAuthUser });
-            } else if (list?.id) {
-                list?.addItem({ item: { name: trimmedName, upc: '' }, xAuthUser });
+                category!.addItem({ item: { name: trimmedName, upc: '' }, xAuthUser });
+            } else if (listId) {
+                list!.addItem({ item: { name: trimmedName, upc: '' }, xAuthUser });
             }
         }
         setIsAddingItem(false);

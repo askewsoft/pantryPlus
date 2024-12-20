@@ -4,7 +4,7 @@ import { StyleSheet, View, Text, Button } from 'react-native';
 import { toJS } from 'mobx';
 
 import { StackPropsListsMyLists } from '@/types/ListNavTypes';
-import ListItem from '@/components/ListElement';
+import ListElement from '@/components/ListElement';
 import AddListModal from './modals/AddListModal';
 
 import { domainStore, ListType } from '@/stores/DomainStore';
@@ -12,20 +12,14 @@ import { domainStore, ListType } from '@/stores/DomainStore';
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { uiStore } from '@/stores/UIStore';
+import { sortByOrdinal } from '@/stores/utils/sorter';
+import logging from '@/config/logging';
 
-const keyExtractor = (item: ListType) => item.id;
-
-// TODO: update the list order in the model & db
-const onDragEnd = (data: ListType[], from: number, to: number) => {
-  domainStore.lists.splice(from, 1);
-  domainStore.lists.splice(to, 0, data[from]);
-}
-
-const renderListItem = (navigation: any) => {
+const renderListElement = (navigation: any) => {
   return ({ item, drag }: { item: ListType, drag: () => void }) => {
     return (
       <ScaleDecorator activeScale={1.04}>
-        <ListItem id={item.id} drag={drag} navigation={navigation}/>
+        <ListElement id={item.id} drag={drag} navigation={navigation}/>
       </ScaleDecorator>
     );
   }
@@ -48,7 +42,6 @@ const styles = StyleSheet.create({
   }
 });
 
-
 const MyLists = ({route, navigation}: StackPropsListsMyLists) => {
   const onPressAddList = () => {
     uiStore.setAddListModalVisible(true);
@@ -69,10 +62,10 @@ const MyLists = ({route, navigation}: StackPropsListsMyLists) => {
       <View>
         <DraggableFlatList
           contentContainerStyle={styles.draggableFlatListStyle}
-          data={toJS(domainStore.lists)}
-          // onDragEnd={onDragEnd}
-          renderItem={renderListItem(navigation)}
-          keyExtractor={keyExtractor}
+          data={toJS(domainStore.lists).sort(sortByOrdinal)}
+          onDragEnd={domainStore.updateListOrder}
+          renderItem={renderListElement(navigation)}
+          keyExtractor={list => list.id}
         />
         <AddListModal />
       </View>
