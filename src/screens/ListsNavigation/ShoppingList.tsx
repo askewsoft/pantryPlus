@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import DraggableFlatList, { ScaleDecorator, DragEndParams } from 'react-native-draggable-flatlist';
+import DraggableFlatList, { DragEndParams } from 'react-native-draggable-flatlist';
 
 import { StackPropsShoppingList } from '@/types/ListNavTypes';
 import CategoryFolder from '@/components/CategoryFolder';
@@ -26,12 +26,10 @@ const ShoppingList = ({ route, navigation }: StackPropsShoppingList) => {
     return ({ item, drag }: { item: CategoryType, drag: () => void }) => {
       const category = currList!.categories.find(c => c.id === item.id);
       return (
-        <ScaleDecorator activeScale={1.04}>
-          <CategoryFolder key={category!.id} categoryId={category!.id} title={category!.name} drag={drag}>
-            <ItemInput category={category!} />
-            <CategoryItems listId={currList!.id} categoryId={category!.id} />
-          </CategoryFolder>
-        </ScaleDecorator>
+        <CategoryFolder key={category!.id} categoryId={category!.id} title={category!.name} drag={drag}>
+          <ItemInput category={category!} />
+          <CategoryItems listId={currList!.id} categoryId={category!.id} />
+        </CategoryFolder>
       );
     }
   }

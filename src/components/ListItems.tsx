@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
+import DraggableFlatList from 'react-native-draggable-flatlist';
 
 import { domainStore } from '@/stores/DomainStore';
 import Item from './Item';
@@ -14,12 +14,16 @@ const ListItems = ({ listId }: { listId: string }) => {
   const currList = domainStore.lists.find((list) => list.id === listId);
   const xAuthUser = domainStore.user?.email!;
 
+  const onRemoveItem = (itemId: string) => {
+    return () => {
+      currList?.removeItem({ itemId, xAuthUser });
+    }
+  }
+
   const renderItem = ({ item, drag }: { item: ItemType, drag: () => void }) => {
     const currItem = currList?.items.find(i => i.id === item.id);
     return (
-      <ScaleDecorator activeScale={1.04}>
-        <Item item={currItem!} drag={drag}/>
-      </ScaleDecorator>
+        <Item item={currItem!} onRemoveItem={onRemoveItem(item.id)} drag={drag} indent={10}/>
     );
   }
 
@@ -39,7 +43,7 @@ const ListItems = ({ listId }: { listId: string }) => {
 const styles = StyleSheet.create({
   draggableFlatListStyle: {
     backgroundColor: colors.detailsBackground,
-  }
+  },
 });
 
 export default observer(ListItems);

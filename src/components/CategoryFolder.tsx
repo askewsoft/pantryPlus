@@ -1,17 +1,20 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
 import { observer } from 'mobx-react-lite';
+import { ScaleDecorator } from 'react-native-draggable-flatlist';
+import SwipeableItem from "react-native-swipeable-item";
 import AntDesign from '@expo/vector-icons/AntDesign';
+import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
-import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 
 import { uiStore } from '@/stores/UIStore';
 import { domainStore } from '@/stores/DomainStore';
 
 import logging from '@/config/logging';
 import AddProductButton from './Buttons/AddProductButton';
+import RemoveCategoryButton from './Buttons/RemoveCategoryButton';
 
 const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string, title: string, drag: () => void, children: React.ReactNode}) => {
   const open = uiStore.openCategories.get(categoryId)?.open ?? false;
@@ -40,51 +43,64 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
   }
 
   return (
-    <View style={styles.container}>
-        <Pressable
-          onPress={toggleFolderOpenClose}
-          onLongPress={() => setIsEditing(true)}
-        >
-          <View style={styles.titleContainer}>
-            <AntDesign
-              name={open ? "folderopen" : "folder1"}
-              size={fonts.rowIconSize}
-              backgroundColor={colors.lightBrandColor}
-              color={colors.white}
-              iconStyle={{ padding: 0, margin: 0 }}
-            />
-            {isEditing ? (
-              <TextInput
-                style={[styles.title, styles.titleInput]}
-                value={editedTitle}
-                onSubmitEditing={onSubmit}
-                onChangeText={(text) => setEditedTitle(text)}
-                autoFocus={true}
-              />
-            ) : (
-              <Text style={styles.title}>{title}</Text>
-            )}
-            {/* TODO: encapsulate drag-indicator in a custom button */}
-            <View style={styles.buttonContainer}>
-              <AddProductButton categoryId={categoryId} foreground={colors.white} background={colors.lightBrandColor} />
-              <MaterialIcons.Button
-                name="drag-indicator"
+    <ScaleDecorator activeScale={1.04}>
+      <SwipeableItem
+        key={categoryId}
+        item={currCategory!}
+        overSwipe={20}
+        snapPointsLeft={[70]}
+        renderUnderlayLeft={() => (
+          <RemoveCategoryButton categoryId={categoryId} listId={currList!.id} />
+        )}
+      >
+        <View style={styles.container}>
+          <Pressable
+            onPress={toggleFolderOpenClose}
+            onLongPress={() => setIsEditing(true)}
+          >
+            <View style={styles.titleContainer}>
+              <AntDesign
+                name={open ? "folderopen" : "folder1"}
                 size={fonts.rowIconSize}
-                color={colors.white}
                 backgroundColor={colors.lightBrandColor}
-                onLongPress={drag}
+                color={colors.white}
+                iconStyle={{ padding: 0, margin: 0 }}
               />
+              {isEditing ? (
+                <TextInput
+                  style={[styles.title, styles.titleInput]}
+                  value={editedTitle}
+                  onSubmitEditing={onSubmit}
+                  onChangeText={(text) => setEditedTitle(text)}
+                  autoFocus={true}
+                />
+              ) : (
+                <Text style={styles.title}>{title}</Text>
+              )}
+              {/* TODO: encapsulate drag-indicator in a custom button */}
+              <View style={styles.buttonContainer}>
+                <AddProductButton categoryId={categoryId} foreground={colors.white} background={colors.lightBrandColor} />
+                <MaterialIcons.Button
+                  name="drag-indicator"
+                  size={fonts.rowIconSize}
+                  color={colors.white}
+                  backgroundColor={colors.lightBrandColor}
+                  onLongPress={drag}
+                />
+              </View>
             </View>
-          </View>
-        </Pressable>
-      {children}
-    </View>
+          </Pressable>
+          {children}
+        </View>
+      </SwipeableItem>
+    </ScaleDecorator>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
+    backgroundColor: colors.itemBackground,
   },
   titleContainer: {
     display: 'flex',

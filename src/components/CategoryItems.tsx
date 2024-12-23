@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
+import DraggableFlatList from 'react-native-draggable-flatlist';
 
 import { domainStore } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
@@ -17,15 +17,19 @@ const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: str
   const xAuthUser = domainStore.user?.email!;
   const currCategory = currList?.categories.find((category) => category.id === categoryId);
 
+  const onRemoveItem = (itemId: string) => {
+    return () => {
+      currCategory?.removeItem({ itemId, xAuthUser });
+    }
+  }
+
   useEffect(() => {
     currCategory?.loadCategoryItems({ xAuthUser });
   }, [xAuthUser]);
 
   const renderItem = ({ item, drag }: { item: ItemType, drag: () => void }) => {
     return (
-      <ScaleDecorator activeScale={1.04}>
-        <Item item={item} drag={drag}/>
-      </ScaleDecorator>
+      <Item item={item} onRemoveItem={onRemoveItem(item.id)} drag={drag} indent={30}/>
     );
   }
 

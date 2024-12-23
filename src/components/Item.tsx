@@ -1,33 +1,44 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, TextInput } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { ScaleDecorator } from 'react-native-draggable-flatlist';
+import SwipeableItem from "react-native-swipeable-item";
 import { ItemType } from '@/stores/models/Category';
 import CheckBoxButton from './Buttons/CheckBoxButton';
+import RemoveItemButton from './Buttons/RemoveItemButton';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
-import logging from '@/config/logging';
 
-
-const Item = ({ item, drag }: { item: ItemType, drag: () => void }) => {
-
+const Item = ({ item, onRemoveItem, drag, indent }: { item: ItemType, onRemoveItem: () => void, drag: () => void, indent: number }) => {
   return (
-    <View style={styles.itemLine}>
-      <View style={styles.itemContainer}>
-        <CheckBoxButton />
-        <Text style={styles.item}>{item.name}</Text>
-      </View>
-      <MaterialIcons.Button
-        name="drag-indicator"
-        size={fonts.rowIconSize}
-        backgroundColor={colors.itemBackground}
-        color={colors.brandColor}
-        iconStyle={{ padding: 0, margin: 0 }}
-        style={{ alignSelf: 'flex-end' }}
-        onLongPress={drag}
-      />
-    </View>
+    <ScaleDecorator activeScale={1.04}>
+      <SwipeableItem
+        key={item.id}
+        item={item}
+        overSwipe={20}
+        snapPointsLeft={[70]}
+        renderUnderlayLeft={() => (
+          <RemoveItemButton onPress={onRemoveItem} />
+        )}
+      >
+        <View style={[styles.itemLine, { paddingLeft: indent }]}>
+          <View style={styles.itemContainer}>
+          <CheckBoxButton />
+          <Text style={styles.item}>{item.name}</Text>
+        </View>
+        <MaterialIcons.Button
+          name="drag-indicator"
+          size={fonts.rowIconSize}
+          backgroundColor={colors.itemBackground}
+          color={colors.brandColor}
+          iconStyle={{ padding: 0, margin: 0 }}
+          style={{ alignSelf: 'flex-end' }}
+            onLongPress={drag}
+          />
+        </View>
+      </SwipeableItem>
+    </ScaleDecorator>
   );
 };
 
@@ -36,13 +47,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: colors.itemBackground,
-    marginTop: 2,
+    borderWidth: 1,
+    borderColor: 'white',
   },
   itemContainer: {
     flexDirection: 'row',
     alignContent: 'flex-start',
     alignItems: 'center',
-    paddingLeft: 30,
   },
   item: {
     color: colors.brandColor,
