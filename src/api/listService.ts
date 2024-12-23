@@ -1,4 +1,4 @@
-import { ListsApi, Configuration, PickCategoryIdOrName_, List, Item } from 'pantryPlusApiClient';
+import { ListsApi, Configuration, Category, List, Item } from 'pantryPlusApiClient';
 import cognitoConfig from '@/config/cognito';
 import logging from '@/config/logging';
 
@@ -19,7 +19,7 @@ const createList = async ({ list, xAuthUser }: { list: List, xAuthUser: string }
     }
 }
 
-const getListCategories = async ({ listId, xAuthUser }: { listId: string, xAuthUser: string }): Promise<Array<PickCategoryIdOrName_>> => {
+const getListCategories = async ({ listId, xAuthUser }: { listId: string, xAuthUser: string }): Promise<Array<Category>> => {
     try {
         const categoriesData = await listsApi.getCategories(xAuthUser, listId);
         logging.debug ? console.log(`getListCategories response: ${JSON.stringify(categoriesData)}`) : null;
@@ -30,7 +30,7 @@ const getListCategories = async ({ listId, xAuthUser }: { listId: string, xAuthU
     }
 }
 
-const addListCategory = async ({ listId, category, xAuthUser }: { listId: string, category: PickCategoryIdOrName_, xAuthUser: string }) => {
+const addListCategory = async ({ listId, category, xAuthUser }: { listId: string, category: Category, xAuthUser: string }) => {
     try {
         const { id, name, ordinal } = category;
         await listsApi.createCategory({ id, name, listId, ordinal }, xAuthUser, listId);
@@ -57,10 +57,22 @@ const associateListItem= async ({ listId, itemId, xAuthUser }: { listId: string,
     }
 }
 
+const removeListItem = async ({ listId, itemId, xAuthUser }: { listId?: string, itemId?: string, xAuthUser: string }) => {
+    try {
+        if (!listId || !itemId) {
+            throw new Error('List ID and item ID are required');
+        }
+        await listsApi.removeItem(xAuthUser, listId, itemId);
+    } catch (error) {
+        console.error(`Failed to removeListItem in DB: ${error}`);
+    }
+}
+
 export default {
     createList,
     getListCategories,
     addListCategory,
     getListItems,
     associateListItem,
+    removeListItem,
 };

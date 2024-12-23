@@ -33,6 +33,17 @@ export const CategoryModel = t.model('CategoryModel', {
             console.error(`Error adding item to category: ${error}`);
         }
     }),
+    removeItem: flow(function*({ itemId, xAuthUser }: { itemId: string, xAuthUser: string }): Generator<any, any, any> {
+        try {
+            yield api.category.removeCategoryItem({ categoryId: self.id, itemId, xAuthUser });
+            const index = self.items?.findIndex(i => i.id === itemId);
+            if (index !== undefined && index !== -1) {
+                self.items!.splice(index, 1);
+            }
+        } catch (error) {
+            console.error(`Error removing item from category: ${error}`);
+        }
+    }),
     loadCategoryItems: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
         try {
             const itemsData = yield api.category.loadCategoryItems({ categoryId: self.id, xAuthUser });

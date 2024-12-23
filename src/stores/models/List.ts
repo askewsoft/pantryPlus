@@ -29,8 +29,13 @@ export const ListModel = t.model('ListModel', {
         const newCategoryId = randomUUID();
         const ordinal = self.categories.length;
         const newCategory = CategoryModel.create({ id: newCategoryId, name, ordinal });
-        yield api.list.addListCategory({ listId: self.id, category: {name, id: newCategoryId}, xAuthUser });
-        self.categories.push(newCategory);
+        const listId = self.id;
+        try {
+            yield api.list.addListCategory({ listId, category: { id: newCategoryId, name, ordinal, listId }, xAuthUser });
+            self.categories.push(newCategory);
+        } catch (error) {
+            console.error(`Error adding category to list: ${error}`);
+        }
     }),
     removeCategory(categoryId: string): void {
         const index = self.categories?.findIndex(c => c.id === categoryId);
@@ -57,7 +62,6 @@ export const ListModel = t.model('ListModel', {
         }
 
         // Now replace categories array
-        // self.categories.clear();
         self.categories.replace(categories);
     }),
     loadListItems: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
@@ -73,13 +77,32 @@ export const ListModel = t.model('ListModel', {
     addItem: flow(function*({ item, xAuthUser }: { item: Pick<ItemType, 'name' | 'upc'>, xAuthUser: string }): Generator<any, any, any> {
         const newItemId = randomUUID();
         const newItem = ItemModel.create({ id: newItemId, name: item.name, upc: item.upc, ordinal: self.items.length });
-        yield newItem.saveItem(xAuthUser);
-        yield api.list.associateListItem({ listId: self.id, itemId: newItemId, xAuthUser });
-        self.items.push(newItem);
+        try {
+            yield newItem.saveItem(xAuthUser);
+            yield api.list.associateListItem({ listId: self.id, itemId: newItemId, xAuthUser });
+            self.items.push(newItem);
+        } catch (error) {
+            console.error(`Error adding item to list: ${error}`);
+        }
+    }),
+    removeItem: flow(function*({ itemId, xAuthUser }: { itemId: string, xAuthUser: string }): Generator<any, any, any> {
+        try {
+            yield api.list.removeListItem({ listId: self.id, itemId, xAuthUser });
+            const index = self.items?.findIndex(i => i.id === itemId);
+            if (index !== undefined && index !== -1) {
+                self.items!.splice(index, 1);
+            }
+        } catch (error) {
+            console.error(`Error removing item from list: ${error}`);
+        }
     }),
     associateItemToList: flow(function*({ item, xAuthUser }: { item: Item, xAuthUser: string }): Generator<any, any, any> {
-        yield api.list.associateListItem({ listId: self.id, itemId: item.id, xAuthUser });
-        self.items.push(item);
+        try {
+            yield api.list.associateListItem({ listId: self.id, itemId: item.id, xAuthUser });
+            self.items.push(item);
+        } catch (error) {
+            console.error(`Error associating item to list: ${error}`);
+        }
     }),
     updateCategoryOrder: flow(function* ({ data, xAuthUser }: { data: CategoryType[], xAuthUser: string }): Generator<any, any, any> {
         data.forEach((category, index) => {

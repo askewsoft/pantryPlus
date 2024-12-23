@@ -37,9 +37,20 @@ const loadCategoryItems = async ({ categoryId, xAuthUser }: { categoryId: string
     }
     return returnItems;
 }
+const removeCategoryItem = async ({ categoryId, itemId, xAuthUser }: { categoryId?: string, itemId?: string, xAuthUser: string }): Promise<void> => {
+    try {
+        if (!categoryId || !itemId) {
+            throw new Error('Category ID and item ID are required');
+        }
+        await categoriesApi.removeItemFromCategory(xAuthUser, categoryId, itemId);
+    } catch (error) {
+        console.error(`Error removing category item: ${error}`);
+    }
+}
 
 export default {
     updateCategory,
     associateCategoryItem,
     loadCategoryItems,
+    removeCategoryItem,
 };
