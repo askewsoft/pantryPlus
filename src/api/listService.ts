@@ -12,12 +12,21 @@ const createList = async ({ list, xAuthUser }: { list: List, xAuthUser: string }
     const { id, name, ownerId }  = list;
     logging.debug ? console.log(`createList: ${JSON.stringify({ id, name, ownerId, xAuthUser})}`) : null;
     try {
-        const response = await listsApi.createList({ id, name, ownerId }, xAuthUser);
+        const response = await listsApi.createList({ id, name, ownerId, ordinal: 0 }, xAuthUser);
         logging.debug ? console.log(`createList response: ${JSON.stringify(response)}`) : null;
     } catch (error) {
         console.error(`Failed to createList in DB: ${error}`);
     }
 }
+
+const updateList = async ({ list, xAuthUser }: { list: Omit<List, "ownerId">, xAuthUser: string }) => {
+    const { id, name, groupId = '', ordinal } = list;
+    try {
+        await listsApi.updateList({ name, groupId, ordinal }, xAuthUser, id );
+    } catch (error) {
+        console.error(`Failed to updateList in DB: ${error}`);
+    }
+} 
 
 const getListCategories = async ({ listId, xAuthUser }: { listId: string, xAuthUser: string }): Promise<Array<Category>> => {
     try {
@@ -75,4 +84,5 @@ export default {
     getListItems,
     associateListItem,
     removeListItem,
+    updateList,
 };

@@ -49,12 +49,12 @@ const DomainStoreModel = t
             const newList: ListType = ListModel.create({
                 id: newListId,
                 name: name,
-                ordinal: ordinal,
+                ordinal,
                 userIsOwner: true,
                 groupId: undefined,
                 categories: [],
             });
-            yield api.list.createList({ list: {name, id: newListId, ownerId}, xAuthUser });
+            yield api.list.createList({ list: {name, id: newListId, ownerId, ordinal}, xAuthUser });
             logging.debug ? console.log(`addList: ${newList}`) : null;
             self.lists.push(newList);
         }),
@@ -71,6 +71,7 @@ const DomainStoreModel = t
             self.lists.spliceWithArray(0, self.lists.length, lists);
         }),
         updateListOrder: ({ data, from, to }: { data: ListType[], from: number, to: number }) => {
+            const xAuthUser = self.user?.email!;
             data.forEach((list, index) => {
                 if (list.ordinal !== index) {
                     /* each list in data is a copy of the ListModel's properties only
@@ -78,7 +79,7 @@ const DomainStoreModel = t
                     * We must find the ListModel instance to execute the self-mutating action
                     */
                     const updatedList = self.lists.find(l => l.id === list.id);
-                    updatedList!.setOrdinal(index);
+                    updatedList!.setOrdinal(index, xAuthUser);
                 }
             });
         }

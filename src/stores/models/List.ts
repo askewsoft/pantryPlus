@@ -8,10 +8,11 @@ import { ItemModel } from './Item';
 import logging from '@/config/logging';
 
 import { randomUUID } from 'expo-crypto';
-import { Category, Item } from 'pantryPlusApiClient';
+import { Category, Item, List } from 'pantryPlusApiClient';
 
 export type ItemType = Instance<typeof ItemModel>;
 export type CategoryType = Instance<typeof CategoryModel>;
+export type ListType = Instance<typeof ListModel>;
 
 export const ListModel = t.model('ListModel', {
     id: t.identifier,
@@ -22,9 +23,14 @@ export const ListModel = t.model('ListModel', {
     categories: t.array(CategoryModel),
     items: t.array(ItemModel),
 }).actions(self => ({
-    updateListName(name: string): void {
-        self.name = name;
-    },
+    updateList: flow(function*({ name, ownerId, groupId, ordinal, xAuthUser }: { name: string, ownerId: string, groupId: string, ordinal: number, xAuthUser: string }): Generator<any, any, any> {
+        try {
+            yield api.list.updateList({ list: { id: self.id, name, ownerId, groupId, ordinal }, xAuthUser });
+            self.name = name;
+        } catch (error) {
+            console.error(`Error updating list: ${error}`);
+        }
+    }),
     addCategory: flow(function*({ name, xAuthUser }: { name: string, xAuthUser: string }): Generator<any, any, any> {
         const newCategoryId = randomUUID();
         const ordinal = self.categories.length;
@@ -48,6 +54,7 @@ export const ListModel = t.model('ListModel', {
         self.groupId = groupId;
     },
     loadCategories: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
+        logging.debug ? console.log(`loading categories for ${self.name} - ${self.id}`) : null;
         const categoriesData = yield api.list.getListCategories({ listId: self.id, xAuthUser });
         const categories = categoriesData.map(
             (category: Category) => {
@@ -58,10 +65,12 @@ export const ListModel = t.model('ListModel', {
 
         // Load items for each category, before replacing categories array
         for (const category of categories) {
+            logging.debug ? console.log(`loading items for ${category.name} - ${category.id}`) : null;
             yield category.loadCategoryItems({ xAuthUser });
         }
 
         // Now replace categories array
+        self.categories.clear();
         self.categories.replace(categories);
     }),
     loadListItems: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
@@ -124,8 +133,13 @@ export const ListModel = t.model('ListModel', {
             }
         });
     },
-    setOrdinal(ordinal: number): void {
-        // TODO: update ordinal in backend
+    setOrdinal: flow(function* (ordinal: number, xAuthUser: string): Generator<any, any, any> {
+        try {
+            yield api.list.updateList({ list: { id: self.id, name: self.name, groupId: self.groupId, ordinal }, xAuthUser });
+            self.ordinal = ordinal;
+        } catch (error) {
+            console.error(`Error updating list: ${error}`);
+        }
         self.ordinal = ordinal;
-    },
+    })
 }));
