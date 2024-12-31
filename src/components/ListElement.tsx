@@ -1,4 +1,5 @@
-import { Text, View, StyleSheet, Pressable } from 'react-native';
+import { useState } from 'react';
+import { Text, View, StyleSheet, Pressable, TextInput } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -10,6 +11,17 @@ import colors from '@/consts/colors';
 const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navigation: any}) => {
   const list = domainStore.lists.find(list => list.id === id);
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(list!.name);
+
+  const onSubmit = async () => {
+    const { groupId = '' } = list!;
+    const xAuthUser = domainStore.user!.email;
+    console.log(`onSubmit - updating list ${JSON.stringify({ name: editedTitle, groupId, xAuthUser })}`);
+    await list?.updateList({ name: editedTitle, groupId, xAuthUser });
+    setIsEditing(false)
+  }
+
   const handlePress = ({ id }: { id: string }) => {
     uiStore.setSelectedShoppingList(id);
     navigation.navigate('ShoppingList');
@@ -17,9 +29,22 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navi
 
   return (
     <View style={styles.container}>
-      <Pressable style={styles.titleContainer} onPress={() => handlePress({ id })}>
+      <Pressable style={styles.titleContainer}
+        onPress={() => handlePress({ id })}
+        onLongPress={() => setIsEditing(true)}
+      >
         <MaterialIcons name="format-list-bulleted" size={fonts.rowIconSize} color={colors.brandColor} />
-        <Text style={styles.title}>{list?.name}</Text>
+        {isEditing ? (
+          <TextInput
+            style={[styles.title, styles.titleInput]}
+            value={editedTitle}
+            onSubmitEditing={onSubmit}
+            onChangeText={(text: string) => setEditedTitle(text)}
+            autoFocus={true}
+          />
+        ) : (
+          <Text style={styles.title}>{list?.name}</Text>
+        )}
       </Pressable>
       <MaterialIcons.Button
         name="drag-indicator"
@@ -46,13 +71,19 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 5,
+    paddingLeft: 5,
   },
   title: {
     fontSize: fonts.rowTextSize,
     fontWeight: 'bold',
     color: colors.brandColor,
-    marginLeft: 5,
+    paddingVertical: 5,
+    marginLeft: 10,
+  },
+  titleInput: {
+    backgroundColor: colors.lightBrandColor,
+    paddingRight: 5,
+    color: colors.white,
   }
 });
 

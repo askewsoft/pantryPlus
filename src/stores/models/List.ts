@@ -23,10 +23,13 @@ export const ListModel = t.model('ListModel', {
     categories: t.array(CategoryModel),
     items: t.array(ItemModel),
 }).actions(self => ({
-    updateList: flow(function*({ name, ownerId, groupId, ordinal, xAuthUser }: { name: string, ownerId: string, groupId: string, ordinal: number, xAuthUser: string }): Generator<any, any, any> {
+    updateList: flow(function*({ name, groupId, xAuthUser }: { name: string, groupId: string, xAuthUser: string }): Generator<any, any, any> {
         try {
-            yield api.list.updateList({ list: { id: self.id, name, ownerId, groupId, ordinal }, xAuthUser });
+            console.log(`updating list ${name}`);
+            yield api.list.updateList({ list: { id: self.id, name, groupId, ordinal: self.ordinal }, xAuthUser });
             self.name = name;
+            self.groupId = groupId;
+            console.log(`updated list ${name}`);
         } catch (error) {
             console.error(`Error updating list: ${error}`);
         }
@@ -45,7 +48,7 @@ export const ListModel = t.model('ListModel', {
     }),
     removeCategory(categoryId: string): void {
         const index = self.categories?.findIndex(c => c.id === categoryId);
-        if (index !== undefined && index !== -1) {
+        if (index !== undefined && index >= 0) {
             self.categories!.splice(index, 1);
         }
     },
@@ -59,7 +62,7 @@ export const ListModel = t.model('ListModel', {
         const categories = categoriesData.map(
             (category: Category) => {
                 const { id, name, ordinal } = category;
-                return CategoryModel.create({ id, name, ordinal: ordinal ?? -1 });
+                return CategoryModel.create({ id, name, ordinal: ordinal ?? 0 });
             }
         );
 
@@ -98,7 +101,7 @@ export const ListModel = t.model('ListModel', {
         try {
             yield api.list.removeListItem({ listId: self.id, itemId, xAuthUser });
             const index = self.items?.findIndex(i => i.id === itemId);
-            if (index !== undefined && index !== -1) {
+            if (index !== undefined && index >= 0) {
                 self.items!.splice(index, 1);
             }
         } catch (error) {

@@ -15,8 +15,9 @@ export const CategoryModel = t.model('CategoryModel', {
     items: t.array(ItemModel),
 }).actions(self => ({
     setName: flow(function*(name: string, xAuthUser: string): Generator<any, any, any> {
+        const { id, ordinal = 0 } = self;
         try {
-            yield api.category.updateCategory({ categoryId: self.id, name, ordinal: self.ordinal, xAuthUser });
+            yield api.category.updateCategory({ categoryId: id, name, ordinal, xAuthUser });
             self.name = name;
         } catch (error) {
             console.error(`Error setting name: ${error}`);
@@ -37,7 +38,7 @@ export const CategoryModel = t.model('CategoryModel', {
         try {
             yield api.category.removeCategoryItem({ categoryId: self.id, itemId, xAuthUser });
             const index = self.items?.findIndex(i => i.id === itemId);
-            if (index !== undefined && index !== -1) {
+            if (index !== undefined && index >= 0) {
                 self.items!.splice(index, 1);
             }
         } catch (error) {
