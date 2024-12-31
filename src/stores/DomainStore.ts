@@ -62,10 +62,9 @@ const DomainStoreModel = t
             const listsData = yield api.shopper.getUserLists({ user: self.user! });
             const lists = listsData.map(
                 (list: List, index: number) => {
-                    const { id, name, ownerId, groupId } = list;
+                    const { id, name, ownerId, groupId, ordinal } = list;
                     const userIsOwner = ownerId === self.user?.id;
-                    // TODO: get ordinal from backend
-                    return ListModel.create({ id, name, userIsOwner, groupId, ordinal: index });
+                    return ListModel.create({ id, name, userIsOwner, groupId, ordinal });
                 }
             );
             self.lists.spliceWithArray(0, self.lists.length, lists);
