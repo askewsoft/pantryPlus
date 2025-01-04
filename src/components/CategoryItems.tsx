@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import DraggableFlatList from 'react-native-draggable-flatlist';
+import { NestableDraggableFlatList } from 'react-native-draggable-flatlist';
 
 import { domainStore } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
@@ -34,12 +34,13 @@ const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: str
   }
 
   return (
-    <DraggableFlatList
+    <NestableDraggableFlatList
       contentContainerStyle={[styles.draggableFlatListStyle, { display: open ? 'flex' : 'none' }]}
       data={toJS(currCategory!.items).sort(sortByOrdinal)}
       onDragEnd={currCategory!.updateItemOrder}
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
+      dragItemOverflow={true}
     />
   );
 };

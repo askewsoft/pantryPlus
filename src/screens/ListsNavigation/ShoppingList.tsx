@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import DraggableFlatList, { DragEndParams } from 'react-native-draggable-flatlist';
+import { DragEndParams } from 'react-native-draggable-flatlist';
+import { NestableScrollContainer, NestableDraggableFlatList } from "react-native-draggable-flatlist";
+
 
 import { StackPropsShoppingList } from '@/types/ListNavTypes';
 import CategoryFolder from '@/components/CategoryFolder';
@@ -53,10 +55,10 @@ const ShoppingList = ({ route, navigation }: StackPropsShoppingList) => {
   }, [currList?.id, xAuthUser]);
 
   return (
-    <View style={styles.container}>
+    <NestableScrollContainer style={styles.container}>
       <ItemInput list={currList!} />
       <ListItems listId={listId!} />
-      <DraggableFlatList
+      <NestableDraggableFlatList
         contentContainerStyle={styles.draggableFlatListStyle}
         data={toJS(currList!.categories).sort(sortByOrdinal)}
         renderItem={renderCategoryElement()}
@@ -64,7 +66,7 @@ const ShoppingList = ({ route, navigation }: StackPropsShoppingList) => {
         onDragEnd={onDragEnd}
       />
       <AddCategoryModal />
-    </View>
+    </NestableScrollContainer>
   );
 }
 

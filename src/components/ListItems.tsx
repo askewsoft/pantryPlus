@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import DraggableFlatList from 'react-native-draggable-flatlist';
+import { NestableDraggableFlatList } from 'react-native-draggable-flatlist';
 
 import { domainStore } from '@/stores/DomainStore';
 import Item from './Item';
@@ -31,7 +31,7 @@ const ListItems = ({ listId }: { listId: string }) => {
     currList?.loadListItems ({ xAuthUser });
   }, [xAuthUser]);
 
-  return <DraggableFlatList
+  return <NestableDraggableFlatList
     contentContainerStyle={styles.draggableFlatListStyle}
     data={toJS(currList!.items).sort(sortByOrdinal)}
     keyExtractor={(item) => item.id}
