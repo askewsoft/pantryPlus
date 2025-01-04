@@ -25,7 +25,6 @@ const onBackPress = () => {
 }
 */
 
-
 const ListsNavigation = () => {
   const onPressAddList = () => {
     uiStore.setAddListModalVisible(true);
