@@ -1,8 +1,9 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { observer } from 'mobx-react-lite';
-import colors from '@/consts/colors';
-import fonts from '@/consts/fonts';
 import { uiStore } from '@/stores/UIStore';
+
+import fonts from '@/consts/fonts';
+import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 
 type AddProductButtonProps = {
   categoryId?: string;
@@ -28,6 +29,8 @@ const AddProductButton = ({categoryId, listId, foreground, background}: AddProdu
       size={fonts.rowIconSize}
       color={foreground}
       backgroundColor={background}
+      iconStyle={iconStyleStyle}
+      style={iconStyle}
       onPress={onPress}
     />
   )

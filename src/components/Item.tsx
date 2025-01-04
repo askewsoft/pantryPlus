@@ -9,6 +9,7 @@ import RemoveItemButton from './Buttons/RemoveItemButton';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
+import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 
 const Item = ({ item, onRemoveItem, drag, indent }: { item: ItemType, onRemoveItem: () => void, drag: () => void, indent: number }) => {
   return (
@@ -32,9 +33,9 @@ const Item = ({ item, onRemoveItem, drag, indent }: { item: ItemType, onRemoveIt
           size={fonts.rowIconSize}
           backgroundColor={colors.itemBackground}
           color={colors.brandColor}
-          iconStyle={{ padding: 0, margin: 0 }}
-          style={{ alignSelf: 'flex-end' }}
-            onLongPress={drag}
+          iconStyle={iconStyleStyle}
+          style={iconStyle}
+          onLongPress={drag}
           />
         </View>
       </SwipeableItem>

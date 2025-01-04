@@ -1,7 +1,4 @@
-import { View } from 'react-native';
-import { StyleSheet } from 'react-native';
 import { observer } from 'mobx-react-lite';
-// import { useNavigation } from '@react-navigation/native';
 
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import colors from '@/consts/colors';

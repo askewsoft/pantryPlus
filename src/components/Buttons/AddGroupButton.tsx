@@ -1,5 +1,6 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { observer } from 'mobx-react-lite';
+import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 
 const AddGroupButton = () => {
   return (
@@ -9,7 +10,8 @@ const AddGroupButton = () => {
       color="white"
       backgroundColor="purple"
       borderRadius={0}
-      iconStyle={{ paddingRight: 0, paddingLeft: 0, paddingBottom: 0, paddingTop: 0 }}
+      iconStyle={iconStyleStyle}
+      style={iconStyle}
       onPress={() => {}}
     />
   )

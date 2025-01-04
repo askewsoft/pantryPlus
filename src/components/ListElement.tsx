@@ -7,6 +7,7 @@ import { domainStore } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
 import fonts from '@/consts/fonts';
 import colors from '@/consts/colors';
+import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 
 const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navigation: any}) => {
   const list = domainStore.lists.find(list => list.id === id);
@@ -25,6 +26,10 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navi
   const handlePress = ({ id }: { id: string }) => {
     uiStore.setSelectedShoppingList(id);
     navigation.navigate('ShoppingList');
+  }
+
+  const openShareModal = () => {
+    console.log('openShareModal');
   }
 
   return (
@@ -46,14 +51,26 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navi
           <Text style={styles.title}>{list?.name}</Text>
         )}
       </Pressable>
-      <MaterialIcons.Button
-        name="drag-indicator"
-        size={fonts.rowIconSize}
-        backgroundColor={colors.itemBackground}
-        color={colors.brandColor}
-        iconStyle={{ padding: 0, margin: 0 }}
-        onLongPress={drag}
-      />
+      <View style={styles.buttonContainer}>
+        <MaterialIcons.Button
+          name="ios-share"
+          size={fonts.rowIconSize}
+          backgroundColor={colors.itemBackground}
+          color={colors.brandColor}
+          iconStyle={iconStyleStyle}
+          style={iconStyle}
+          onPress={openShareModal}
+        />
+        <MaterialIcons.Button
+          name="drag-indicator"
+          size={fonts.rowIconSize}
+          backgroundColor={colors.itemBackground}
+          color={colors.brandColor}
+          iconStyle={iconStyleStyle}
+          style={iconStyle}
+          onLongPress={drag}
+        />
+      </View>
     </View>
   );
 }
@@ -84,6 +101,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightBrandColor,
     paddingRight: 5,
     color: colors.white,
+  },
+  buttonContainer: {
+    display: 'flex',
+    flexDirection: 'row',
   }
 });
 

@@ -1,6 +1,7 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { observer } from 'mobx-react-lite';
 import colors from '@/consts/colors';
+import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 
 const AddListButton = ({onPress, dark}: {onPress: () => void, dark?: boolean}) => {
   return (
@@ -10,7 +11,8 @@ const AddListButton = ({onPress, dark}: {onPress: () => void, dark?: boolean}) =
       color={dark ? colors.white : colors.brandColor}
       backgroundColor={dark ? colors.brandColor : colors.detailsBackground}
       borderRadius={0}
-      iconStyle={{ paddingRight: 0, paddingLeft: 0, paddingBottom: 0, paddingTop: 0 }}
+      iconStyle={iconStyleStyle}
+      style={iconStyle}
       onPress={onPress}
     />
   )

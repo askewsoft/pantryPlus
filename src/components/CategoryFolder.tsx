@@ -8,6 +8,7 @@ import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
+import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 
 import { uiStore } from '@/stores/UIStore';
 import { domainStore } from '@/stores/DomainStore';
@@ -86,6 +87,8 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
                   color={colors.white}
                   backgroundColor={colors.lightBrandColor}
                   onLongPress={drag}
+                  iconStyle={iconStyleStyle}
+                  style={iconStyle}
                 />
               </View>
             </View>
