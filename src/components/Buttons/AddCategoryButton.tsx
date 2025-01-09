@@ -1,12 +1,11 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { observer } from 'mobx-react-lite';
-import colors from '@/consts/colors';
 import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 
 const AddCategoryButton = ({onPress, foreground, background}: {onPress: () => void, foreground: string, background: string}) => {
   return (
     <MaterialIcons.Button
-      name="playlist-add"
+      name="create-new-folder"
       size={24}
       color={foreground}
       backgroundColor={background}

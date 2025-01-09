@@ -18,11 +18,12 @@ export const ListModel = t.model('ListModel', {
     id: t.identifier,
     name: t.string,
     ordinal: t.number, // zero-based index
-    userIsOwner: t.boolean,
+    ownerId: t.string,
     groupId: t.maybe(t.string),
     categories: t.array(CategoryModel),
     items: t.array(ItemModel),
-}).actions(self => ({
+})
+.actions(self => ({
     updateList: flow(function*({ name, groupId, xAuthUser }: { name: string, groupId: string, xAuthUser: string }): Generator<any, any, any> {
         try {
             console.log(`updating list ${name}`);

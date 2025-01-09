@@ -50,12 +50,12 @@ const DomainStoreModel = t
                 id: newListId,
                 name: name,
                 ordinal,
-                userIsOwner: true,
+                ownerId,
                 groupId: undefined,
                 categories: [],
             });
-            yield api.list.createList({ list: {name, id: newListId, ownerId, ordinal}, xAuthUser });
-            logging.debug ? console.log(`addList: ${newList}`) : null;
+            yield api.list.createList({ list: {name, id: newListId, ownerId, ordinal, groupId: undefined}, xAuthUser });
+            logging.debug ? console.log(`addList: ${JSON.stringify(newList)}`) : null;
             self.lists.push(newList);
         }),
         loadLists: flow(function* () {
@@ -63,11 +63,47 @@ const DomainStoreModel = t
             const lists = listsData.map(
                 (list: List, index: number) => {
                     const { id, name, ownerId, groupId, ordinal } = list;
-                    const userIsOwner = ownerId === self.user?.id;
-                    return ListModel.create({ id, name, userIsOwner, groupId, ordinal });
+                    return ListModel.create({ id, name, ownerId, groupId, ordinal });
                 }
             );
             self.lists.spliceWithArray(0, self.lists.length, lists);
+        }),
+        addGroup: flow(function* (name: string) {
+            const xAuthUser = self.user?.email!;
+            const ownerId = self.user?.id!;
+            const newGroupId = randomUUID();
+            const newGroup: GroupType = GroupModel.create({ id: newGroupId, name, ownerId, shoppers: [] });
+            yield api.group.createGroup({ name, newGroupId, xAuthUser });
+            self.groups.push(newGroup);
+        }),
+        loadGroups: flow(function* () {
+            const groupsData = yield api.shopper.getUserGroups({ user: self.user! });
+            logging.debug ? console.log(`loadGroups - num groups: ${groupsData.length}`) : null;
+            const groups = groupsData.map(
+                (group: GroupType) => {
+                    const { id, name, ownerId, shoppers } = group;
+                    logging.debug ? console.log(`loadGroups - group: ${JSON.stringify(group)}`) : null;
+                    return GroupModel.create({ id, name, ownerId, shoppers: shoppers || [] });
+                }
+            );
+
+            // Load group members
+            for (const group of groups) {
+                logging.debug ? console.log(`loadGroupMembers - group ID: ${group.id}`) : null;
+                let members: ShopperType[] = [];
+                try { 
+                    members = yield group.loadGroupMembers({ xAuthUser: self.user?.email! });
+                    logging.debug ? console.log(`loadGroups - group members: ${JSON.stringify(members)}`) : null;
+                    group.shoppers.clear();
+                    group.shoppers.replace(members);
+                } catch (error) {
+                    console.error('Unable to load group members:', error);
+                }
+            }
+
+            logging.debug ? console.log(`loadGroups - groups: ${JSON.stringify(groups)}`) : null;
+
+            self.groups.replace(groups);
         }),
         updateListOrder: ({ data, from, to }: { data: ListType[], from: number, to: number }) => {
             const xAuthUser = self.user?.email!;

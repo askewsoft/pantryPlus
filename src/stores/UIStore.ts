@@ -16,6 +16,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
     selectedShoppingList: t.maybeNull(t.string),
     addListModalVisible: false,
     addCategoryModalVisible: false,
+    addGroupModalVisible: false,
     openCategories: t.map(OpenCategory),
     addItemToCategoryID: t.optional(t.string, ''),
     addItemToListID: t.optional(t.string, ''),
@@ -42,6 +43,9 @@ export const UIStoreModel = t.model('UIStoreModel', {
     setAddCategoryModalVisible(addCategoryModalVisible: boolean) {
         self.addCategoryModalVisible = addCategoryModalVisible;
     },
+    setAddGroupModalVisible(addGroupModalVisible: boolean) {
+        self.addGroupModalVisible = addGroupModalVisible;
+    },
     setOpenCategory(categoryId: string, open: boolean) {
         self.openCategories.put({ id: categoryId, open });
     },
@@ -62,6 +66,7 @@ export const uiStore = UIStoreModel.create({
     addListModalVisible: false,
     selectedShoppingList: null,
     addCategoryModalVisible: false,
+    addGroupModalVisible: false,
     openCategories: {}
 });
 
@@ -69,7 +74,7 @@ export const uiStore = UIStoreModel.create({
 persist('pantryPlusUI', uiStore, {
     storage: AsyncStorage,
     jsonify: true,
-    blacklist: ['addItemToCategoryID', 'addItemToListID']
+    blacklist: ['addItemToCategoryID', 'addItemToListID', 'addGroupModalVisible']
 });
 
 export const UIStoreContext = createContext<UIStoreType | null>(null);
