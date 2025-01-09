@@ -2,7 +2,8 @@ import {
     ShoppersApi,
     Shopper,
     Configuration,
-    List
+    List,
+    PickGroupIdOrNameOrOwnerId_
 } from 'pantryPlusApiClient';
 
 import cognitoConfig from '@/config/cognito';
@@ -21,7 +22,7 @@ const registerUser = async () => {
         userAttributes = await fetchUserAttributes();
     } catch(error) {
         console.error('Unable to fetch user attributes:', error);
-        // throw error;
+        return;
     }
 
     authenticatedUser = {
@@ -35,7 +36,7 @@ const registerUser = async () => {
         return authenticatedUser;
     } catch(error) {
         console.error('Unable to create shopper:', error);
-        // throw error;
+        return;
     }
 };
 
@@ -47,11 +48,24 @@ const getUserLists = async ({ user }: { user: Shopper }): Promise<Array<List>> =
         return listsData.data;
     } catch (error) {
         console.error('Unable to get user lists:', error);
-        // throw error;
+        return [];
+    }
+};
+
+const getUserGroups = async ({ user }: { user: Shopper }): Promise<Array<PickGroupIdOrNameOrOwnerId_>> => {
+    const xAuthUser = user.email!;
+    const shopperId = user.id!;
+    try {
+        const groupsData = await shopperApi.getGroups(xAuthUser, shopperId);
+        return groupsData.data;
+    } catch (error) {
+        console.error('Unable to get user groups:', error);
+        return [];
     }
 };
 
 export default {
     registerUser,
     getUserLists,
+    getUserGroups
 };
