@@ -8,6 +8,7 @@ const UserContext = ({children}: {children: React.ReactNode}) => {
     try {
         domainStore.initUser().then(() => {
             domainStore.loadLists();
+            domainStore.loadGroups();
         });
     } catch (error) {
         console.error('Unable to initialize user:', error);
