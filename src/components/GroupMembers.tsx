@@ -1,11 +1,13 @@
 import { useEffect } from 'react';
-import { StyleSheet, FlatList } from 'react-native';
+import { StyleSheet, FlatList, Text } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
+import { getType, isStateTreeNode } from 'mobx-state-tree';
 
-import { domainStore, ShopperType } from '@/stores/DomainStore';
+import { domainStore, InviteeType, ShopperType, MemberType } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
 import Shopper from '@/components/Shopper';
+import Invitee from '@/components/Invitee';
 import colors from '@/consts/colors';
 
 const GroupMembers = ({ groupId }: { groupId: string }) => {
@@ -19,21 +21,43 @@ const GroupMembers = ({ groupId }: { groupId: string }) => {
   }
 
   useEffect(() => {
-    // currGroup?.loadShoppers({ xAuthUser });
-  }, [xAuthUser]);
+    currGroup?.loadGroupShoppers({ xAuthUser });
+    currGroup?.loadGroupInvitees({ xAuthUser });
+  }, [xAuthUser, groupId]);
 
-  const renderShopper = ({ item }: { item: ShopperType }) => {
+  const renderMember = ({ member }: { member: MemberType }) => {
+    console.log('Member:', JSON.stringify(member));
+    if (isStateTreeNode(member)) {
+      const nodeType = getType(member);
+      console.log('MST type:', JSON.stringify(nodeType)); // This will log the MST type name
+      if (nodeType.name === 'ShopperModel') {
+        return renderShopper(member);
+      } else {
+        return renderInvitee(member);
+      }
+    } else {
+      return <Text>Unknown member type</Text>;
+    }
+  }
+
+  const renderShopper = (member: ShopperType) => {
     return (
-      <Shopper shopper={item} onRemoveItem={onRemoveItem(item.id)} indent={30}/>
+      <Shopper shopper={member} onRemoveItem={onRemoveItem(member.id)} indent={30}/>
+    );
+  }
+
+  const renderInvitee = (member: InviteeType) => {
+    return (
+      <Invitee invitee={member} onRemoveItem={onRemoveItem(member.email)} indent={30} />
     );
   }
 
   return (
     <FlatList
       contentContainerStyle={[styles.draggableFlatListStyle]}
-      data={toJS(currGroup!.shoppers)}
-      renderItem={renderShopper}
-      keyExtractor={(item) => item.id}
+      data={toJS(currGroup!.members)}
+      renderItem={renderMember as any}
+      keyExtractor={(member) => member.email}
     />
   );
 };

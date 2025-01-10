@@ -9,6 +9,7 @@ import api from '@/api';
 import { UserModel } from './models/User';
 import { ListModel } from './models/List';
 import { ShopperModel } from './models/Shopper';
+import { InviteeModel } from './models/Invitee';
 import { GroupModel } from './models/Group';
 import { LocationModel } from './models/Location';
 
@@ -17,6 +18,8 @@ import logging from '@/config/logging';
 
 export type UserType = Instance<typeof UserModel>;
 export type ShopperType = Instance<typeof ShopperModel>;
+export type InviteeType = Instance<typeof InviteeModel>;
+export type MemberType = ShopperType | InviteeType;
 export type ListType = Instance<typeof ListModel>;
 export type GroupType = Instance<typeof GroupModel>;
 export type LocationType = Instance<typeof LocationModel>;
@@ -72,7 +75,7 @@ const DomainStoreModel = t
             const xAuthUser = self.user?.email!;
             const ownerId = self.user?.id!;
             const newGroupId = randomUUID();
-            const newGroup: GroupType = GroupModel.create({ id: newGroupId, name, ownerId, shoppers: [] });
+            const newGroup: GroupType = GroupModel.create({ id: newGroupId, name, ownerId });
             yield api.group.createGroup({ name, newGroupId, xAuthUser });
             self.groups.push(newGroup);
         }),
@@ -81,28 +84,30 @@ const DomainStoreModel = t
             logging.debug ? console.log(`loadGroups - num groups: ${groupsData.length}`) : null;
             const groups = groupsData.map(
                 (group: GroupType) => {
-                    const { id, name, ownerId, shoppers } = group;
+                    const { id, name, ownerId, shoppers, invitees } = group;
                     logging.debug ? console.log(`loadGroups - group: ${JSON.stringify(group)}`) : null;
-                    return GroupModel.create({ id, name, ownerId, shoppers: shoppers || [] });
+                    return GroupModel.create({ id, name, ownerId, shoppers: shoppers || [], invitees: invitees || [] });
                 }
             );
 
             // Load group members
             for (const group of groups) {
                 logging.debug ? console.log(`loadGroupMembers - group ID: ${group.id}`) : null;
-                let members: ShopperType[] = [];
+                // Load shoppers
                 try { 
-                    members = yield group.loadGroupMembers({ xAuthUser: self.user?.email! });
-                    logging.debug ? console.log(`loadGroups - group members: ${JSON.stringify(members)}`) : null;
-                    group.shoppers.clear();
-                    group.shoppers.replace(members);
+                    yield group.loadGroupShoppers({ xAuthUser: self.user?.email! });
                 } catch (error) {
-                    console.error('Unable to load group members:', error);
+                    console.error('Unable to load group shoppers:', error);
+                }
+
+                // Load invitees
+                try { 
+                    yield group.loadGroupInvitees({ xAuthUser: self.user?.email! });
+                } catch (error) {
+                    console.error('Unable to load group invitees:', error);
                 }
             }
-
             logging.debug ? console.log(`loadGroups - groups: ${JSON.stringify(groups)}`) : null;
-
             self.groups.replace(groups);
         }),
         updateListOrder: ({ data, from, to }: { data: ListType[], from: number, to: number }) => {

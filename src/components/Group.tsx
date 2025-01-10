@@ -23,14 +23,13 @@ const Group = ({groupId, title, children}: {groupId: string, title: string, chil
   const [isAddingShopper, setIsAddingShopper] = useState(false);
   const [newShopperEmail, setNewShopperEmail] = useState('');
 
-  useEffect(() => {
-    currGroup?.loadGroupMembers({ xAuthUser });
-  }, [xAuthUser]);
+  const onChangeShopperEmail = (text: string) => {
+    setNewShopperEmail(text.toLowerCase().trim());
+  }
 
   const onSubmit = async () => {
     if (editedTitle.trim().toLowerCase() !== title.trim().toLowerCase()) {
       await currGroup?.setName({ name: editedTitle, xAuthUser });
-
     }
     setIsEditing(false);
   }
@@ -41,9 +40,12 @@ const Group = ({groupId, title, children}: {groupId: string, title: string, chil
   }
 
   const onAddShopper = async () => {
-    // TODO: Add shopper to Group by either email or id
-    // currGroup?.addShopperById({ shopperId: newShopperEmail, xAuthUser });
-    // currGroup?.addShopperByEmail({ shopperEmail: newShopperEmail, xAuthUser });
+    await currGroup?.addShopperByEmail({ inviteeEmail: newShopperEmail, user: domainStore.user! });
+    setIsAddingShopper(false);
+    setNewShopperEmail('');
+  }
+
+  const onCancelAddShopper = () => {
     setIsAddingShopper(false);
     setNewShopperEmail('');
   }
@@ -61,7 +63,7 @@ const Group = ({groupId, title, children}: {groupId: string, title: string, chil
       <View style={styles.container}>
         <Pressable
           onLongPress={prepareToEditName}
-      >
+        >
         <View style={styles.titleContainer}>
           <MaterialIcons
             name="group"
@@ -81,9 +83,18 @@ const Group = ({groupId, title, children}: {groupId: string, title: string, chil
           ) : (
             <Text style={styles.title}>{title}</Text>
             )}
-            <AddShopperButton onPress={onAddShopper} foreground={colors.white} background={colors.lightBrandColor} />
+            <AddShopperButton onPress={() => setIsAddingShopper(true)} foreground={colors.white} background={colors.lightBrandColor} />
           </View>
         </Pressable>
+        {isAddingShopper && (
+          <TextInput
+            style={[styles.title, styles.titleInput]}
+            value={newShopperEmail}
+            onSubmitEditing={onAddShopper}
+            onChangeText={onChangeShopperEmail}
+            autoFocus={true}
+          />
+        )}
         {children}
       </View>
     </SwipeableItem>

@@ -2,7 +2,10 @@ import {
     GroupsApi,
     Shopper,
     Configuration,
-    PickGroupIdOrNameOrOwnerId_
+    PickGroupIdOrNameOrOwnerId_,
+    PickShopperEmail_,
+    PickShopperId_,
+    PickGroupName_
 } from 'pantryPlusApiClient';
 
 import cognitoConfig from '@/config/cognito';
@@ -24,8 +27,9 @@ const createGroup = async ({ name, newGroupId, xAuthUser }: { name: string, newG
 };
 
 const updateGroup = async ({ name, id, xAuthUser }: { name: string, id: string, xAuthUser: string }): Promise<void> => {
+    const body: PickGroupName_ = { name: name };
     try {
-        await groupApi.updateGroupName({name}, xAuthUser, id);
+        await groupApi.updateGroupName(body, xAuthUser, id);
     } catch (error) {
         console.error('Unable to update group:', error);
     }
@@ -52,19 +56,21 @@ const deleteGroup = async ({ groupId, xAuthUser }: { groupId: string, xAuthUser:
 };
 
 const addShopperToGroup = async ({ groupId, shopperId, xAuthUser }: { groupId: string, shopperId: string, xAuthUser: string }): Promise<void> => {
+    const body: PickShopperId_ = { id: shopperId };
     try {
-        await groupApi.addShopperToGroup(shopperId, xAuthUser, groupId);
+        await groupApi.addShopperToGroup(body, xAuthUser, groupId);
     } catch (error) {
         console.error('Unable to add shopper to group:', error);
     }
     return;
 };
 
-const inviteShopperToGroup = async ({ groupId, shopperEmail, xAuthUser }: { groupId: string, shopperEmail: string, xAuthUser: string }): Promise<void> => {
+const addInviteeToGroup = async ({ groupId, inviteeEmail, xAuthUser }: { groupId: string, inviteeEmail: string, xAuthUser: string }): Promise<void> => {
+    const body: PickShopperEmail_ = { email: inviteeEmail };
     try {
-        await groupApi.inviteShopper(shopperEmail, xAuthUser, groupId);
+        await groupApi.inviteShopper(body, xAuthUser, groupId);
     } catch (error) {
-        console.error('Unable to invite shopper to group:', error);
+        console.error('Unable to add invitee to group:', error);
     }
     return;
 };
@@ -78,9 +84,10 @@ const removeShopperFromGroup = async ({ groupId, shopperId, xAuthUser }: { group
     return;
 };
 
-const removeInviteeFromGroup = async ({ groupId, shopperEmail, xAuthUser }: { groupId: string, shopperEmail: string, xAuthUser: string }): Promise<void> => {
+const removeInviteeFromGroup = async ({ groupId, inviteeEmail, xAuthUser }: { groupId: string, inviteeEmail: string, xAuthUser: string }): Promise<void> => {
+    const body: PickShopperEmail_ = { email: inviteeEmail };
     try {
-        await groupApi.uninviteShopper(shopperEmail, xAuthUser, groupId);
+        await groupApi.uninviteShopper(body, xAuthUser, groupId);
     } catch (error) {
         console.error('Unable to remove invitee from group:', error);
     }
@@ -97,14 +104,25 @@ const getGroupShoppers = async ({ groupId, xAuthUser }: { groupId: string, xAuth
     }
 };
 
+const getGroupInvitees = async ({ groupId, xAuthUser }: { groupId: string, xAuthUser: string }): Promise<Array<PickShopperEmail_>> => {
+    try {
+        const inviteesData = await groupApi.getInvitees(xAuthUser, groupId);
+        return inviteesData.data;
+    } catch (error) {
+        console.error('Unable to get group invitees:', error);
+        return [];
+    }
+};
+
 export default {
     getGroup,
     createGroup,
     updateGroup,
     deleteGroup,
     addShopperToGroup,
-    inviteShopperToGroup,
+    addInviteeToGroup,
     removeShopperFromGroup,
     removeInviteeFromGroup,
-    getGroupShoppers
+    getGroupShoppers,
+    getGroupInvitees
 };

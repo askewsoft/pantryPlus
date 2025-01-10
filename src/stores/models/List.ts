@@ -74,7 +74,7 @@ export const ListModel = t.model('ListModel', {
         }
 
         // Now replace categories array
-        self.categories.clear();
+        // self.categories.clear();
         self.categories.replace(categories);
     }),
     loadListItems: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
