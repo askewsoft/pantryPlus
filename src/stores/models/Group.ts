@@ -1,7 +1,7 @@
 import { flow, t } from 'mobx-state-tree';
 import { ShopperModel } from './Shopper';
 import api from '@/api';
-import { ShopperType } from '../DomainStore';
+import { ShopperType, UserType } from '../DomainStore';
  
 export const GroupModel = t.model('GroupModel', {
     id: t.identifier,
@@ -12,9 +12,8 @@ export const GroupModel = t.model('GroupModel', {
 .actions(self => ({
     setName: flow(function* ({name, xAuthUser}: {name: string, xAuthUser: string}) {
         const id = self.id;
-        const members = self.shoppers?.map(s => s.id) ?? [];
-        const ownerId = self.ownerId;
         yield api.group.updateGroup({ name, id, xAuthUser });
+        self.name = name;
     }),
     loadGroupMembers: flow(function* ({xAuthUser}: {xAuthUser: string}) {
         const groupId = self.id;
@@ -24,22 +23,40 @@ export const GroupModel = t.model('GroupModel', {
             self.shoppers?.push(memberModel);
         });
     }),
-    addShopperById: flow(function* ({shopperId, xAuthUser}: {shopperId: string, xAuthUser: string}) {
+    addShopperById: flow(function* ({shopperId, user}: {shopperId: string, user: UserType}) {
         const groupId = self.id;
-        const ownerId = self.ownerId;
-        // TODO: Add shopper to Group by id
-        // yield api.group.addShopperToGroup({ groupId, shopperId, xAuthUser });
+        const xAuthUser = user.email;
+        if (self.ownerId !== user.id) {
+            console.error(`Cannot add shopper as user ${user.id} is not the owner ${self.ownerId} of this group ${groupId}`);
+            return;
+        }
+        yield api.group.addShopperToGroup({ groupId, shopperId, xAuthUser });
     }),
-    addShopperByEmail: flow(function* ({shopperEmail, xAuthUser}: {shopperEmail: string, xAuthUser: string}) {
+    addShopperByEmail: flow(function* ({shopperEmail, user}: {shopperEmail: string, user: UserType}) {
         const groupId = self.id;
-        const ownerId = self.ownerId;
-        // TODO: Add shopper to Group by email
-        // yield api.group.updateGroup({ group: {id, name, members, ownerId}, xAuthUser });
+        const xAuthUser = user.email;
+        if (self.ownerId !== user.id) {
+            console.error(`Cannot invite shopper as user ${user.id} is not the owner ${self.ownerId} of this group ${groupId}`);
+            return;
+        }
+        yield api.group.inviteShopperToGroup({ groupId, shopperEmail, xAuthUser });
     }),
-    removeShopper: flow(function* ({shopperId, xAuthUser}: {shopperId: string, xAuthUser: string}) {
+    removeShopper: flow(function* ({shopperId, user}: {shopperId: string, user: UserType}) {
         const groupId = self.id;
-        const ownerId = self.ownerId;
-        // TODO: Remove shopper from Group by id
-        // yield api.group.updateGroup({ group: {id, name, members, ownerId}, xAuthUser });
+        const xAuthUser = user.email;
+        if (self.ownerId !== user.id) {
+            console.error(`Cannot remove shopper as user ${user.id} is not the owner ${self.ownerId} of this group ${groupId}`);
+            return;
+        }
+        yield api.group.removeShopperFromGroup({ groupId, shopperId, xAuthUser });
+    }),
+    removeInvitee: flow(function* ({shopperEmail, user}: {shopperEmail: string, user: UserType}) {
+        const groupId = self.id;
+        const xAuthUser = user.email;
+        if (self.ownerId !== user.id) {
+            console.error(`Cannot remove invitee as user ${user.id} is not the owner ${self.ownerId} of this group ${groupId}`);
+            return;
+        }
+        yield api.group.removeInviteeFromGroup({ groupId, shopperEmail, xAuthUser });
     }),
 }));

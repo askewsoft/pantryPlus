@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import SwipeableItem from "react-native-swipeable-item";
@@ -12,6 +12,8 @@ import { domainStore } from '@/stores/DomainStore';
 import AddShopperButton from './Buttons/AddShopperButton';
 import RemoveGroupButton from './Buttons/RemoveGroupButton';
 
+import logging from '@/config/logging';
+
 const Group = ({groupId, title, children}: {groupId: string, title: string, children: React.ReactNode}) => {
   const currGroup = domainStore.groups.find(g => g.id === groupId);
   const xAuthUser = domainStore.user?.email!;
@@ -21,11 +23,21 @@ const Group = ({groupId, title, children}: {groupId: string, title: string, chil
   const [isAddingShopper, setIsAddingShopper] = useState(false);
   const [newShopperEmail, setNewShopperEmail] = useState('');
 
+  useEffect(() => {
+    currGroup?.loadGroupMembers({ xAuthUser });
+  }, [xAuthUser]);
+
   const onSubmit = async () => {
-    if (editedTitle !== title) {
+    if (editedTitle.trim().toLowerCase() !== title.trim().toLowerCase()) {
       await currGroup?.setName({ name: editedTitle, xAuthUser });
+
     }
     setIsEditing(false);
+  }
+
+  const prepareToEditName = () => {
+    setEditedTitle(title);
+    setIsEditing(true);
   }
 
   const onAddShopper = async () => {
@@ -48,7 +60,7 @@ const Group = ({groupId, title, children}: {groupId: string, title: string, chil
     >
       <View style={styles.container}>
         <Pressable
-          onLongPress={() => setIsEditing(true)}
+          onLongPress={prepareToEditName}
       >
         <View style={styles.titleContainer}>
           <MaterialIcons

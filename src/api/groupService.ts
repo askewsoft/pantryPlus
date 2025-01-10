@@ -14,8 +14,7 @@ const configuration = new Configuration({
 
 const groupApi = new GroupsApi(configuration);
 
-const createGroup = async ({ name, xAuthUser }: { name: string, xAuthUser: string }): Promise<void> => {
-    const newGroupId = randomUUID();
+const createGroup = async ({ name, newGroupId, xAuthUser }: { name: string, newGroupId: string, xAuthUser: string }): Promise<void> => {
     try {
         await groupApi.createGroup({name: name, id: newGroupId}, xAuthUser);
     } catch (error) {
@@ -26,7 +25,7 @@ const createGroup = async ({ name, xAuthUser }: { name: string, xAuthUser: strin
 
 const updateGroup = async ({ name, id, xAuthUser }: { name: string, id: string, xAuthUser: string }): Promise<void> => {
     try {
-        await groupApi.updateGroupName(name, xAuthUser, id);
+        await groupApi.updateGroupName({name}, xAuthUser, id);
     } catch (error) {
         console.error('Unable to update group:', error);
     }
@@ -52,6 +51,42 @@ const deleteGroup = async ({ groupId, xAuthUser }: { groupId: string, xAuthUser:
     return;
 };
 
+const addShopperToGroup = async ({ groupId, shopperId, xAuthUser }: { groupId: string, shopperId: string, xAuthUser: string }): Promise<void> => {
+    try {
+        await groupApi.addShopperToGroup(shopperId, xAuthUser, groupId);
+    } catch (error) {
+        console.error('Unable to add shopper to group:', error);
+    }
+    return;
+};
+
+const inviteShopperToGroup = async ({ groupId, shopperEmail, xAuthUser }: { groupId: string, shopperEmail: string, xAuthUser: string }): Promise<void> => {
+    try {
+        await groupApi.inviteShopper(shopperEmail, xAuthUser, groupId);
+    } catch (error) {
+        console.error('Unable to invite shopper to group:', error);
+    }
+    return;
+};
+
+const removeShopperFromGroup = async ({ groupId, shopperId, xAuthUser }: { groupId: string, shopperId: string, xAuthUser: string }): Promise<void> => {
+    try {
+        await groupApi.removeShopperFromGroup(xAuthUser, groupId, shopperId);
+    } catch (error) {
+        console.error('Unable to remove shopper from group:', error);
+    }
+    return;
+};
+
+const removeInviteeFromGroup = async ({ groupId, shopperEmail, xAuthUser }: { groupId: string, shopperEmail: string, xAuthUser: string }): Promise<void> => {
+    try {
+        await groupApi.uninviteShopper(shopperEmail, xAuthUser, groupId);
+    } catch (error) {
+        console.error('Unable to remove invitee from group:', error);
+    }
+    return;
+};
+
 const getGroupShoppers = async ({ groupId, xAuthUser }: { groupId: string, xAuthUser: string }): Promise<Array<Shopper>> => {
     try {
         const shoppersData = await groupApi.getGroupShoppers(xAuthUser, groupId);
@@ -67,5 +102,9 @@ export default {
     createGroup,
     updateGroup,
     deleteGroup,
+    addShopperToGroup,
+    inviteShopperToGroup,
+    removeShopperFromGroup,
+    removeInviteeFromGroup,
     getGroupShoppers
 };
