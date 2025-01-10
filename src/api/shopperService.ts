@@ -64,8 +64,19 @@ const getUserGroups = async ({ user }: { user: Shopper }): Promise<Array<PickGro
     }
 };
 
+const getShopper = async ({ shopperId, xAuthUser }: { shopperId: string, xAuthUser: string }): Promise<Shopper> => {
+    try {
+        const shopperData = await shopperApi.retrieveShopper(xAuthUser, shopperId);
+        return shopperData.data;
+    } catch (error) {
+        console.error('Unable to get shopper:', error);
+        return {} as Shopper;
+    }
+};
+
 export default {
     registerUser,
     getUserLists,
-    getUserGroups
+    getUserGroups,
+    getShopper
 };
