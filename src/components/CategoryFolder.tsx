@@ -27,8 +27,15 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
   const [editedTitle, setEditedTitle] = useState(title);
 
   const onSubmit = async () => {
-    await currCategory?.setName(editedTitle, xAuthUser);
-    setIsEditing(false)
+    if (editedTitle.trim().toLowerCase() !== currCategory?.name.trim().toLowerCase()) {
+      await currCategory?.setName(editedTitle, xAuthUser);
+    }
+    setIsEditing(false);
+  }
+
+  const prepareToEditName = () => {
+    setEditedTitle(currCategory!.name!);
+    setIsEditing(true);
   }
 
   const toggleFolderOpenClose = () => {
@@ -57,7 +64,7 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
         <View style={styles.container}>
           <Pressable
             onPress={toggleFolderOpenClose}
-            onLongPress={() => setIsEditing(true)}
+            onLongPress={prepareToEditName}
           >
             <View style={styles.titleContainer}>
               <AntDesign

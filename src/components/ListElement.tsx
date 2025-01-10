@@ -18,9 +18,15 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navi
   const onSubmit = async () => {
     const { groupId = '' } = list!;
     const xAuthUser = domainStore.user!.email;
-    console.log(`onSubmit - updating list ${JSON.stringify({ name: editedTitle, groupId, xAuthUser })}`);
-    await list?.updateList({ name: editedTitle, groupId, xAuthUser });
+    if (editedTitle.trim().toLowerCase() !== list!.name.trim().toLowerCase()) {
+      await list?.updateList({ name: editedTitle, groupId, xAuthUser });
+    }
     setIsEditing(false)
+  }
+
+  const prepareToEditName = () => {
+    setEditedTitle(list!.name);
+    setIsEditing(true);
   }
 
   const handlePress = ({ id }: { id: string }) => {
@@ -36,7 +42,7 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navi
     <View style={styles.container}>
       <Pressable style={styles.titleContainer}
         onPress={() => handlePress({ id })}
-        onLongPress={() => setIsEditing(true)}
+        onLongPress={prepareToEditName}
       >
         <MaterialIcons name="format-list-bulleted" size={fonts.rowIconSize} color={colors.brandColor} />
         {isEditing ? (
