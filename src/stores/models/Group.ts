@@ -4,6 +4,8 @@ import { InviteeModel } from './Invitee';
 
 import api from '@/api';
 import { InviteeType, ShopperType, UserType, MemberType } from '../DomainStore';
+
+import logging from '@/config/logging';
  
 export const GroupModel = t.model('GroupModel', {
     id: t.identifier,
@@ -58,6 +60,7 @@ export const GroupModel = t.model('GroupModel', {
             return;
         }
         yield api.group.addInviteeToGroup({ groupId, inviteeEmail, xAuthUser });
+        self.invitees?.push(InviteeModel.create({ email: inviteeEmail }));
     }),
     removeShopper: flow(function* ({shopperId, user}: {shopperId: string, user: UserType}) {
         const groupId = self.id;
