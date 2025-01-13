@@ -40,12 +40,9 @@ const Group = ({groupId, title, children}: {groupId: string, title: string, chil
   }
 
   const onAddShopper = async () => {
-    await currGroup?.addShopperByEmail({ inviteeEmail: newShopperEmail, user: domainStore.user! });
-    setIsAddingShopper(false);
-    setNewShopperEmail('');
-  }
-
-  const onCancelAddShopper = () => {
+    if (newShopperEmail.trim().length > 0) {
+      await currGroup?.addShopperByEmail({ inviteeEmail: newShopperEmail, user: domainStore.user! });
+    }
     setIsAddingShopper(false);
     setNewShopperEmail('');
   }
@@ -88,7 +85,7 @@ const Group = ({groupId, title, children}: {groupId: string, title: string, chil
         </Pressable>
         {isAddingShopper && (
           <TextInput
-            style={[styles.title, styles.titleInput]}
+            style={styles.memberInput}
             value={newShopperEmail}
             onSubmitEditing={onAddShopper}
             onChangeText={onChangeShopperEmail}
@@ -126,6 +123,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.detailsBackground,
     color: colors.lightBrandColor,
     paddingVertical: 7,
+  },
+  memberInput: {
+    fontSize: fonts.rowTextSize,
+    backgroundColor: colors.detailsBackground,
+    color: colors.lightBrandColor,
+    marginLeft: 40,
+    padding: 7,
   },
   buttonContainer: {
     alignSelf: 'flex-end',

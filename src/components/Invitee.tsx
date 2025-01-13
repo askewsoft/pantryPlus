@@ -24,6 +24,12 @@ const Invitee = ({ invitee, onRemoveItem, indent }: { invitee: InviteeType, onRe
     >
       <View style={[styles.itemLine, { paddingLeft: indent }]}>
         <View style={styles.itemContainer}>
+          <MaterialIcons
+            name="person-outline"
+            size={fonts.rowIconSize}
+            color={colors.lightBrandColor}
+            style={iconStyle}
+          />
           <Text style={styles.item}>{invitee.email}</Text>
         </View>
       </View>
@@ -47,6 +53,7 @@ const styles = StyleSheet.create({
   item: {
     color: colors.brandColor,
     fontSize: fonts.rowTextSize,
+    padding: 10
   }
 });
 

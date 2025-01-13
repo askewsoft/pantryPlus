@@ -20,24 +20,16 @@ const GroupMembers = ({ groupId }: { groupId: string }) => {
     }
   }
 
-  useEffect(() => {
-    currGroup?.loadGroupShoppers({ xAuthUser });
-    currGroup?.loadGroupInvitees({ xAuthUser });
-  }, [xAuthUser, groupId]);
-
-  const renderMember = ({ member }: { member: MemberType }) => {
-    console.log('Member:', JSON.stringify(member));
-    if (isStateTreeNode(member)) {
-      const nodeType = getType(member);
-      console.log('MST type:', JSON.stringify(nodeType)); // This will log the MST type name
-      if (nodeType.name === 'ShopperModel') {
-        return renderShopper(member);
-      } else {
-        return renderInvitee(member);
+  const renderMember = ({ item: member }: { item: MemberType }) => {
+      if (typeof member !== 'undefined' && isStateTreeNode(member)) {
+        const nodeType = getType(member);
+        if (nodeType.name === 'ShopperModel') {
+          return renderShopper(member as ShopperType);
+        } else if (nodeType.name === 'InviteeModel') {
+          return renderInvitee(member as InviteeType);
+        }
       }
-    } else {
-      return <Text>Unknown member type</Text>;
-    }
+      return null;
   }
 
   const renderShopper = (member: ShopperType) => {
@@ -56,7 +48,7 @@ const GroupMembers = ({ groupId }: { groupId: string }) => {
     <FlatList
       contentContainerStyle={[styles.draggableFlatListStyle]}
       data={toJS(currGroup!.members)}
-      renderItem={renderMember as any}
+      renderItem={renderMember}
       keyExtractor={(member) => member.email}
     />
   );
