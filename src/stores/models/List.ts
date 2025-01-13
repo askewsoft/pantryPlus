@@ -26,11 +26,9 @@ export const ListModel = t.model('ListModel', {
 .actions(self => ({
     updateList: flow(function*({ name, groupId, xAuthUser }: { name: string, groupId: string, xAuthUser: string }): Generator<any, any, any> {
         try {
-            console.log(`updating list ${name}`);
             yield api.list.updateList({ list: { id: self.id, name, groupId, ordinal: self.ordinal }, xAuthUser });
             self.name = name;
             self.groupId = groupId;
-            console.log(`updated list ${name}`);
         } catch (error) {
             console.error(`Error updating list: ${error}`);
         }
@@ -58,7 +56,6 @@ export const ListModel = t.model('ListModel', {
         self.groupId = groupId;
     },
     loadCategories: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
-        logging.debug ? console.log(`loading categories for ${self.name} - ${self.id}`) : null;
         const categoriesData = yield api.list.getListCategories({ listId: self.id, xAuthUser });
         const categories = categoriesData.map(
             (category: Category) => {
@@ -69,7 +66,6 @@ export const ListModel = t.model('ListModel', {
 
         // Load items for each category, before replacing categories array
         for (const category of categories) {
-            logging.debug ? console.log(`loading items for ${category.name} - ${category.id}`) : null;
             yield category.loadCategoryItems({ xAuthUser });
         }
 

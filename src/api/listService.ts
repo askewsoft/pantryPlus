@@ -10,10 +10,8 @@ const listsApi = new ListsApi(configuration);
 
 const createList = async ({ list, xAuthUser }: { list: List, xAuthUser: string }) => {
     const { id, name, ownerId }  = list;
-    logging.debug ? console.log(`createList: ${JSON.stringify({ id, name, ownerId, xAuthUser})}`) : null;
     try {
         const response = await listsApi.createList({ id, name, ownerId, ordinal: 0 }, xAuthUser);
-        logging.debug ? console.log(`createList response: ${JSON.stringify(response)}`) : null;
     } catch (error) {
         console.error(`Failed to createList in DB: ${error}`);
     }
@@ -31,7 +29,6 @@ const updateList = async ({ list, xAuthUser }: { list: Omit<List, "ownerId">, xA
 const getListCategories = async ({ listId, xAuthUser }: { listId: string, xAuthUser: string }): Promise<Array<Category>> => {
     try {
         const categoriesData = await listsApi.getCategories(xAuthUser, listId);
-        logging.debug ? console.log(`getListCategories response: ${JSON.stringify(categoriesData)}`) : null;
         return categoriesData.data;
     } catch (error) {
         console.error(`Failed to getListCategories in DB: ${error}`);
