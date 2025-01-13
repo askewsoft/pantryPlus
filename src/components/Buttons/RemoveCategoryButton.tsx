@@ -7,7 +7,7 @@ import logging from '@/config/logging';
 
 const RemoveCategoryButton = ({ categoryId, listId }: { categoryId: string, listId: string }) => {
     const onPressDelete = () => {
-        logging.debug ? alert(`delete category: ${categoryId}, from list: ${listId}`) : null;
+        // logging.debug ? alert(`delete category: ${categoryId}, from list: ${listId}`) : null;
         // TODO: remove category from list
     }
     return (

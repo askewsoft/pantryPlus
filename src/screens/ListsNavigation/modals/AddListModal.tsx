@@ -40,7 +40,6 @@ const AddListModal = () => {
 }
 
 const onSubmit = async (evt: any) => {
-    logging.debug ? console.log(`onSubmit: ${evt.nativeEvent.text}`) : null;
     domainStore.addList(evt.nativeEvent.text);
     uiStore.setAddListModalVisible(false);
 }

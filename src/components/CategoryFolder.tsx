@@ -44,7 +44,6 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
        then clear the addItemToCategoryID
     */
     if (open && uiStore.addItemToCategoryID === categoryId) {
-      logging.debug ? console.log(`toggleFolderOpenClose - clearing addItemToCategoryID: ${uiStore.addItemToCategoryID}`) : null;
       uiStore.setAddItemToCategoryID('');
     }
     uiStore.setOpenCategory(categoryId, !open);

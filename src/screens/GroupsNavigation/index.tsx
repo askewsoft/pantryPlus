@@ -5,7 +5,6 @@ import { GroupsStackParamList } from '@/types/GroupNavTypes';
 import stackNavScreenOptions from '@/consts/stackNavOptions';
 
 import MyGroups from './MyGroups';
-import GroupDetails from './GroupDetails';
 
 import AddGroupButton from '@/components/Buttons/AddGroupButton';
 import colors from '@/consts/colors';
@@ -33,7 +32,6 @@ const GroupsNavigation = () => {
             />
         }}
       />
-      <Screen name="GroupDetails" component={GroupDetails} />
     </Navigator>
   );
 }

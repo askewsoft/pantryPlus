@@ -40,10 +40,8 @@ const AddGroupModal = () => {
 }
 
 const onSubmit = async (evt: any) => {
-    logging.debug ? console.log(`onSubmit: ${evt.nativeEvent.text}`) : null;
     domainStore.addGroup(evt.nativeEvent.text);
     uiStore.setAddGroupModalVisible(false);
-    // domainStore.loadGroups();
 }
 
 const styles = StyleSheet.create({
