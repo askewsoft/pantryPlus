@@ -10,9 +10,11 @@ const OpenCategory = t.model('OpenCategory', {
 
 export const UIStoreModel = t.model('UIStoreModel', {
     showIntroScreen: false,
-    lastScreen: t.enumeration('lastScreen', ['IntroScreen', 'WelcomeScreen', 'MyLists']),
-    lastUsedVersion: t.string,
-    signInOrUp: t.enumeration('signInOrUp', ['signIn', 'signUp']),
+    lastScreen: t.optional(t.enumeration('lastScreen', ['IntroScreen', 'WelcomeScreen', 'MyLists']), 'IntroScreen'),
+    lastUsedVersion: t.optional(t.string, '1.0.0'),
+    signInOrUp: t.optional(t.enumeration('signInOrUp', ['signIn', 'signUp']), 'signIn'),
+    listsLoaded: false,
+    groupsLoaded: false,
     selectedShoppingList: t.maybeNull(t.string),
     addListModalVisible: false,
     addCategoryModalVisible: false,
@@ -33,6 +35,12 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setLastUsedVersion(lastUsedVersion: string) {
         self.lastUsedVersion = cast(lastUsedVersion);
+    },
+    setListsLoaded(listsLoaded: boolean) {
+        self.listsLoaded = listsLoaded;
+    },
+    setGroupsLoaded(groupsLoaded: boolean) {
+        self.groupsLoaded = groupsLoaded;
     },
     setAddListModalVisible(addListModalVisible: boolean) {
         self.addListModalVisible = addListModalVisible;
@@ -59,22 +67,13 @@ export const UIStoreModel = t.model('UIStoreModel', {
 
 type UIStoreType = Instance<typeof UIStoreModel>;
 
-export const uiStore = UIStoreModel.create({
-    lastScreen: 'IntroScreen',
-    lastUsedVersion: '1.0.0',
-    signInOrUp: 'signIn',
-    addListModalVisible: false,
-    selectedShoppingList: null,
-    addCategoryModalVisible: false,
-    addGroupModalVisible: false,
-    openCategories: {}
-});
+export const uiStore = UIStoreModel.create();
 
 // saves to and loads from device storage
 persist('pantryPlusUI', uiStore, {
     storage: AsyncStorage,
     jsonify: true,
-    blacklist: ['addItemToCategoryID', 'addItemToListID', 'addGroupModalVisible']
+    blacklist: ['addItemToCategoryID', 'addItemToListID', 'addGroupModalVisible', 'listsLoaded', 'groupsLoaded']
 });
 
 export const UIStoreContext = createContext<UIStoreType | null>(null);

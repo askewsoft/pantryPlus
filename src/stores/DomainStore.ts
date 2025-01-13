@@ -5,6 +5,7 @@ import { persist } from 'mst-persist';
 import { List } from 'pantryPlusApiClient';
 
 import api from '@/api';
+import { uiStore } from './UIStore';
 
 import { UserModel } from './models/User';
 import { ListModel } from './models/List';
@@ -16,6 +17,7 @@ import { LocationModel } from './models/Location';
 import { randomUUID } from 'expo-crypto';
 import logging from '@/config/logging';
 
+const debug = logging.debug;
 export type UserType = Instance<typeof UserModel>;
 export type ShopperType = Instance<typeof ShopperModel>;
 export type InviteeType = Instance<typeof InviteeModel>;
@@ -44,7 +46,6 @@ const DomainStoreModel = t
             self.locations.spliceWithArray(0, self.locations.length, []);
         },
         addList: flow(function* (name: string) {
-            logging.debug ? console.log(`addList: ${name}`) : null;
             const ordinal = self.lists.length;
             const xAuthUser = self.user?.email!;
             const ownerId = self.user?.id!;
@@ -58,7 +59,6 @@ const DomainStoreModel = t
                 categories: [],
             });
             yield api.list.createList({ list: {name, id: newListId, ownerId, ordinal, groupId: undefined}, xAuthUser });
-            logging.debug ? console.log(`addList: ${JSON.stringify(newList)}`) : null;
             self.lists.push(newList);
         }),
         loadLists: flow(function* () {
@@ -70,6 +70,7 @@ const DomainStoreModel = t
                 }
             );
             self.lists.spliceWithArray(0, self.lists.length, lists);
+            uiStore.setListsLoaded(true);
         }),
         addGroup: flow(function* (name: string) {
             const xAuthUser = self.user?.email!;
@@ -81,34 +82,24 @@ const DomainStoreModel = t
         }),
         loadGroups: flow(function* () {
             const groupsData = yield api.shopper.getUserGroups({ user: self.user! });
-            logging.debug ? console.log(`loadGroups - num groups: ${groupsData.length}`) : null;
             const groups = groupsData.map(
                 (group: GroupType) => {
                     const { id, name, ownerId, shoppers, invitees } = group;
-                    logging.debug ? console.log(`loadGroups - group: ${JSON.stringify(group)}`) : null;
                     return GroupModel.create({ id, name, ownerId, shoppers: shoppers || [], invitees: invitees || [] });
                 }
             );
 
             // Load group members
             for (const group of groups) {
-                logging.debug ? console.log(`loadGroupMembers - group ID: ${group.id}`) : null;
-                // Load shoppers
                 try { 
                     yield group.loadGroupShoppers({ xAuthUser: self.user?.email! });
-                } catch (error) {
-                    console.error('Unable to load group shoppers:', error);
-                }
-
-                // Load invitees
-                try { 
                     yield group.loadGroupInvitees({ xAuthUser: self.user?.email! });
                 } catch (error) {
-                    console.error('Unable to load group invitees:', error);
+                    console.error('Unable to load group members:', error);
                 }
             }
-            logging.debug ? console.log(`loadGroups - groups: ${JSON.stringify(groups)}`) : null;
             self.groups.replace(groups);
+            uiStore.setGroupsLoaded(true);
         }),
         updateListOrder: ({ data, from, to }: { data: ListType[], from: number, to: number }) => {
             const xAuthUser = self.user?.email!;
