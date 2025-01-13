@@ -2,7 +2,7 @@ import {
     GroupsApi,
     Shopper,
     Configuration,
-    PickGroupIdOrNameOrOwnerId_,
+    PickGroupIdOrNameOrOwner_,
     PickShopperEmail_,
     PickShopperId_,
     PickGroupName_
@@ -36,13 +36,13 @@ const updateGroup = async ({ name, id, xAuthUser }: { name: string, id: string, 
     return;
 };
 
-const getGroup = async ({ groupId, xAuthUser }: { groupId: string, xAuthUser: string }): Promise<PickGroupIdOrNameOrOwnerId_> => {
+const getGroup = async ({ groupId, xAuthUser }: { groupId: string, xAuthUser: string }): Promise<PickGroupIdOrNameOrOwner_> => {
     try {
         const groupData = await groupApi.getGroup(xAuthUser, groupId);
         return groupData.data;
     } catch (error) {
         console.error('Unable to get group:', error);
-        return {} as PickGroupIdOrNameOrOwnerId_;
+        return {} as PickGroupIdOrNameOrOwner_;
     }
 };
 

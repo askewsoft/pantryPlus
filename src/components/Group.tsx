@@ -119,6 +119,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 20,
   },
+      
   titleInput: {
     backgroundColor: colors.detailsBackground,
     color: colors.lightBrandColor,

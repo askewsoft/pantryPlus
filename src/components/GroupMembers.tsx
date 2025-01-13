@@ -8,6 +8,7 @@ import { domainStore, InviteeType, ShopperType, MemberType } from '@/stores/Doma
 import { uiStore } from '@/stores/UIStore';
 import Shopper from '@/components/Shopper';
 import Invitee from '@/components/Invitee';
+import Owner from '@/components/Owner';
 import colors from '@/consts/colors';
 
 const GroupMembers = ({ groupId }: { groupId: string }) => {
@@ -24,7 +25,11 @@ const GroupMembers = ({ groupId }: { groupId: string }) => {
       if (typeof member !== 'undefined' && isStateTreeNode(member)) {
         const nodeType = getType(member);
         if (nodeType.name === 'ShopperModel') {
-          return renderShopper(member as ShopperType);
+          if (member.email === currGroup?.owner.email) {
+            return renderOwner(member as ShopperType);
+          } else {
+            return renderShopper(member as ShopperType);
+          }
         } else if (nodeType.name === 'InviteeModel') {
           return renderInvitee(member as InviteeType);
         }
@@ -41,6 +46,12 @@ const GroupMembers = ({ groupId }: { groupId: string }) => {
   const renderInvitee = (member: InviteeType) => {
     return (
       <Invitee invitee={member} onRemoveItem={onRemoveItem(member.email)} indent={30} />
+    );
+  }
+
+  const renderOwner = (member: ShopperType) => {
+    return (
+      <Owner owner={member} indent={30} />
     );
   }
 

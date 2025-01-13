@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
   item: {
     color: colors.brandColor,
     fontSize: fonts.rowTextSize,
+    padding: 10
   }
 });
 

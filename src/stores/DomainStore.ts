@@ -76,7 +76,7 @@ const DomainStoreModel = t
             const xAuthUser = self.user?.email!;
             const ownerId = self.user?.id!;
             const newGroupId = randomUUID();
-            const newGroup: GroupType = GroupModel.create({ id: newGroupId, name, ownerId });
+            const newGroup: GroupType = GroupModel.create({ id: newGroupId, name, owner: self.user! });
             yield api.group.createGroup({ name, newGroupId, xAuthUser });
             self.groups.push(newGroup);
         }),
@@ -84,8 +84,8 @@ const DomainStoreModel = t
             const groupsData = yield api.shopper.getUserGroups({ user: self.user! });
             const groups = groupsData.map(
                 (group: GroupType) => {
-                    const { id, name, ownerId, shoppers, invitees } = group;
-                    return GroupModel.create({ id, name, ownerId, shoppers: shoppers || [], invitees: invitees || [] });
+                    const { id, name, owner } = group;
+                    return GroupModel.create({ id, name, owner, shoppers: [], invitees: [] });
                 }
             );
 

@@ -3,7 +3,7 @@ import {
     Shopper,
     Configuration,
     List,
-    PickGroupIdOrNameOrOwnerId_
+    PickGroupIdOrNameOrOwner_
 } from 'pantryPlusApiClient';
 
 import cognitoConfig from '@/config/cognito';
@@ -52,7 +52,7 @@ const getUserLists = async ({ user }: { user: Shopper }): Promise<Array<List>> =
     }
 };
 
-const getUserGroups = async ({ user }: { user: Shopper }): Promise<Array<PickGroupIdOrNameOrOwnerId_>> => {
+const getUserGroups = async ({ user }: { user: Shopper }): Promise<Array<PickGroupIdOrNameOrOwner_>> => {
     const xAuthUser = user.email!;
     const shopperId = user.id!;
     try {

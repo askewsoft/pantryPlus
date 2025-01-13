@@ -10,13 +10,13 @@ import logging from '@/config/logging';
 export const GroupModel = t.model('GroupModel', {
     id: t.identifier,
     name: t.string,
-    ownerId: t.string,
+    owner: t.late(() => ShopperModel),
     shoppers: t.maybe(t.array(t.late(() => ShopperModel))),
     invitees: t.maybe(t.array(t.late(() => InviteeModel))),
 })
 .views(self => ({
     get members(): MemberType[] {
-        return [...(self.shoppers || []), ...(self.invitees || [])];
+        return [self.owner, ...(self.shoppers || []), ...(self.invitees || [])];
     }
 }))
 .actions(self => ({
@@ -44,8 +44,8 @@ export const GroupModel = t.model('GroupModel', {
     addShopperById: flow(function* ({shopperId, user}: {shopperId: string, user: UserType}) {
         const groupId = self.id;
         const xAuthUser = user.email;
-        if (self.ownerId !== user.id) {
-            console.error(`Cannot add shopper as user ${user.id} is not the owner ${self.ownerId} of this group ${groupId}`);
+        if (self.owner.id !== user.id) {
+            console.error(`Cannot add shopper as user ${user.id} is not the owner ${self.owner.id} of this group ${groupId}`);
             return;
         }
         yield api.group.addShopperToGroup({ groupId, shopperId, xAuthUser });
@@ -55,8 +55,8 @@ export const GroupModel = t.model('GroupModel', {
     addShopperByEmail: flow(function* ({inviteeEmail, user}: {inviteeEmail: string, user: UserType}) {
         const groupId = self.id;
         const xAuthUser = user.email;
-        if (self.ownerId !== user.id) {
-            console.error(`Cannot invite shopper as user ${user.id} is not the owner ${self.ownerId} of this group ${groupId}`);
+        if (self.owner.id !== user.id) {
+            console.error(`Cannot invite shopper as user ${user.id} is not the owner ${self.owner.id} of this group ${groupId}`);
             return;
         }
         yield api.group.addInviteeToGroup({ groupId, inviteeEmail, xAuthUser });
@@ -65,8 +65,8 @@ export const GroupModel = t.model('GroupModel', {
     removeShopper: flow(function* ({shopperId, user}: {shopperId: string, user: UserType}) {
         const groupId = self.id;
         const xAuthUser = user.email;
-        if (self.ownerId !== user.id) {
-            console.error(`Cannot remove shopper as user ${user.id} is not the owner ${self.ownerId} of this group ${groupId}`);
+        if (self.owner.id !== user.id) {
+            console.error(`Cannot remove shopper as user ${user.id} is not the owner ${self.owner.id} of this group ${groupId}`);
             return;
         }
         yield api.group.removeShopperFromGroup({ groupId, shopperId, xAuthUser });
@@ -74,10 +74,10 @@ export const GroupModel = t.model('GroupModel', {
     removeInvitee: flow(function* ({shopperEmail, user}: {shopperEmail: string, user: UserType}) {
         const groupId = self.id;
         const xAuthUser = user.email;
-        if (self.ownerId !== user.id) {
-            console.error(`Cannot remove invitee as user ${user.id} is not the owner ${self.ownerId} of this group ${groupId}`);
+        if (self.owner.id !== user.id) {
+            console.error(`Cannot remove invitee as user ${user.id} is not the owner ${self.owner.id} of this group ${groupId}`);
             return;
         }
-        yield api.group.removeInviteeFromGroup({ groupId, shopperEmail, xAuthUser });
+        yield api.group.removeInviteeFromGroup({ groupId, inviteeEmail: shopperEmail, xAuthUser });
     }),
 }));
