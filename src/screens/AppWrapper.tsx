@@ -11,7 +11,9 @@ import ListsNavigation from './ListsNavigation';
 import SettingsNavigation from './SettingsNavigation';
 import GroupsNavigation from './GroupsNavigation';
 import LocationsNavigation from './LocationsNavigation';
+
 import colors from '@/consts/colors';
+import { domainStore } from '@/stores/DomainStore';
 
 const { Navigator, Screen } = createBottomTabNavigator<AppTabParamList>();
 
@@ -43,6 +45,7 @@ const tabBarIconCreator = (name: MaterialIconName) => {
 
 // Shared tab options
 const tabOptions = ({iconName}: {iconName: MaterialIconName}): BottomTabNavigationOptions => {
+  const numInvites = domainStore.user?.numInvites || 0;
   return {
     tabBarIcon: tabBarIconCreator(iconName),
     tabBarShowLabel: true,
@@ -52,8 +55,10 @@ const tabOptions = ({iconName}: {iconName: MaterialIconName}): BottomTabNavigati
     tabBarInactiveTintColor: colors.inactiveButtonColor,
     tabBarInactiveBackgroundColor: colors.brandColor,
     tabBarStyle: { backgroundColor: colors.brandColor, height: 90, paddingBottom: 20, paddingTop: 10 },
-    tabBarItemStyle: { backgroundColor: colors.lightBrandColor },
+    tabBarItemStyle: { borderRadius: 5, backgroundColor: colors.lightBrandColor },
     tabBarPosition: 'bottom',
+    tabBarBadge: iconName === 'groups' && numInvites >= 0 ? numInvites : undefined,
+    tabBarBadgeStyle: { color: colors.white, backgroundColor: colors.alertColor },
   }
 };
 

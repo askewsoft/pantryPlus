@@ -1,12 +1,14 @@
 import { observer } from 'mobx-react-lite';
+import { View, StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { GroupsStackParamList } from '@/types/GroupNavTypes';
 import stackNavScreenOptions from '@/consts/stackNavOptions';
 
 import MyGroups from './MyGroups';
-
+import MyInvites from './MyInvites';
 import AddGroupButton from '@/components/Buttons/AddGroupButton';
+
 import colors from '@/consts/colors';
 import { uiStore } from '@/stores/UIStore';
 
@@ -15,6 +17,17 @@ const onPressAddGroup = () => {
 };
 
 const { Navigator, Screen } = createStackNavigator<GroupsStackParamList>();
+
+const renderHeader = () => {
+  return (
+    <View style={styles.headerContainer}>
+      <AddGroupButton onPress={onPressAddGroup}
+        foreground={colors.white}
+        background={colors.brandColor}
+      />
+    </View>
+  );
+}
 
 const GroupsNavigation = () => {
   return (
@@ -25,15 +38,29 @@ const GroupsNavigation = () => {
         options={{
           title: 'My Groups',
           headerMode: 'float',
-          headerRight: () =>
-            <AddGroupButton onPress={onPressAddGroup}
-              foreground={colors.white}
-              background={colors.brandColor}
-            />
+          headerRight: renderHeader,
+        }}
+      />
+      <Screen
+        name="MyInvites"
+        component={MyInvites}
+        options={{
+          title: 'Invites',
         }}
       />
     </Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  headerContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    margin: 0,
+    padding: 0,
+  }
+});
 
 export default observer(GroupsNavigation);

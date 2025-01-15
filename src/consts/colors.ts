@@ -5,4 +5,5 @@ export default {
   detailsBackground: '#f0f0f0',
   itemBackground: '#e7e7e7',
   inactiveButtonColor: '#cccccc',
+  alertColor: '#5886ae',
 }
