@@ -3,7 +3,7 @@ import {
     Shopper,
     Configuration,
     List,
-    PickGroupIdOrNameOrOwner_
+    Group,
 } from 'pantryPlusApiClient';
 
 import cognitoConfig from '@/config/cognito';
@@ -52,7 +52,7 @@ const getUserLists = async ({ user }: { user: Shopper }): Promise<Array<List>> =
     }
 };
 
-const getUserGroups = async ({ user }: { user: Shopper }): Promise<Array<PickGroupIdOrNameOrOwner_>> => {
+const getUserGroups = async ({ user }: { user: Shopper }): Promise<Array<Group>> => {
     const xAuthUser = user.email!;
     const shopperId = user.id!;
     try {
@@ -60,6 +60,18 @@ const getUserGroups = async ({ user }: { user: Shopper }): Promise<Array<PickGro
         return groupsData.data;
     } catch (error) {
         console.error('Unable to get user groups:', error);
+        return [];
+    }
+};
+
+const getUserInvites = async ({ user }: { user: Shopper }): Promise<Array<Group>> => {
+    const xAuthUser = user.email!;
+    const shopperId = user.id!;
+    try {
+        const invitesData = await shopperApi.getInvites(xAuthUser, shopperId);
+        return invitesData.data;
+    } catch (error) {
+        console.error('Unable to get user invites:', error);
         return [];
     }
 };
@@ -78,5 +90,6 @@ export default {
     registerUser,
     getUserLists,
     getUserGroups,
+    getUserInvites,
     getShopper
 };
