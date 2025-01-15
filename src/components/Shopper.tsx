@@ -2,13 +2,11 @@ import { View, Text, StyleSheet } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import SwipeableItem from "react-native-swipeable-item";
-import { ItemType } from '@/stores/models/Category';
-import CheckBoxButton from './Buttons/CheckBoxButton';
 import RemoveItemButton from './Buttons/RemoveItemButton';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
-import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
+import { iconStyle } from '@/consts/iconButtons';
 import { ShopperType } from '@/stores/DomainStore';
 
 const Shopper = ({ shopper, onRemoveItem, indent }: { shopper: ShopperType, onRemoveItem: () => void, indent: number }) => {
@@ -24,6 +22,12 @@ const Shopper = ({ shopper, onRemoveItem, indent }: { shopper: ShopperType, onRe
     >
       <View style={[styles.itemLine, { paddingLeft: indent }]}>
         <View style={styles.itemContainer}>
+          <MaterialIcons
+            name="person"
+            size={fonts.rowIconSize}
+            color={colors.lightBrandColor}
+            style={iconStyle}
+          />
           <Text style={styles.item}>{shopper.nickName}</Text>
         </View>
       </View>

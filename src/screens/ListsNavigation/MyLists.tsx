@@ -13,7 +13,6 @@ import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { uiStore } from '@/stores/UIStore';
 import { sortByOrdinal } from '@/stores/utils/sorter';
-import logging from '@/config/logging';
 
 const renderListElement = (navigation: any) => {
   return ({ item, drag }: { item: ListType, drag: () => void }) => {
@@ -42,7 +41,7 @@ const styles = StyleSheet.create({
   }
 });
 
-const MyLists = ({route, navigation}: StackPropsListsMyLists) => {
+const MyLists = ({navigation}: StackPropsListsMyLists) => {
   const onPressAddList = () => {
     uiStore.setAddListModalVisible(true);
   };

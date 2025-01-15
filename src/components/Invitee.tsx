@@ -2,14 +2,12 @@ import { View, Text, StyleSheet } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import SwipeableItem from "react-native-swipeable-item";
-import { ItemType } from '@/stores/models/Category';
-import CheckBoxButton from './Buttons/CheckBoxButton';
 import RemoveItemButton from './Buttons/RemoveItemButton';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
-import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
-import { InviteeType, ShopperType } from '@/stores/DomainStore';
+import { iconStyle } from '@/consts/iconButtons';
+import { InviteeType } from '@/stores/DomainStore';
 
 const Invitee = ({ invitee, onRemoveItem, indent }: { invitee: InviteeType, onRemoveItem: () => void, indent: number }) => {
   return (
