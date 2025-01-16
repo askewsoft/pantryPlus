@@ -8,6 +8,7 @@ import {
 
 import cognitoConfig from '@/config/cognito';
 import { fetchUserAttributes } from 'aws-amplify/auth';
+import logging from '@/config/logging';
 
 const configuration = new Configuration({
   basePath: cognitoConfig.apiUrl,
@@ -28,7 +29,7 @@ const registerUser = async () => {
     authenticatedUser = {
       email: userAttributes?.email || '',
       id: userAttributes?.sub || '',
-      nickName: userAttributes?.nickname || ''
+      nickname: userAttributes?.nickname || ''
     };
 
     try {
@@ -76,6 +77,22 @@ const getUserInvites = async ({ user }: { user: Shopper }): Promise<Array<Group>
     }
 };
 
+const acceptInvite = async ({ xAuthUser, shopperId, inviteId }: { xAuthUser: string, shopperId: string, inviteId: string }): Promise<void> => {
+    try {
+        await shopperApi.acceptInvite(xAuthUser, shopperId, inviteId);
+    } catch (error) {
+        console.error('Unable to accept invite:', error);
+    }
+};
+
+const declineInvite = async ({ xAuthUser, shopperId, inviteId }: { xAuthUser: string, shopperId: string, inviteId: string }): Promise<void> => {
+    try {
+        await shopperApi.declineInvite(xAuthUser, shopperId, inviteId);
+    } catch (error) {
+        console.error('Unable to decline invite:', error);
+    }
+};
+
 const getShopper = async ({ shopperId, xAuthUser }: { shopperId: string, xAuthUser: string }): Promise<Shopper> => {
     try {
         const shopperData = await shopperApi.retrieveShopper(xAuthUser, shopperId);
@@ -91,5 +108,7 @@ export default {
     getUserLists,
     getUserGroups,
     getUserInvites,
+    acceptInvite,
+    declineInvite,
     getShopper
 };

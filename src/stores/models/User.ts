@@ -2,21 +2,14 @@ import { flow, t } from 'mobx-state-tree';
 import api from '@/api';
 import { GroupModel } from '@/stores/models/Group';
 import { Group } from 'pantryPlusApiClient';
+import logging from '@/config/logging';
 
 export const UserModel = t
     .model("UserModel",{
         id: t.identifier,
         email: t.string,
-        nickName: t.string,
-        invites: t.array(t.model({
-            id: t.identifier,
-            name: t.string,
-            owner: t.model({
-                id: t.identifier,
-                email: t.string,
-                nickName: t.string
-            })
-        }))
+        nickname: t.string,
+        invites: t.array(t.late(() => GroupModel))
     })
     .views(self => ({
         get numInvites(): number {
@@ -24,12 +17,24 @@ export const UserModel = t
         }
     }))
     .actions(self => ({
-        setNickName: (nickName: string) => {
+        setNickName: (nickname: string) => {
             // TODO: update shopper nickname in DB
-            self.nickName = nickName;
+            self.nickname = nickname;
         },
         getInvites: flow(function* () {
             const invitesData = yield api.shopper.getUserInvites({ user: self });
             self.invites?.replace(invitesData.map((invite: Group) => GroupModel.create(invite)));
+        }),
+        acceptInvite: flow(function* (inviteId: string) {
+            const xAuthUser = self.email!;
+            const shopperId = self.id!;
+            yield api.shopper.acceptInvite({ xAuthUser, shopperId, inviteId });
+            self.invites?.replace(self.invites?.filter(invite => invite.id !== inviteId));
+        }),
+        declineInvite: flow(function* (inviteId: string) {
+            const xAuthUser = self.email!;
+            const shopperId = self.id!;
+            yield api.shopper.declineInvite({ xAuthUser, shopperId, inviteId });
+            self.invites?.replace(self.invites?.filter(invite => invite.id !== inviteId));
         })
     }));
