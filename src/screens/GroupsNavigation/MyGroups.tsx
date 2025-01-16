@@ -2,7 +2,6 @@ import { Text, StyleSheet, Pressable } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { NestableScrollContainer, NestableDraggableFlatList } from "react-native-draggable-flatlist";
-import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { domainStore, GroupType } from '@/stores/DomainStore';
@@ -13,12 +12,12 @@ import AddGroupModal from './modals/AddGroupModal';
 
 import fonts from '@/consts/fonts';
 import colors from '@/consts/colors';
+import { StackPropsMyGroups } from '@/types/GroupNavTypes';
 
-const MyGroups = () => {
+const MyGroups = ({navigation}: StackPropsMyGroups) => {
   const numInvites = domainStore.user?.numInvites || 0;
-  const navigation = useNavigation();
 
-  const onPressInvites = (navigation: any) => {
+  const onPressInvites = () => {
     navigation.navigate('MyInvites');
   }
 
@@ -37,7 +36,7 @@ const MyGroups = () => {
 
   const InviteNotice = () => {
     return (
-      <Pressable onPress={() => onPressInvites(navigation)} style={styles.inviteBadge}>
+      <Pressable onPress={onPressInvites} style={styles.inviteBadge}>
         <MaterialIcons name="notifications-active" size={fonts.rowIconSize} color={'white'} style={{padding: 5}} />
         <Text style={styles.badgeText}>Awaiting Invites: {numInvites}</Text>
       </Pressable>
@@ -46,7 +45,7 @@ const MyGroups = () => {
 
   return (
     <NestableScrollContainer style={styles.container}>
-      {numInvites >= 0 && <InviteNotice />}
+      {numInvites > 0 && <InviteNotice />}
       <NestableDraggableFlatList
         data={toJS(domainStore.groups)}
         renderItem={renderGroupElement}

@@ -1,17 +1,17 @@
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, FlatList } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { NestableScrollContainer, NestableDraggableFlatList } from "react-native-draggable-flatlist";
 
 import { domainStore } from '@/stores/DomainStore';
 import Invite from '@/components/Invite';
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
+import { StackPropsMyInvites } from '@/types/GroupNavTypes';
 
-const MyInvites = () => {
+const MyInvites = ({navigation}: StackPropsMyInvites) => {
   const renderInvite = ({ item }: { item: any }) => {
     return (
-      <Invite key={item.id} inviteId={item.id} />
+      <Invite navigation={navigation} key={item.id} inviteId={item.id} />
     );
   }
 
@@ -23,16 +23,13 @@ const MyInvites = () => {
         Only accept invites from email addresses
         that you recognize and trust
       </Text>
-      <Invite inviteId={invites[0]?.id} />
-      <Invite inviteId={invites[1]?.id} />
+      <FlatList
+        data={toJS(invites)}
+        renderItem={renderInvite}
+        keyExtractor={invite => invite.id}
+        style={styles.invites}
+      />
     </View>
-    // <NestableScrollContainer style={styles.container}>
-    //   <NestableDraggableFlatList
-    //     data={toJS(domainStore.user?.invites || [])}
-    //     renderItem={renderInvite}
-    //     keyExtractor={invite => invite.id}
-    //   />
-    // </NestableScrollContainer>
   );
 }
 
@@ -46,8 +43,13 @@ const styles = StyleSheet.create({
   instructions: {
     color: colors.white,
     fontSize: fonts.messageTextSize,
-    backgroundColor: colors.lightBrandColor,
+    backgroundColor: colors.alertColor,
     padding: 10,
+  },
+  invites: {
+    flex: 1,
+    backgroundColor: colors.itemBackground,
+    height: '100%',
   },
 });
 

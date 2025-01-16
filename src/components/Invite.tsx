@@ -1,16 +1,28 @@
 import { View, Text, StyleSheet, Button } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
+import { StackPropsMyInvites } from '@/types/GroupNavTypes';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
-import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 
 import { domainStore } from '@/stores/DomainStore';
+import logging from '@/config/logging';
 
-const Invite = ({inviteId}: {inviteId: string}) => {
-  // const invite = domainStore.groups.find(g => g.id === inviteId);
-  const xAuthUser = domainStore.user?.email!;
+const Invite = ({navigation, inviteId}: {navigation: StackPropsMyInvites['navigation'], inviteId: string}) => {
+  const invite = domainStore.user?.invites.find(i => i.id === inviteId);
+  const user = domainStore.user;
+
+  const onAccept = () => {
+    user?.acceptInvite(inviteId).then(() => {
+      domainStore.loadGroups();
+      navigation.navigate('MyGroups');
+    });
+  }
+
+  const onDecline = () => {
+    user?.declineInvite(inviteId);
+  }
 
   return (
     <View style={styles.cardContainer}>
@@ -25,18 +37,18 @@ const Invite = ({inviteId}: {inviteId: string}) => {
         <View style={styles.cardSection}>
           <Text style={styles.cardContent}>
             You are invited by owner &nbsp;
-            <Text style={styles.title}>steve.quince@gmail.com</Text>
+            <Text style={styles.title}>{invite?.owner?.email}</Text>
           </Text>
         </View>
         <View style={styles.cardSection}>
           <Text style={styles.cardContent}>
             to join the group &nbsp;
-            <Text style={styles.title}>Family</Text>
+            <Text style={styles.title}>{invite?.name}</Text>
           </Text> 
         </View>
         <View style={styles.buttonSection}>
-          <Button title="Decline" onPress={() => {}} color={colors.brandColor} />
-          <Button title="Accept" onPress={() => {}} color={colors.brandColor} />
+          <Button title="Decline" onPress={onDecline} color={colors.brandColor} />
+          <Button title="Accept" onPress={onAccept} color={colors.brandColor} />
         </View>
       </View>
     </View>
