@@ -28,7 +28,7 @@ const Shopper = ({ shopper, onRemoveItem, indent }: { shopper: ShopperType, onRe
             color={colors.lightBrandColor}
             style={iconStyle}
           />
-          <Text style={styles.item}>{shopper.nickName}</Text>
+          <Text style={styles.item}>{shopper.nickname}</Text>
         </View>
       </View>
     </SwipeableItem>

@@ -12,7 +12,7 @@ const Owner = ({ owner, indent }: { owner: ShopperType, indent: number }) => {
     <View style={[styles.itemLine, { paddingLeft: indent }]}>
       <View style={styles.itemContainer}>
         <Ionicons name="person-circle-outline" size={fonts.rowIconSize} color={colors.lightBrandColor} style={iconStyle} />
-        <Text style={styles.item}>{owner.nickName}</Text>
+        <Text style={styles.item}>{owner.nickname}</Text>
       </View>
     </View>
   );

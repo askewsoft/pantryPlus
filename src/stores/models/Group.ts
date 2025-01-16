@@ -3,7 +3,8 @@ import { ShopperModel } from './Shopper';
 import { InviteeModel } from './Invitee';
 
 import api from '@/api';
-import { InviteeType, ShopperType, UserType, MemberType } from '../DomainStore';
+import { InviteeType, ShopperType, IUser, MemberType } from '../DomainStore';
+import { Shopper } from 'pantryPlusApiClient';
 
 import logging from '@/config/logging';
  
@@ -28,8 +29,8 @@ export const GroupModel = t.model('GroupModel', {
     loadGroupShoppers: flow(function* ({xAuthUser}: {xAuthUser: string}) {
         const groupId = self.id;
         const members = yield api.group.getGroupShoppers({ groupId, xAuthUser });
-        const shoppers = members.map((member: ShopperType) => {
-            return ShopperModel.create({ id: member.id, email: member.email, nickName: member.nickName });
+        const shoppers = members.map((member: Shopper) => {
+            return ShopperModel.create({ id: member.id, email: member.email, nickname: member.nickname });
         });
         self.shoppers?.replace(shoppers);
     }),
@@ -41,7 +42,7 @@ export const GroupModel = t.model('GroupModel', {
         });
         self.invitees?.replace(invitees);
     }),
-    addShopperById: flow(function* ({shopperId, user}: {shopperId: string, user: UserType}) {
+    addShopperById: flow(function* ({shopperId, user}: {shopperId: string, user: IUser}) {
         const groupId = self.id;
         const xAuthUser = user.email;
         if (self.owner.id !== user.id) {
@@ -50,9 +51,9 @@ export const GroupModel = t.model('GroupModel', {
         }
         yield api.group.addShopperToGroup({ groupId, shopperId, xAuthUser });
         const shopper = yield api.shopper.getShopper({shopperId, xAuthUser}) ;
-        self.shoppers?.push(ShopperModel.create({ id: shopper.id, email: shopper.email, nickName: shopper.nickName }));
+        self.shoppers?.push(ShopperModel.create({ id: shopper.id, email: shopper.email, nickname: shopper.nickname }));
     }),
-    addShopperByEmail: flow(function* ({inviteeEmail, user}: {inviteeEmail: string, user: UserType}) {
+    addShopperByEmail: flow(function* ({inviteeEmail, user}: {inviteeEmail: string, user: IUser}) {
         const groupId = self.id;
         const xAuthUser = user.email;
         if (self.owner.id !== user.id) {
@@ -62,7 +63,7 @@ export const GroupModel = t.model('GroupModel', {
         yield api.group.addInviteeToGroup({ groupId, inviteeEmail, xAuthUser });
         self.invitees?.push(InviteeModel.create({ email: inviteeEmail }));
     }),
-    removeShopper: flow(function* ({shopperId, user}: {shopperId: string, user: UserType}) {
+    removeShopper: flow(function* ({shopperId, user}: {shopperId: string, user: IUser}) {
         const groupId = self.id;
         const xAuthUser = user.email;
         if (self.owner.id !== user.id) {
@@ -71,7 +72,7 @@ export const GroupModel = t.model('GroupModel', {
         }
         yield api.group.removeShopperFromGroup({ groupId, shopperId, xAuthUser });
     }),
-    removeInvitee: flow(function* ({shopperEmail, user}: {shopperEmail: string, user: UserType}) {
+    removeInvitee: flow(function* ({shopperEmail, user}: {shopperEmail: string, user: IUser}) {
         const groupId = self.id;
         const xAuthUser = user.email;
         if (self.owner.id !== user.id) {

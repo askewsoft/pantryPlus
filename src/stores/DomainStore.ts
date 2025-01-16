@@ -26,6 +26,13 @@ export type ListType = Instance<typeof ListModel>;
 export type GroupType = Instance<typeof GroupModel>;
 export type LocationType = Instance<typeof LocationModel>;
 
+export interface IUser {
+    id: string;
+    email: string;
+    nickname: string;
+    invites: GroupType[];
+}
+
 const DomainStoreModel = t
     .model("DomainStoreModel", {
         user: t.maybe(UserModel),
