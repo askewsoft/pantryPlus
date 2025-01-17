@@ -5,6 +5,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useAuthenticator } from '@aws-amplify/ui-react-native';
 
 import { domainStore } from '@/stores/DomainStore';
+import { uiStore } from '@/stores/UIStore';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
@@ -13,6 +14,7 @@ const MySettings = ({ navigation }: StackPropsMySettings) => {
   const { signOut } = useAuthenticator();
   const logout = () => {
     domainStore.initialize();
+    uiStore.initialize();
     signOut();
   }
   return (

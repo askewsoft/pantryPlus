@@ -24,6 +24,21 @@ export const UIStoreModel = t.model('UIStoreModel', {
     addItemToListID: t.optional(t.string, ''),
 })
 .actions(self => ({
+    initialize: () => {
+        self.showIntroScreen = false;
+        self.lastScreen = 'IntroScreen';
+        // self.lastUsedVersion = '1.0.0'; // intentionally not resetting this
+        self.signInOrUp = 'signIn';
+        self.listsLoaded = false;
+        self.groupsLoaded = false;
+        self.selectedShoppingList = null;
+        self.addListModalVisible = false;
+        self.addCategoryModalVisible = false;
+        self.addGroupModalVisible = false;
+        self.openCategories.clear();
+        self.addItemToCategoryID = '';
+        self.addItemToListID = '';
+    },
     setSignInOrUp(signInOrUp: 'signIn' | 'signUp') {
         self.signInOrUp = cast(signInOrUp);
     },
