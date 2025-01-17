@@ -4,11 +4,14 @@ import { MaterialIcons } from '@expo/vector-icons';
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import logging from '@/config/logging';
+import { domainStore } from '@/stores/DomainStore';
+
+const xAuthUser = domainStore.user?.email!;
 
 const RemoveCategoryButton = ({ categoryId, listId }: { categoryId: string, listId: string }) => {
     const onPressDelete = () => {
-        // logging.debug ? alert(`delete category: ${categoryId}, from list: ${listId}`) : null;
-        // TODO: remove category from list
+        const currList = domainStore.lists.find(l => l.id === listId);
+        currList?.removeCategory({ categoryId, xAuthUser });
     }
     return (
         <MaterialIcons.Button
