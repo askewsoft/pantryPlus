@@ -3,14 +3,16 @@ import { observer } from 'mobx-react';
 
 import { uiStore } from '@/stores/UIStore';
 import { domainStore, ListType } from '@/stores/DomainStore';
+
 import colors from '@/consts/colors';
+import fonts from '@/consts/fonts';
 import logging from '@/config/logging';
 
 const AddGroupModal = () => {
   return (
     <Modal
       visible={uiStore.addGroupModalVisible}
-      transparent={false}
+      transparent={true}
       animationType="slide"
     >
       <View style={styles.modalContainer}>
@@ -51,11 +53,11 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: colors.brandColor,
-    opacity: 0.9,
     paddingVertical: 50,
+    marginTop: '60%',
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: fonts.modalTitleSize,
     fontWeight: 'bold',
     marginBottom: 30,
     marginTop: 60,
@@ -68,7 +70,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     padding: 10,
     textAlign: 'center',
-    fontSize: 18,
+    fontSize: fonts.rowTextSize,
   },
 });
 

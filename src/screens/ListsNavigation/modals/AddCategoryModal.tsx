@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import { uiStore } from '@/stores/UIStore';
 import { domainStore } from '@/stores/DomainStore';
 import colors from '@/consts/colors';
+import fonts from '@/consts/fonts';
 
 const AddCategoryModal = () => {
   return (
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
     marginTop: '60%',
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: fonts.modalTitleSize,
     fontWeight: 'bold',
     marginBottom: 30,
     marginTop: 60,
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     padding: 10,
     textAlign: 'center',
-    fontSize: 18,
+    fontSize: fonts.rowTextSize,
   },
 });
 
