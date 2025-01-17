@@ -7,7 +7,6 @@ import { InviteeType, IUser, MemberType } from '../DomainStore';
 import { Shopper } from 'pantryPlusApiClient';
 
 import logging from '@/config/logging';
-import { UserModel } from './User';
  
 export const GroupModel = t.model('GroupModel', {
     id: t.identifier,
