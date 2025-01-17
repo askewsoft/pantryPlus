@@ -6,6 +6,7 @@ import { toJS } from 'mobx';
 import { StackPropsListsMyLists } from '@/types/ListNavTypes';
 import ListElement from '@/components/ListElement';
 import AddListModal from './modals/AddListModal';
+import ShareListModal from './modals/ShareListModal';
 
 import { domainStore, ListType } from '@/stores/DomainStore';
 
@@ -67,6 +68,7 @@ const MyLists = ({navigation}: StackPropsListsMyLists) => {
           keyExtractor={list => list.id}
         />
         <AddListModal />
+        <ShareListModal />
       </View>
     );
   }

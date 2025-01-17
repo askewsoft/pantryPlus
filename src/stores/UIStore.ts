@@ -22,6 +22,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
     openCategories: t.map(OpenCategory),
     addItemToCategoryID: t.optional(t.string, ''),
     addItemToListID: t.optional(t.string, ''),
+    shareModalVisible: false,
 })
 .actions(self => ({
     initialize: () => {
@@ -38,6 +39,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
         self.openCategories.clear();
         self.addItemToCategoryID = '';
         self.addItemToListID = '';
+        self.shareModalVisible = false;
     },
     setSignInOrUp(signInOrUp: 'signIn' | 'signUp') {
         self.signInOrUp = cast(signInOrUp);
@@ -77,6 +79,9 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setAddItemToListID(listID: string) {
         self.addItemToListID = listID;
+    },
+    setShareModalVisible(shareModalVisible: boolean) {
+        self.shareModalVisible = shareModalVisible;
     }
 }));
 
@@ -88,7 +93,7 @@ export const uiStore = UIStoreModel.create();
 persist('pantryPlusUI', uiStore, {
     storage: AsyncStorage,
     jsonify: true,
-    blacklist: ['addItemToCategoryID', 'addItemToListID', 'addGroupModalVisible', 'listsLoaded', 'groupsLoaded']
+    blacklist: ['addItemToCategoryID', 'addItemToListID', 'addGroupModalVisible', 'listsLoaded', 'groupsLoaded', 'shareModalVisible']
 });
 
 export const UIStoreContext = createContext<UIStoreType | null>(null);

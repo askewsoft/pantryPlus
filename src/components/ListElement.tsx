@@ -5,12 +5,14 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import { domainStore } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
+
 import fonts from '@/consts/fonts';
 import colors from '@/consts/colors';
 import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 
 const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navigation: any}) => {
   const list = domainStore.lists.find(list => list.id === id);
+  const userIsListOwner = list?.ownerId === domainStore.user?.id;
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(list!.name);
@@ -35,7 +37,8 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navi
   }
 
   const openShareModal = () => {
-    console.log('openShareModal');
+    uiStore.setSelectedShoppingList(id);
+    uiStore.setShareModalVisible(true);
   }
 
   return (
@@ -43,6 +46,7 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navi
       <Pressable style={styles.titleContainer}
         onPress={() => handlePress({ id })}
         onLongPress={prepareToEditName}
+        disabled={!userIsListOwner}
       >
         <MaterialIcons name="format-list-bulleted" size={fonts.rowIconSize} color={colors.brandColor} />
         {isEditing ? (
@@ -58,15 +62,18 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navi
         )}
       </Pressable>
       <View style={styles.buttonContainer}>
-        <MaterialIcons.Button
-          name="ios-share"
-          size={fonts.rowIconSize}
-          backgroundColor={colors.itemBackground}
-          color={colors.brandColor}
-          iconStyle={iconStyleStyle}
+        {userIsListOwner && (
+          <MaterialIcons.Button
+            name="ios-share"
+            size={fonts.rowIconSize}
+            backgroundColor={colors.itemBackground}
+            color={colors.brandColor}
+            iconStyle={iconStyleStyle}
           style={iconStyle}
+          underlayColor={colors.lightBrandColor}
           onPress={openShareModal}
-        />
+          />
+        )}
         <MaterialIcons.Button
           name="drag-indicator"
           size={fonts.rowIconSize}
