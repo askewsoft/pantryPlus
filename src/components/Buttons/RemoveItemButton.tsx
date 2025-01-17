@@ -16,6 +16,7 @@ const RemoveItemButton = ({ onPress }: { onPress: () => void }) => {
             color={colors.brandColor}
             iconStyle={{ padding: 0, margin: 0 }}
             style={{ alignSelf: 'flex-end', height: '95%' }}
+            underlayColor={colors.itemBackground}
             onLongPress={onPress}
         />
     );

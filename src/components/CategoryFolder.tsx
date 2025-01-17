@@ -95,6 +95,7 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
                   onLongPress={drag}
                   iconStyle={iconStyleStyle}
                   style={iconStyle}
+                  underlayColor={colors.lightBrandColor}
                 />
               </View>
             </View>

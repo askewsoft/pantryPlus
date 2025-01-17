@@ -13,6 +13,7 @@ const CheckBoxButton = () => {
       backgroundColor={colors.itemBackground}
       color={colors.brandColor}
       iconStyle={{ padding: 0, margin: 0 }}
+      underlayColor={colors.lightBrandColor}
       onPress={() => {
       }}
     />

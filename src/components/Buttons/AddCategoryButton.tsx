@@ -12,6 +12,7 @@ const AddCategoryButton = ({onPress, foreground, background}: {onPress: () => vo
       borderRadius={0}
       iconStyle={iconStyleStyle}
       style={iconStyle}
+      underlayColor={background}
       onPress={onPress}
     />
   )

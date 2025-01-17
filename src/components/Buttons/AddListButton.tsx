@@ -13,6 +13,7 @@ const AddListButton = ({onPress, dark}: {onPress: () => void, dark?: boolean}) =
       borderRadius={0}
       iconStyle={iconStyleStyle}
       style={iconStyle}
+      underlayColor={colors.lightBrandColor}
       onPress={onPress}
     />
   )

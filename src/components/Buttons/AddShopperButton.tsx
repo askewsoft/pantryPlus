@@ -13,6 +13,7 @@ const AddShopperButton = ({onPress, foreground, background}: {onPress: () => voi
       borderRadius={0}
       iconStyle={iconStyleStyle}
       style={iconStyle}
+      underlayColor={background}
       onPress={onPress}
     />
   )

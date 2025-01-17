@@ -35,6 +35,7 @@ const Item = ({ item, onRemoveItem, drag, indent }: { item: ItemType, onRemoveIt
           color={colors.brandColor}
           iconStyle={iconStyleStyle}
           style={iconStyle}
+          underlayColor={colors.lightBrandColor}
           onLongPress={drag}
           />
         </View>

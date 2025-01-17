@@ -31,6 +31,7 @@ const AddProductButton = ({categoryId, listId, foreground, background}: AddProdu
       backgroundColor={background}
       iconStyle={iconStyleStyle}
       style={iconStyle}
+      underlayColor={background}
       onPress={onPress}
     />
   )

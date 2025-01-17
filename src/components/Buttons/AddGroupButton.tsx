@@ -12,6 +12,7 @@ const AddGroupButton = ({onPress, foreground, background}: {onPress: () => void,
       borderRadius={0}
       iconStyle={iconStyleStyle}
       style={iconStyle}
+      underlayColor={background}
       onPress={onPress}
     />
   )
