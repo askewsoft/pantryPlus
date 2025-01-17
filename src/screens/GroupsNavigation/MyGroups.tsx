@@ -27,9 +27,10 @@ const MyGroups = ({navigation}: StackPropsMyGroups) => {
 
   const renderGroupElement = ({ item }: { item: GroupType }) => {
     const group = domainStore.groups.find(g => g.id === item.id);
+    const userIsGroupOwner = group?.owner.email === domainStore.user?.email;
     return (
-      <Group key={group!.id} groupId={group!.id} title={group!.name}>
-        <GroupMembers groupId={group!.id} />
+      <Group key={group!.id} groupId={group!.id} title={group!.name} userIsGroupOwner={userIsGroupOwner}>
+        <GroupMembers groupId={group!.id} userIsGroupOwner={userIsGroupOwner} />
       </Group>
     );
   }

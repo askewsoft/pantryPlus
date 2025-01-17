@@ -16,12 +16,17 @@ const Invite = ({navigation, inviteId}: {navigation: StackPropsMyInvites['naviga
   const onAccept = () => {
     user?.acceptInvite(inviteId).then(() => {
       domainStore.loadGroups();
-      navigation.navigate('MyGroups');
+      if (domainStore.user?.invites && domainStore.user?.invites.length <= 1) {
+        navigation.goBack();
+      }
     });
   }
 
   const onDecline = () => {
     user?.declineInvite(inviteId);
+    if (domainStore.user?.invites && domainStore.user?.invites.length <= 1) {
+      navigation.goBack();
+    }
   }
 
   return (

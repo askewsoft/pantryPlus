@@ -3,10 +3,11 @@ import { ShopperModel } from './Shopper';
 import { InviteeModel } from './Invitee';
 
 import api from '@/api';
-import { InviteeType, ShopperType, IUser, MemberType } from '../DomainStore';
+import { InviteeType, IUser, MemberType } from '../DomainStore';
 import { Shopper } from 'pantryPlusApiClient';
 
 import logging from '@/config/logging';
+import { UserModel } from './User';
  
 export const GroupModel = t.model('GroupModel', {
     id: t.identifier,
@@ -71,6 +72,10 @@ export const GroupModel = t.model('GroupModel', {
             return;
         }
         yield api.group.removeShopperFromGroup({ groupId, shopperId, xAuthUser });
+        const index = self.shoppers?.findIndex(shopper => shopper.id === shopperId);
+        if (index !== undefined && index >= 0) {
+            self.shoppers?.splice(index, 1);
+        }
     }),
     removeInvitee: flow(function* ({shopperEmail, user}: {shopperEmail: string, user: IUser}) {
         const groupId = self.id;
@@ -80,5 +85,9 @@ export const GroupModel = t.model('GroupModel', {
             return;
         }
         yield api.group.removeInviteeFromGroup({ groupId, inviteeEmail: shopperEmail, xAuthUser });
+        const index = self.invitees?.findIndex(invitee => invitee.email === shopperEmail);
+        if (index !== undefined && index >= 0) {
+            self.invitees?.splice(index, 1);
+        }
     }),
 }));

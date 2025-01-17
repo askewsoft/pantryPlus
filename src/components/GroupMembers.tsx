@@ -1,23 +1,26 @@
-import { useEffect } from 'react';
 import { StyleSheet, FlatList, Text } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { getType, isStateTreeNode } from 'mobx-state-tree';
 
 import { domainStore, InviteeType, ShopperType, MemberType } from '@/stores/DomainStore';
-import { uiStore } from '@/stores/UIStore';
 import Shopper from '@/components/Shopper';
 import Invitee from '@/components/Invitee';
 import Owner from '@/components/Owner';
 import colors from '@/consts/colors';
 
-const GroupMembers = ({ groupId }: { groupId: string }) => {
+const GroupMembers = ({ groupId, userIsGroupOwner }: { groupId: string, userIsGroupOwner: boolean }) => {
   const currGroup = domainStore.groups.find(g => g.id === groupId);
-  const xAuthUser = domainStore.user?.email!;
 
-  const onRemoveItem = (shopperId: string) => {
+  const onRemoveShopper = (shopperId: string) => {
     return () => {
-      // currGroup?.removeShopper({ shopperId, xAuthUser });
+      currGroup?.removeShopper({ shopperId, user: domainStore.user! });
+    }
+  }
+
+  const onRemoveInvitee = (inviteeEmail: string) => {
+    return () => {
+      currGroup?.removeInvitee({ shopperEmail: inviteeEmail, user: domainStore.user! });
     }
   }
 
@@ -39,13 +42,13 @@ const GroupMembers = ({ groupId }: { groupId: string }) => {
 
   const renderShopper = (member: ShopperType) => {
     return (
-      <Shopper shopper={member} onRemoveItem={onRemoveItem(member.id)} indent={30}/>
+      <Shopper shopper={member} onRemoveItem={onRemoveShopper(member.id)} indent={30} userIsGroupOwner={userIsGroupOwner}/>
     );
   }
 
   const renderInvitee = (member: InviteeType) => {
     return (
-      <Invitee invitee={member} onRemoveItem={onRemoveItem(member.email)} indent={30} />
+      <Invitee invitee={member} onRemoveItem={onRemoveInvitee(member.email)} indent={30} userIsGroupOwner={userIsGroupOwner}/>
     );
   }
 

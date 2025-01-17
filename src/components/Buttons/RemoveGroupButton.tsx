@@ -4,12 +4,13 @@ import { MaterialIcons } from '@expo/vector-icons';
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import logging from '@/config/logging';
+import { domainStore } from '@/stores/DomainStore';
 
 const RemoveGroupButton = ({ groupId }: { groupId: string }) => {
     const onPressDelete = () => {
-        logging.debug ? alert(`delete group: ${groupId}`) : null;
-        // TODO: remove group
+        domainStore.removeGroup(groupId);
     }
+
     return (
         <MaterialIcons.Button
             name="delete"

@@ -9,7 +9,7 @@ import fonts from '@/consts/fonts';
 import { iconStyle } from '@/consts/iconButtons';
 import { ShopperType } from '@/stores/DomainStore';
 
-const Shopper = ({ shopper, onRemoveItem, indent }: { shopper: ShopperType, onRemoveItem: () => void, indent: number }) => {
+const Shopper = ({ shopper, indent, userIsGroupOwner, onRemoveItem }: { shopper: ShopperType, indent: number, userIsGroupOwner: boolean, onRemoveItem: () => void }) => {
   return (
     <SwipeableItem
       key={shopper.id}
@@ -19,6 +19,7 @@ const Shopper = ({ shopper, onRemoveItem, indent }: { shopper: ShopperType, onRe
       renderUnderlayLeft={() => (
         <RemoveItemButton onPress={onRemoveItem} />
       )}
+      swipeEnabled={userIsGroupOwner}
     >
       <View style={[styles.itemLine, { paddingLeft: indent }]}>
         <View style={styles.itemContainer}>

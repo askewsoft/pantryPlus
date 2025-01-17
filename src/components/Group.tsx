@@ -14,7 +14,7 @@ import RemoveGroupButton from './Buttons/RemoveGroupButton';
 
 import logging from '@/config/logging';
 
-const Group = ({groupId, title, children}: {groupId: string, title: string, children: React.ReactNode}) => {
+const Group = ({groupId, title, userIsGroupOwner, children}: {groupId: string, title: string, userIsGroupOwner: boolean, children: React.ReactNode}) => {
   const currGroup = domainStore.groups.find(g => g.id === groupId);
   const xAuthUser = domainStore.user?.email!;
 
@@ -35,8 +35,10 @@ const Group = ({groupId, title, children}: {groupId: string, title: string, chil
   }
 
   const prepareToEditName = () => {
-    setEditedTitle(title);
-    setIsEditing(true);
+    if (userIsGroupOwner) {
+      setEditedTitle(title);
+      setIsEditing(true);
+    }
   }
 
   const onAddShopper = async () => {
@@ -56,10 +58,12 @@ const Group = ({groupId, title, children}: {groupId: string, title: string, chil
       renderUnderlayLeft={() => (
         <RemoveGroupButton groupId={groupId} />
       )}
+      swipeEnabled={userIsGroupOwner}
     >
       <View style={styles.container}>
         <Pressable
           onLongPress={prepareToEditName}
+          disabled={!userIsGroupOwner}
         >
         <View style={styles.titleContainer}>
           <MaterialIcons
@@ -79,11 +83,13 @@ const Group = ({groupId, title, children}: {groupId: string, title: string, chil
             />
           ) : (
             <Text style={styles.title}>{title}</Text>
-            )}
+          )}
+          {userIsGroupOwner && (
             <AddShopperButton onPress={() => setIsAddingShopper(true)} foreground={colors.white} background={colors.lightBrandColor} />
+          )}
           </View>
         </Pressable>
-        {isAddingShopper && (
+        {isAddingShopper && userIsGroupOwner && (
           <TextInput
             style={styles.memberInput}
             value={newShopperEmail}
@@ -111,6 +117,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
     paddingLeft: 20,
     paddingVertical: 7,
+    minHeight: fonts.rowIconSize + 24,
   },
   title: {
     flex: 1,

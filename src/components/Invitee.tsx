@@ -9,7 +9,7 @@ import fonts from '@/consts/fonts';
 import { iconStyle } from '@/consts/iconButtons';
 import { InviteeType } from '@/stores/DomainStore';
 
-const Invitee = ({ invitee, onRemoveItem, indent }: { invitee: InviteeType, onRemoveItem: () => void, indent: number }) => {
+const Invitee = ({ invitee, indent, userIsGroupOwner, onRemoveItem }: { invitee: InviteeType, indent: number, userIsGroupOwner: boolean, onRemoveItem: () => void }) => {
   return (
     <SwipeableItem
       key={invitee.email}
@@ -19,6 +19,7 @@ const Invitee = ({ invitee, onRemoveItem, indent }: { invitee: InviteeType, onRe
       renderUnderlayLeft={() => (
         <RemoveItemButton onPress={onRemoveItem} />
       )}
+      swipeEnabled={userIsGroupOwner}
     >
       <View style={[styles.itemLine, { paddingLeft: indent }]}>
         <View style={styles.itemContainer}>

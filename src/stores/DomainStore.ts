@@ -83,9 +83,15 @@ const DomainStoreModel = t
             const xAuthUser = self.user?.email!;
             const ownerId = self.user?.id!;
             const newGroupId = randomUUID();
-            const newGroup: GroupType = GroupModel.create({ id: newGroupId, name, owner: self.user! });
+            const owner = ShopperModel.create({ id: ownerId, email: self.user!.email, nickname: self.user!.nickname });
+            const newGroup: GroupType = GroupModel.create({ id: newGroupId, name, owner });
             yield api.group.createGroup({ name, newGroupId, xAuthUser });
             self.groups.push(newGroup);
+        }),
+        removeGroup: flow(function* (groupId: string) {
+            const xAuthUser = self.user?.email!;
+            yield api.group.deleteGroup({ groupId, xAuthUser });
+            self.groups.splice(self.groups.findIndex(g => g.id === groupId), 1);
         }),
         loadGroups: flow(function* () {
             const groupsData = yield api.shopper.getUserGroups({ user: self.user! });
