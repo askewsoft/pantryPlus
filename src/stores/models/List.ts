@@ -45,16 +45,21 @@ export const ListModel = t.model('ListModel', {
             console.error(`Error adding category to list: ${error}`);
         }
     }),
-    removeCategory(categoryId: string): void {
+    removeCategory: flow(function* ({ categoryId, xAuthUser }: { categoryId: string, xAuthUser: string }): Generator<any, any, any> {
         const index = self.categories?.findIndex(c => c.id === categoryId);
-        if (index !== undefined && index >= 0) {
-            self.categories!.splice(index, 1);
+        try {
+            yield api.list.deleteListCategory({ listId: self.id, categoryId, xAuthUser });
+            if (index !== undefined && index >= 0) {
+                self.categories!.splice(index, 1);
+            }
+        } catch (error) {
+            console.error(`Error removing category from list: ${error}`);
         }
-    },
-    assignGroupId(groupId: string): void {
+    }),
+    assignGroupId: flow(function* (groupId: string): Generator<any, any, any> {
         // TODO: add this to backend
         self.groupId = groupId;
-    },
+    }),
     loadCategories: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
         const categoriesData = yield api.list.getListCategories({ listId: self.id, xAuthUser });
         const categories = categoriesData.map(
