@@ -20,8 +20,8 @@ export const UIStoreModel = t.model('UIStoreModel', {
     addCategoryModalVisible: false,
     addGroupModalVisible: false,
     openCategories: t.map(OpenCategory),
-    addItemToCategoryID: t.optional(t.string, ''),
-    addItemToListID: t.optional(t.string, ''),
+    addItemToCategoryID: t.maybeNull(t.string),
+    addItemToListID: t.maybeNull(t.string),
     shareModalVisible: false,
 })
 .actions(self => ({
@@ -37,8 +37,8 @@ export const UIStoreModel = t.model('UIStoreModel', {
         self.addCategoryModalVisible = false;
         self.addGroupModalVisible = false;
         self.openCategories.clear();
-        self.addItemToCategoryID = '';
-        self.addItemToListID = '';
+        self.addItemToCategoryID = null;
+        self.addItemToListID = null;
         self.shareModalVisible = false;
     },
     setSignInOrUp(signInOrUp: 'signIn' | 'signUp') {
@@ -62,7 +62,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
     setAddListModalVisible(addListModalVisible: boolean) {
         self.addListModalVisible = addListModalVisible;
     },
-    setSelectedShoppingList(selectedShoppingList: string) {
+    setSelectedShoppingList(selectedShoppingList: string | null) {
         self.selectedShoppingList = cast(selectedShoppingList);
     },
     setAddCategoryModalVisible(addCategoryModalVisible: boolean) {
@@ -74,7 +74,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
     setOpenCategory(categoryId: string, open: boolean) {
         self.openCategories.put({ id: categoryId, open });
     },
-    setAddItemToCategoryID(categoryID: string) {
+    setAddItemToCategoryID(categoryID: string | null) {
         self.addItemToCategoryID = categoryID;
     },
     setAddItemToListID(listID: string) {
