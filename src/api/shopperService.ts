@@ -42,8 +42,8 @@ const registerUser = async () => {
 };
 
 const getUserLists = async ({ user }: { user: Shopper }): Promise<Array<List>> => {
-    const xAuthUser = user.email!;
-    const shopperId = user.id!;
+    const xAuthUser = user?.email!;
+    const shopperId = user?.id!;
     try {
         const listsData = await shopperApi.getLists(xAuthUser, shopperId);
         return listsData.data;
