@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { t, Instance, flow } from 'mobx-state-tree';
+import { t, Instance, flow, onAction } from 'mobx-state-tree';
 import { persist } from 'mst-persist';
 import { List } from 'pantryPlusApiClient';
 
@@ -40,6 +40,11 @@ const DomainStoreModel = t
         groups: t.array(GroupModel),
         locations: t.array(LocationModel),
     })
+    .views(self => ({
+        get groupsOwnedByUser() {
+            return self.groups.filter(group => group.owner.id === self.user?.id);
+        }
+    }))
     .actions(self => ({
         initUser: flow(function* () {
             const authenticatedUser = yield api.shopper.registerUser();
@@ -134,6 +139,22 @@ type DomainStoreType = Instance<typeof DomainStoreModel>;
 export const domainStore = DomainStoreModel.create({});
 export const DomainStoreContext = createContext<DomainStoreType | null>(null);
 export const DomainStoreContextProvider = DomainStoreContext.Provider;
+
+// this avoids circular dependencies in UserModel.ts
+onAction(domainStore, (call) => {
+    if (call.name === 'acceptInvite') {
+        domainStore.loadLists();
+    }
+}, true);
+
+onAction(domainStore, (call) => {
+    if (call.name === 'loadLists') {
+        domainStore.lists.forEach(list => {
+            list.loadCategories({ xAuthUser: domainStore.user?.email! });
+            list.loadListItems({ xAuthUser: domainStore.user?.email! });
+        });
+    }
+}, true);
 
 // saves to and loads from device storage
 persist('pantryPlusDomain', domainStore, {
