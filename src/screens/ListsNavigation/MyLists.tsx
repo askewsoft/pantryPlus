@@ -68,7 +68,7 @@ const MyLists = ({navigation}: StackPropsListsMyLists) => {
           keyExtractor={list => list.id}
         />
         <AddListModal />
-        <ShareListModal />
+        <ShareListModal navigation={navigation} />
       </View>
     );
   }

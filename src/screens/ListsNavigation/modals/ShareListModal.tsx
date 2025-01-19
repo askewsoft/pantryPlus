@@ -1,48 +1,115 @@
-import { Modal, View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { useState, useEffect } from 'react';
+import { Modal, View, Text, Button, StyleSheet } from 'react-native';
 import { observer } from 'mobx-react';
+import DropDownPicker, { ItemType } from 'react-native-dropdown-picker';
 
 import { uiStore } from '@/stores/UIStore';
-import { domainStore, ListType } from '@/stores/DomainStore';
+import { domainStore } from '@/stores/DomainStore';
+
 import colors from '@/consts/colors';
+import fonts from '@/consts/fonts';
 import logging from '@/config/logging';
 
-const AddListModal = () => {
+const ShareListModal = ({ navigation }: { navigation: any }) => {
+  const xAuthUser = domainStore.user!.email;
+  const placeholder = 'Select a Group';
+  const currList = domainStore.lists.find(list => list.id === uiStore.selectedShoppingList);
+  
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState<string | null>(null);
+  const [items, setItems] = useState<ItemType<string>[]>([]);
+
+  useEffect(() => {
+    const groupItems = domainStore.groupsOwnedByUser.map(group => ({ 
+      label: group.name, 
+      value: group.id 
+    }));
+    
+    const sharedWithGroup = groupItems.find(group => group.value === currList?.groupId);
+    if (sharedWithGroup) {
+      setValue(sharedWithGroup.value);
+    }
+    
+    setItems(groupItems);
+  }, [domainStore.groupsOwnedByUser, currList?.groupId]);
+
+  const onCancel = () => {
+    uiStore.setShareModalVisible(false);
+  }
+
+  const onUnshare = () => {
+    if (currList) {
+      currList.updateList({ name: currList.name, groupId: '', xAuthUser });
+    }
+    setValue(null);
+    uiStore.setSelectedShoppingList(null);
+    uiStore.setShareModalVisible(false);
+  }
+
+  const onSelectItem = async (item: ItemType<string> | undefined) => {
+    if (currList && item && item.value) {
+      currList.updateList({ name: currList.name, groupId: item.value, xAuthUser });
+    }
+    uiStore.setSelectedShoppingList(null);
+    uiStore.setShareModalVisible(false);
+  }
+
+  const onCreateNewGroup = () => {
+    uiStore.setShareModalVisible(false);
+    uiStore.setAddGroupModalVisible(true);
+    navigation.navigate('Groups', { screen: 'MyGroups' });
+  }
+
   return (
     <Modal
       visible={uiStore.shareModalVisible}
-      transparent={false}
+      transparent={true}
       animationType="slide"
     >
       <View style={styles.modalContainer}>
         <Text style={styles.modalTitle}>Share List</Text>
-        <TextInput
-            style={styles.input}
-            autoFocus={true}
-            inputMode="text"
-            lineBreakStrategyIOS="none"
-            clearButtonMode="while-editing"
-            enablesReturnKeyAutomatically={true}
-            keyboardAppearance="light"
-            maxLength={100}
-            placeholder="List Name"
-            placeholderTextColor={colors.lightBrandColor}
-            returnKeyType="done"
-            onSubmitEditing={onSubmit}
-        />
-        <Button
+        <Text style={styles.modalSubtitle}>{currList?.name}</Text>
+        {items.length > 0 &&
+          <DropDownPicker
+              items={items}
+              value={value}
+              open={open}
+              setItems={setItems}
+              setValue={setValue}
+              onSelectItem={onSelectItem}
+              setOpen={setOpen}
+              multiple={false}
+              containerStyle={styles.pickerContainer}
+              labelStyle={styles.input}
+              placeholder={placeholder}
+              placeholderStyle={styles.placeholderStyle}
+              listItemLabelStyle={styles.listItemLabelStyle}
+          />
+        }
+        <View style={styles.buttonContainer}>
+          <Button
             title="Cancel"
-            onPress={() => uiStore.setShareModalVisible(false)}
+            onPress={onCancel}
             color={colors.white}
-        />
+          />
+          <Button
+            title="Unshare"
+            onPress={onUnshare}
+            color={colors.white}
+          />
+        </View>
+        <View style={styles.createGroupContainer}>
+          <Text style={styles.createGroupText}>Need to create a new group?</Text>
+          <Button
+            title="Create Group"
+            onPress={onCreateNewGroup}
+            color={colors.white}
+          />
+        </View>
+      
       </View>
     </Modal>
   );
-}
-
-const onSubmit = async (evt: any) => {
-    // TODO: set group on list in the DB
-    uiStore.setSelectedShoppingList('');
-    uiStore.setShareModalVisible(false);
 }
 
 const styles = StyleSheet.create({
@@ -52,25 +119,52 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: colors.brandColor,
-    opacity: 0.9,
     paddingVertical: 50,
+    marginTop: '60%',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '80%',
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: fonts.modalTitleSize,
     fontWeight: 'bold',
     marginBottom: 30,
     marginTop: 60,
     color: colors.white,
   },
-  input: {
-    height: 40,
-    minWidth: "80%",
-    backgroundColor: colors.white,
-    marginBottom: 30,
-    padding: 10,
-    textAlign: 'center',
-    fontSize: 18,
+  modalSubtitle: {
+    fontSize: fonts.rowTextSize,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: colors.white,
   },
+  pickerContainer: {
+    width: '80%',
+  },
+  input: {
+    fontSize: fonts.rowTextSize,
+  },
+  placeholderStyle: {
+    color: colors.brandColor,
+    fontSize: fonts.rowTextSize,
+  },
+  listItemLabelStyle: {
+    color: colors.brandColor,
+    fontSize: fonts.rowTextSize,
+  },
+  createGroupContainer: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '80%',
+    marginTop: 50,
+  },
+  createGroupText: {
+    color: colors.white,
+    fontSize: fonts.rowTextSize - 2,
+  }
 });
 
-export default observer(AddListModal);  
+export default observer(ShareListModal);  

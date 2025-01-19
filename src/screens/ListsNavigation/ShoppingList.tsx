@@ -5,7 +5,6 @@ import { observer } from 'mobx-react-lite';
 import { DragEndParams } from 'react-native-draggable-flatlist';
 import { NestableScrollContainer, NestableDraggableFlatList } from "react-native-draggable-flatlist";
 
-
 import { StackPropsShoppingList } from '@/types/ListNavTypes';
 import CategoryFolder from '@/components/CategoryFolder';
 import CategoryItems from '@/components/CategoryItems';
@@ -14,12 +13,12 @@ import ItemInput from '@/components/ItemInput';
 import AddCategoryModal from './modals/AddCategoryModal';
 
 import { uiStore } from '@/stores/UIStore';
-import { domainStore, ListType } from '@/stores/DomainStore';
+import { domainStore } from '@/stores/DomainStore';
 import { CategoryType } from '@/stores/models/List';
 import colors from '@/consts/colors';
 import { sortByOrdinal } from '@/stores/utils/sorter';
 
-const ShoppingList = ({ route, navigation }: StackPropsShoppingList) => {
+const ShoppingList = ({ navigation }: StackPropsShoppingList) => {
   const { selectedShoppingList: listId } = uiStore;
   const currList = domainStore.lists.find((list) => list.id === listId);
   const xAuthUser = domainStore.user?.email!;
@@ -50,9 +49,12 @@ const ShoppingList = ({ route, navigation }: StackPropsShoppingList) => {
   }
 
   useEffect(() => {
-    navigation.setOptions({ title: currList?.name });
-    currList?.loadCategories({ xAuthUser });
-  }, [currList?.id, xAuthUser]);
+    if (currList?.id === uiStore.selectedShoppingList) {
+      navigation.setOptions({ title: currList?.name });
+      currList?.loadCategories({ xAuthUser });
+      currList?.loadListItems({ xAuthUser });
+    }
+  }, [currList?.id, xAuthUser, uiStore.selectedShoppingList]);
 
   return (
     <NestableScrollContainer style={styles.container}>
