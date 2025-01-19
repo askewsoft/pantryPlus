@@ -56,10 +56,6 @@ export const ListModel = t.model('ListModel', {
             console.error(`Error removing category from list: ${error}`);
         }
     }),
-    assignGroupId: flow(function* (groupId: string): Generator<any, any, any> {
-        // TODO: add this to backend
-        self.groupId = groupId;
-    }),
     loadCategories: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
         const categoriesData = yield api.list.getListCategories({ listId: self.id, xAuthUser });
         const categories = categoriesData.map(
