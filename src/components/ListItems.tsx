@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
@@ -8,6 +7,7 @@ import { domainStore } from '@/stores/DomainStore';
 import Item from './Item';
 import { ItemType } from '@/stores/models/List';
 import { sortByOrdinal } from '@/stores/utils/sorter';
+
 import colors from '@/consts/colors';
 
 const ListItems = ({ listId }: { listId: string }) => {
@@ -26,10 +26,6 @@ const ListItems = ({ listId }: { listId: string }) => {
         <Item item={currItem!} onRemoveItem={onRemoveItem(item.id)} drag={drag} indent={10}/>
     );
   }
-
-  useEffect(() => {
-    currList?.loadListItems ({ xAuthUser });
-  }, [xAuthUser]);
 
   return <NestableDraggableFlatList
     contentContainerStyle={styles.draggableFlatListStyle}

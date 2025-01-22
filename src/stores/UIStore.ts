@@ -93,7 +93,15 @@ export const uiStore = UIStoreModel.create();
 persist('pantryPlusUI', uiStore, {
     storage: AsyncStorage,
     jsonify: true,
-    blacklist: ['addItemToCategoryID', 'addItemToListID', 'addGroupModalVisible', 'listsLoaded', 'groupsLoaded', 'shareModalVisible']
+    blacklist: [
+        'addItemToCategoryID',
+        'addItemToListID',
+        'addGroupModalVisible',
+        'listsLoaded',
+        'groupsLoaded',
+        'shareModalVisible',
+        'selectedShoppingList'
+    ]
 });
 
 export const UIStoreContext = createContext<UIStoreType | null>(null);

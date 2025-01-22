@@ -92,6 +92,7 @@ const DomainStoreModel = t
             const newGroup: GroupType = GroupModel.create({ id: newGroupId, name, owner });
             yield api.group.createGroup({ name, newGroupId, xAuthUser });
             self.groups.push(newGroup);
+            return newGroupId;
         }),
         removeGroup: flow(function* (groupId: string) {
             const xAuthUser = self.user?.email!;
@@ -149,10 +150,7 @@ onAction(domainStore, (call) => {
 
 onAction(domainStore, (call) => {
     if (call.name === 'loadLists') {
-        domainStore.lists.forEach(list => {
-            list.loadCategories({ xAuthUser: domainStore.user?.email! });
-            list.loadListItems({ xAuthUser: domainStore.user?.email! });
-        });
+        uiStore.setListsLoaded(true);
     }
 }, true);
 

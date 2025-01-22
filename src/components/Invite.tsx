@@ -15,8 +15,6 @@ const Invite = ({navigation, inviteId}: {navigation: StackPropsMyInvites['naviga
 
   const onAccept = () => {
     user?.acceptInvite(inviteId).then(() => {
-      domainStore.loadLists();
-      domainStore.loadGroups();
       if (domainStore.user?.invites && domainStore.user?.invites.length <= 1) {
         navigation.goBack();
       }

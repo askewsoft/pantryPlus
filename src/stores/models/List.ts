@@ -1,4 +1,6 @@
 import { t, Instance, flow } from 'mobx-state-tree';
+import { randomUUID } from 'expo-crypto';
+import { Category, Item, List } from 'pantryPlusApiClient';
 
 import api from '@/api';
 
@@ -6,9 +8,6 @@ import { CategoryModel } from './Category';
 import { ItemModel } from './Item';
 
 import logging from '@/config/logging';
-
-import { randomUUID } from 'expo-crypto';
-import { Category, Item, List } from 'pantryPlusApiClient';
 
 export type ItemType = Instance<typeof ItemModel>;
 export type CategoryType = Instance<typeof CategoryModel>;
@@ -19,7 +18,7 @@ export const ListModel = t.model('ListModel', {
     name: t.string,
     ordinal: t.number, // zero-based index
     ownerId: t.string,
-    groupId: t.maybe(t.string),
+    groupId: t.maybeNull(t.string),
     categories: t.array(CategoryModel),
     items: t.array(ItemModel),
 })
@@ -57,32 +56,52 @@ export const ListModel = t.model('ListModel', {
         }
     }),
     loadCategories: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
-        const categoriesData = yield api.list.getListCategories({ listId: self.id, xAuthUser });
-        const categories = categoriesData.map(
-            (category: Category) => {
-                const { id, name, ordinal } = category;
-                return CategoryModel.create({ id, name, ordinal: ordinal ?? 0 });
+        // Check if the node is still in the tree
+        if (!self.id) return;
+
+        try {
+            const categoriesData = yield api.list.getListCategories({ listId: self.id, xAuthUser });
+            const categories = categoriesData.map(
+                (category: Category) => {
+                    const { id, name, ordinal } = category;
+                    return CategoryModel.create({ id, name, ordinal: ordinal ?? 0 });
+                }
+            );
+            // Replace categories array before loading category items
+            self.categories.clear();
+            self.categories.replace(categories);
+
+            // Load items for each category
+            for (const category of self.categories) {
+                if (self.id) {
+                    yield category.loadCategoryItems({ xAuthUser });
+                }
             }
-        );
-
-        // Load items for each category, before replacing categories array
-        for (const category of categories) {
-            yield category.loadCategoryItems({ xAuthUser });
+        } catch (error) {
+            console.error(`Error loading categories: ${error}`);
         }
-
-        // Now replace categories array
-        // self.categories.clear();
-        self.categories.replace(categories);
     }),
     loadListItems: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
-        const itemsData = yield api.list.getListItems({ listId: self.id, xAuthUser });
-        const items = itemsData.map(
-            (item: Item, index: number) => {
-                const { id, name, upc } = item;
-                return ItemModel.create({ id, name, upc, ordinal: index });
+        // Check if the node is still in the tree
+        if (!self.id) return;
+
+        try {
+            const itemsData = yield api.list.getListItems({ listId: self.id, xAuthUser });
+
+            const items = itemsData.map(
+                (item: Item, index: number) => {
+                    const { id, name, upc } = item;
+                    return ItemModel.create({ id, name, upc, ordinal: index });
+                }
+            );
+            // Only proceed if the node is still in the tree
+            if (self.id) {
+                self.items.clear();
+                self.items.replace(items);
             }
-        );
-        self.items.spliceWithArray(0, self.items.length, items);
+        } catch (error) {
+            console.error(`Error loading items: ${error}`);
+        }
     }),
     addItem: flow(function*({ item, xAuthUser }: { item: Pick<ItemType, 'name' | 'upc'>, xAuthUser: string }): Generator<any, any, any> {
         const newItemId = randomUUID();
@@ -136,7 +155,7 @@ export const ListModel = t.model('ListModel', {
     },
     setOrdinal: flow(function* (ordinal: number, xAuthUser: string): Generator<any, any, any> {
         try {
-            yield api.list.updateList({ list: { id: self.id, name: self.name, groupId: self.groupId, ordinal }, xAuthUser });
+            yield api.list.updateList({ list: { id: self.id, name: self.name, groupId: self.groupId ?? undefined, ordinal }, xAuthUser });
             self.ordinal = ordinal;
         } catch (error) {
             console.error(`Error updating list: ${error}`);
