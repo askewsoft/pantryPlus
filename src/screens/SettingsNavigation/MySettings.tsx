@@ -19,6 +19,10 @@ const MySettings = ({ navigation }: StackPropsMySettings) => {
   }
   return (
     <View style={styles.container}>
+      <View style={styles.loggedInTextContainer}>
+        <Text style={styles.loggedInText}>Logged in as {domainStore.user?.nickname}</Text>
+        <Text style={styles.loggedInText}>[{domainStore.user?.email}]</Text>
+      </View>
       <Pressable style={styles.buttonContainer} onPress={() => navigation.navigate('Profile')}>
         <MaterialIcons
           name="person"
@@ -53,8 +57,19 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    paddingVertical: 40,
     backgroundColor: colors.detailsBackground,
+  },
+  loggedInText: {
+    fontSize: fonts.rowTextSize,
+    color: colors.brandColor,
+    flexWrap: 'wrap',
+  },
+  loggedInTextContainer: {
+    flexDirection: 'column',
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 20,
   },
   buttonContainer: {
     flexDirection: 'row',
