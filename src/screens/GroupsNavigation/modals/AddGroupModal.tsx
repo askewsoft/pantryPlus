@@ -2,13 +2,39 @@ import { Modal, View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { observer } from 'mobx-react';
 
 import { uiStore } from '@/stores/UIStore';
-import { domainStore, ListType } from '@/stores/DomainStore';
+import { domainStore } from '@/stores/DomainStore';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import logging from '@/config/logging';
 
-const AddGroupModal = () => {
+
+const AddGroupModal = ({ navigation }: { navigation: any }) => {
+  const optionallyShareShoppingList = (newGroupId: string) => {
+    if (uiStore.selectedShoppingList) {
+      const selectedList = domainStore.lists.find(list => list.id === uiStore.selectedShoppingList);
+      if (selectedList) {
+        selectedList.updateList({ name: selectedList.name, groupId: newGroupId, xAuthUser: domainStore.user!.email });
+      }
+      uiStore.setShareModalVisible(true);
+      navigation.goBack();
+    }
+  };
+
+  const onSubmit = async (evt: any) => {
+    const newGroupId = await domainStore.addGroup(evt.nativeEvent.text);
+    uiStore.setAddGroupModalVisible(false);
+    optionallyShareShoppingList(newGroupId);
+  };
+
+  const onCancel = () => {
+    uiStore.setAddGroupModalVisible(false);
+    if (uiStore.selectedShoppingList) {
+      uiStore.setShareModalVisible(true);
+      navigation.goBack();
+    }
+  };
+
   return (
     <Modal
       visible={uiStore.addGroupModalVisible}
@@ -33,17 +59,12 @@ const AddGroupModal = () => {
         />
         <Button
             title="Cancel"
-            onPress={() => uiStore.setAddGroupModalVisible(false)}
+            onPress={onCancel}
             color={colors.white}
         />
       </View>
     </Modal>
   );
-}
-
-const onSubmit = async (evt: any) => {
-    domainStore.addGroup(evt.nativeEvent.text);
-    uiStore.setAddGroupModalVisible(false);
 }
 
 const styles = StyleSheet.create({

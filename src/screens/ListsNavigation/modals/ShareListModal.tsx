@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import DropDownPicker, { ItemType } from 'react-native-dropdown-picker';
 
 import { uiStore } from '@/stores/UIStore';
-import { domainStore } from '@/stores/DomainStore';
+import { domainStore, ListType } from '@/stores/DomainStore';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
@@ -13,27 +13,28 @@ import logging from '@/config/logging';
 const ShareListModal = ({ navigation }: { navigation: any }) => {
   const xAuthUser = domainStore.user!.email;
   const placeholder = 'Select a Group';
-  const currList = domainStore.lists.find(list => list.id === uiStore.selectedShoppingList);
   
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<string | null>(null);
   const [items, setItems] = useState<ItemType<string>[]>([]);
+  const [currList, setCurrList] = useState<ListType | undefined>(undefined);
 
   useEffect(() => {
-    const groupItems = domainStore.groupsOwnedByUser.map(group => ({ 
+    const selectedList = domainStore.lists.find(list => list.id === uiStore.selectedShoppingList);
+    setCurrList(selectedList);
+
+    const groupsOwnedByUser = domainStore.groupsOwnedByUser.map(group => ({ 
       label: group.name, 
       value: group.id 
     }));
-    
-    const sharedWithGroup = groupItems.find(group => group.value === currList?.groupId);
-    if (sharedWithGroup) {
-      setValue(sharedWithGroup.value);
-    }
-    
-    setItems(groupItems);
-  }, [domainStore.groupsOwnedByUser, currList?.groupId]);
+    setItems(groupsOwnedByUser);
+
+    const groupToWhomListIsShared = groupsOwnedByUser.find(group => group.value === currList?.groupId);
+    groupToWhomListIsShared?.value ? setValue(groupToWhomListIsShared.value) : setValue(null);
+  }, [domainStore.groupsOwnedByUser, currList?.groupId, uiStore.selectedShoppingList]);
 
   const onCancel = () => {
+    uiStore.setSelectedShoppingList(null);
     uiStore.setShareModalVisible(false);
   }
 
@@ -55,6 +56,7 @@ const ShareListModal = ({ navigation }: { navigation: any }) => {
   }
 
   const onCreateNewGroup = () => {
+    // do not reset the selected shopping list, so that the new group modal can redirect to the shopping list screen
     uiStore.setShareModalVisible(false);
     uiStore.setAddGroupModalVisible(true);
     navigation.navigate('Groups', { screen: 'MyGroups' });
@@ -96,6 +98,7 @@ const ShareListModal = ({ navigation }: { navigation: any }) => {
             title="Unshare"
             onPress={onUnshare}
             color={colors.white}
+            disabled={!value}
           />
         </View>
         <View style={styles.createGroupContainer}>

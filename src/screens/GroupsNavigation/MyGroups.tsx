@@ -52,7 +52,7 @@ const MyGroups = ({navigation}: StackPropsMyGroups) => {
         renderItem={renderGroupElement}
         keyExtractor={group => group.id}
       />
-      <AddGroupModal />
+      <AddGroupModal navigation={navigation} />
     </NestableScrollContainer>
   );
 }

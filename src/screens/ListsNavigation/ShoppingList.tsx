@@ -49,11 +49,14 @@ const ShoppingList = ({ navigation }: StackPropsShoppingList) => {
   }
 
   useEffect(() => {
-    if (currList?.id === uiStore.selectedShoppingList) {
-      navigation.setOptions({ title: currList?.name });
-      currList?.loadCategories({ xAuthUser });
-      currList?.loadListItems({ xAuthUser });
-    }
+    const loadData = async () => {
+        if (currList?.id === uiStore.selectedShoppingList && xAuthUser) {
+            navigation.setOptions({ title: currList?.name });
+            await currList?.loadCategories({ xAuthUser });
+            await currList?.loadListItems({ xAuthUser });
+        }
+    };
+    loadData();
   }, [currList?.id, xAuthUser, uiStore.selectedShoppingList]);
 
   return (
