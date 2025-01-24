@@ -43,7 +43,7 @@ const Group = ({groupId, title, userIsGroupOwner, children}: {groupId: string, t
 
   const onAddShopper = async () => {
     if (newShopperEmail.trim().length > 0) {
-      await currGroup?.addShopperByEmail({ inviteeEmail: newShopperEmail, user: domainStore.user! });
+      await currGroup?.addShopperByEmail({ inviteeEmail: newShopperEmail.trim().toLowerCase(), user: domainStore.user! });
     }
     setIsAddingShopper(false);
     setNewShopperEmail('');

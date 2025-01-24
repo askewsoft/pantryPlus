@@ -1,4 +1,5 @@
-import { StyleSheet, FlatList, Text } from 'react-native';
+import { useEffect } from 'react';
+import { StyleSheet, FlatList } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { getType, isStateTreeNode } from 'mobx-state-tree';
@@ -20,7 +21,7 @@ const GroupMembers = ({ groupId, userIsGroupOwner }: { groupId: string, userIsGr
 
   const onRemoveInvitee = (inviteeEmail: string) => {
     return () => {
-      currGroup?.removeInvitee({ shopperEmail: inviteeEmail, user: domainStore.user! });
+      currGroup?.removeInvitee({ shopperEmail: inviteeEmail.trim().toLowerCase(), user: domainStore.user! });
     }
   }
 
