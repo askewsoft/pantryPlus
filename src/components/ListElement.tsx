@@ -18,7 +18,7 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navi
   const [editedTitle, setEditedTitle] = useState(list!.name);
 
   const onSubmit = async () => {
-    const { groupId = '' } = list!;
+    const { groupId } = list!;
     const xAuthUser = domainStore.user!.email;
     if (editedTitle.trim().toLowerCase() !== list!.name.trim().toLowerCase()) {
       await list?.updateList({ name: editedTitle, groupId, xAuthUser });
@@ -27,8 +27,10 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navi
   }
 
   const prepareToEditName = () => {
-    setEditedTitle(list!.name);
-    setIsEditing(true);
+    if (userIsListOwner) {
+      setEditedTitle(list!.name);
+      setIsEditing(true);
+    }
   }
 
   const handlePress = ({ id }: { id: string }) => {
@@ -46,7 +48,6 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navi
       <Pressable style={styles.titleContainer}
         onPress={() => handlePress({ id })}
         onLongPress={prepareToEditName}
-        disabled={!userIsListOwner}
       >
         <MaterialIcons name="format-list-bulleted" size={fonts.rowIconSize} color={colors.brandColor} />
         {isEditing ? (
