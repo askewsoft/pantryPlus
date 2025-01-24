@@ -1,3 +1,4 @@
+import { runInAction } from 'mobx';
 import { flow, Instance, t } from 'mobx-state-tree';
 import { randomUUID } from 'expo-crypto';
 
@@ -12,7 +13,7 @@ export const CategoryModel = t.model('CategoryModel', {
     id: t.identifier,
     name: t.string,
     ordinal: t.number, // zero-based index
-    items: t.array(ItemModel),
+    items: t.optional(t.array(ItemModel), []),
 }).actions(self => ({
     setName: flow(function*(name: string, xAuthUser: string): Generator<any, any, any> {
         const { id, ordinal = 0 } = self;
@@ -48,13 +49,16 @@ export const CategoryModel = t.model('CategoryModel', {
     loadCategoryItems: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
         try {
             const itemsData = yield api.category.loadCategoryItems({ categoryId: self.id, xAuthUser });
-            const items = itemsData.map(
+            const newItems = itemsData.map(
                 (item: Item, index: number) => {
                     const { id, name, upc } = item;
                     return ItemModel.create({ id, name, upc, ordinal: index });
                 }
             );
-            self.items.replace(items);
+            runInAction(() => {
+                self.items.clear();
+                newItems.forEach((item: ItemType) => self.items.push(item));
+            });
         } catch (error) {
             console.error(`Error loading category items: ${error}`);
         }

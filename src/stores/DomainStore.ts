@@ -81,7 +81,7 @@ const DomainStoreModel = t
                     return ListModel.create({ id, name, ownerId, groupId, ordinal });
                 }
             );
-            self.lists.spliceWithArray(0, self.lists.length, lists);
+            self.lists.replace(lists);
             uiStore.setListsLoaded(true);
         }),
         addGroup: flow(function* (name: string) {

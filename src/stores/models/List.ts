@@ -23,9 +23,9 @@ export const ListModel = t.model('ListModel', {
     items: t.array(ItemModel),
 })
 .actions(self => ({
-    updateList: flow(function*({ name, groupId, xAuthUser }: { name: string, groupId: string, xAuthUser: string }): Generator<any, any, any> {
+    updateList: flow(function*({ name, groupId, xAuthUser }: { name: string, groupId: string | null, xAuthUser: string }): Generator<any, any, any> {
         try {
-            yield api.list.updateList({ list: { id: self.id, name, groupId, ordinal: self.ordinal }, xAuthUser });
+            yield api.list.updateList({ list: { id: self.id, name, groupId: groupId ?? undefined, ordinal: self.ordinal }, xAuthUser });
             self.name = name;
             self.groupId = groupId;
         } catch (error) {
