@@ -11,21 +11,25 @@ import logging from '@/config/logging';
 
 const Invite = ({navigation, inviteId}: {navigation: StackPropsMyInvites['navigation'], inviteId: string}) => {
   const invite = domainStore.user?.invites.find(i => i.id === inviteId);
-  const user = domainStore.user;
 
   const onAccept = () => {
+    const user = domainStore.user;
     user?.acceptInvite(inviteId).then(() => {
-      if (domainStore.user?.invites && domainStore.user?.invites.length <= 1) {
+      domainStore.loadGroups();
+      domainStore.loadLists();
+      if (user?.invites.length <= 1) {
         navigation.goBack();
       }
     });
   }
 
   const onDecline = () => {
-    user?.declineInvite(inviteId);
-    if (domainStore.user?.invites && domainStore.user?.invites.length <= 1) {
-      navigation.goBack();
-    }
+    const user = domainStore.user;
+    user?.declineInvite(inviteId).then(() => {
+      if (user?.invites.length <= 1) {
+        navigation.goBack();
+      }
+    });
   }
 
   return (
