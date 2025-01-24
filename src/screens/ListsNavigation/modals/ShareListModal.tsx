@@ -20,9 +20,13 @@ const ShareListModal = ({ navigation }: { navigation: any }) => {
   const [currList, setCurrList] = useState<ListType | undefined>(undefined);
 
   useEffect(() => {
-    const selectedList = domainStore.lists.find(list => list.id === uiStore.selectedShoppingList);
-    setCurrList(selectedList);
+    if (uiStore.selectedShoppingList) {
+      const selectedList = domainStore.lists.find(list => list.id === uiStore.selectedShoppingList);
+      setCurrList(selectedList);
+    }
+  }, [uiStore.selectedShoppingList]);
 
+  useEffect(() => {
     const groupsOwnedByUser = domainStore.groupsOwnedByUser.map(group => ({ 
       label: group.name, 
       value: group.id 
@@ -30,8 +34,12 @@ const ShareListModal = ({ navigation }: { navigation: any }) => {
     setItems(groupsOwnedByUser);
 
     const groupToWhomListIsShared = groupsOwnedByUser.find(group => group.value === currList?.groupId);
-    groupToWhomListIsShared?.value ? setValue(groupToWhomListIsShared.value) : setValue(null);
-  }, [domainStore.groupsOwnedByUser, currList?.groupId, uiStore.selectedShoppingList]);
+    if (groupToWhomListIsShared?.value) {
+      setValue(groupToWhomListIsShared.value);
+    } else {
+      setValue(null);
+    }
+  }, [domainStore.groupsOwnedByUser, currList]);
 
   const onCancel = () => {
     uiStore.setSelectedShoppingList(null);
