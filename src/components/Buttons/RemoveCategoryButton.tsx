@@ -6,10 +6,9 @@ import fonts from '@/consts/fonts';
 import logging from '@/config/logging';
 import { domainStore } from '@/stores/DomainStore';
 
-const xAuthUser = domainStore.user?.email!;
-
 const RemoveCategoryButton = ({ categoryId, listId }: { categoryId: string, listId: string }) => {
     const onPressDelete = () => {
+        const xAuthUser = domainStore.user?.email!;
         const currList = domainStore.lists.find(l => l.id === listId);
         currList?.removeCategory({ categoryId, xAuthUser });
     }
