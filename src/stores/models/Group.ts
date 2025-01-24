@@ -12,8 +12,8 @@ export const GroupModel = t.model('GroupModel', {
     id: t.identifier,
     name: t.string,
     owner: t.late(() => ShopperModel),
-    shoppers: t.maybe(t.array(t.late(() => ShopperModel))),
-    invitees: t.maybe(t.array(t.late(() => InviteeModel))),
+    shoppers: t.optional(t.array(t.late(() => ShopperModel)), []),
+    invitees: t.optional(t.array(t.late(() => InviteeModel)), []),
 })
 .views(self => ({
     get members(): MemberType[] {
@@ -61,7 +61,8 @@ export const GroupModel = t.model('GroupModel', {
             return;
         }
         yield api.group.addInviteeToGroup({ groupId, inviteeEmail, xAuthUser });
-        self.invitees?.push(InviteeModel.create({ email: inviteeEmail }));
+        const newInvitee = InviteeModel.create({ email: inviteeEmail });
+        self.invitees.push(newInvitee);
     }),
     removeShopper: flow(function* ({shopperId, user}: {shopperId: string, user: IUser}) {
         const groupId = self.id;
