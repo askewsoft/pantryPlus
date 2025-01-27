@@ -1,10 +1,12 @@
 import { observer } from 'mobx-react-lite';
-import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
 import { StyleSheet, View, Text, Button } from 'react-native';
 import { toJS } from 'mobx';
+import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
+import SwipeableItem from "react-native-swipeable-item";
 
 import { StackPropsListsMyLists } from '@/types/ListNavTypes';
 import ListElement from '@/components/ListElement';
+import RemoveListButton from '@/components/Buttons/RemoveListButton';
 import AddListModal from './modals/AddListModal';
 import ShareListModal from './modals/ShareListModal';
 
@@ -17,9 +19,21 @@ import { sortByOrdinal } from '@/stores/utils/sorter';
 
 const renderListElement = (navigation: any) => {
   return ({ item, drag }: { item: ListType, drag: () => void }) => {
+    const userIsListOwner = item.ownerId === domainStore.user?.id;
     return (
       <ScaleDecorator activeScale={1.04}>
-        <ListElement id={item.id} drag={drag} navigation={navigation}/>
+        <SwipeableItem
+          key={item.id}
+          item={item}
+          overSwipe={20}
+          snapPointsLeft={[70]}
+          renderUnderlayLeft={() => (
+            <RemoveListButton listId={item.id} />
+          )}
+          swipeEnabled={userIsListOwner}
+        >
+          <ListElement id={item.id} drag={drag} navigation={navigation}/>
+        </SwipeableItem>
       </ScaleDecorator>
     );
   }

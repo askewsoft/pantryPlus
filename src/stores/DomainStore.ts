@@ -73,6 +73,11 @@ const DomainStoreModel = t
             yield api.list.createList({ list: {name, id: newListId, ownerId, ordinal, groupId: undefined}, xAuthUser });
             self.lists.push(newList);
         }),
+        removeList: flow(function* (listId: string) {
+            const xAuthUser = self.user?.email!;
+            yield api.list.removeList({ listId, xAuthUser });
+            self.lists.splice(self.lists.findIndex(l => l.id === listId), 1);
+        }),
         loadLists: flow(function* () {
             const listsData = yield api.shopper.getUserLists({ user: self.user! });
             const lists = listsData.map(

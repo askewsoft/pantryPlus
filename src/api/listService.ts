@@ -26,6 +26,14 @@ const updateList = async ({ list, xAuthUser }: { list: Omit<List, "ownerId">, xA
     }
 } 
 
+const removeList = async ({ listId, xAuthUser }: { listId: string, xAuthUser: string }) => {
+    try {
+        await listsApi.deleteList(xAuthUser, listId);
+    } catch (error) {
+        console.error(`Failed to removeList in DB: ${error}`);
+    }
+}
+
 const getListCategories = async ({ listId, xAuthUser }: { listId: string, xAuthUser: string }): Promise<Array<Category>> => {
     try {
         const categoriesData = await listsApi.getCategories(xAuthUser, listId);
@@ -91,4 +99,5 @@ export default {
     associateListItem,
     removeListItem,
     updateList,
+    removeList,
 };
