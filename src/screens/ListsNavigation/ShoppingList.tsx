@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { StyleSheet } from 'react-native';
+import { useEffect, useState } from 'react';
+import { StyleSheet, RefreshControl } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { DragEndParams } from 'react-native-draggable-flatlist';
@@ -22,6 +22,14 @@ const ShoppingList = ({ navigation }: StackPropsShoppingList) => {
   const { selectedShoppingList: listId } = uiStore;
   const currList = domainStore.lists.find((list) => list.id === listId);
   const xAuthUser = domainStore.user?.email!;
+  const [listItemsLoaded, setListItemsLoaded] = useState(true);
+  const loadData = async () => {
+      if (currList?.id === uiStore.selectedShoppingList && xAuthUser) {
+          navigation.setOptions({ title: currList?.name });
+          await currList?.loadCategories({ xAuthUser });
+          await currList?.loadListItems({ xAuthUser });
+      }
+  };
 
   const renderCategoryElement = () => {
     return ({ item, drag }: { item: CategoryType, drag: () => void }) => {
@@ -48,19 +56,18 @@ const ShoppingList = ({ navigation }: StackPropsShoppingList) => {
     });
   }
 
+  const onRefresh = async () => {
+    setListItemsLoaded(false);
+    await loadData();
+    setListItemsLoaded(true);
+  }
+
   useEffect(() => {
-    const loadData = async () => {
-        if (currList?.id === uiStore.selectedShoppingList && xAuthUser) {
-            navigation.setOptions({ title: currList?.name });
-            await currList?.loadCategories({ xAuthUser });
-            await currList?.loadListItems({ xAuthUser });
-        }
-    };
     loadData();
   }, [currList?.id, xAuthUser, uiStore.selectedShoppingList]);
 
   return (
-    <NestableScrollContainer style={styles.container}>
+    <NestableScrollContainer style={styles.container} refreshControl={<RefreshControl refreshing={!listItemsLoaded} onRefresh={onRefresh} />}>
       <ItemInput list={currList!} />
       <ListItems listId={listId!} />
       <NestableDraggableFlatList

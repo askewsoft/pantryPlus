@@ -1,4 +1,4 @@
-import { Text, StyleSheet, Pressable } from 'react-native';
+import { Text, StyleSheet, Pressable, RefreshControl } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { NestableScrollContainer, NestableDraggableFlatList } from "react-native-draggable-flatlist";
@@ -21,10 +21,6 @@ const MyGroups = ({navigation}: StackPropsMyGroups) => {
     navigation.navigate('MyInvites');
   }
 
-  if (!uiStore.groupsLoaded) {
-    return <Text>Loading...</Text>;
-  }
-
   const renderGroupElement = ({ item }: { item: GroupType }) => {
     const group = domainStore.groups.find(g => g.id === item.id);
     const userIsGroupOwner = group?.owner.email === domainStore.user?.email;
@@ -44,8 +40,14 @@ const MyGroups = ({navigation}: StackPropsMyGroups) => {
     );
   }
 
+  const onRefresh = async () => {
+    uiStore.setGroupsLoaded(false);
+    await domainStore.loadGroups();
+    uiStore.setGroupsLoaded(true);
+  }
+
   return (
-    <NestableScrollContainer style={styles.container}>
+    <NestableScrollContainer style={styles.container} refreshControl={<RefreshControl refreshing={!uiStore.groupsLoaded} onRefresh={onRefresh} />}>
       {numInvites > 0 && <InviteNotice />}
       <NestableDraggableFlatList
         data={toJS(domainStore.groups)}

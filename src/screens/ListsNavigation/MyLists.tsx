@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { StyleSheet, View, Text, Button } from 'react-native';
+import { StyleSheet, View, Text, Button, RefreshControl } from 'react-native';
 import { toJS } from 'mobx';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
 import SwipeableItem from "react-native-swipeable-item";
@@ -61,6 +61,12 @@ const MyLists = ({navigation}: StackPropsListsMyLists) => {
     uiStore.setAddListModalVisible(true);
   };
 
+  const onRefresh = async () => {
+    uiStore.setListsLoaded(false);
+    await domainStore.loadLists();
+    uiStore.setListsLoaded(true);
+  }
+
   if (domainStore.lists.length <= 0 && !uiStore.addListModalVisible) {
     return (
       <View style={styles.noListsContainer}>
@@ -80,6 +86,7 @@ const MyLists = ({navigation}: StackPropsListsMyLists) => {
           onDragEnd={domainStore.updateListOrder}
           renderItem={renderListElement(navigation)}
           keyExtractor={list => list.id}
+          refreshControl={<RefreshControl refreshing={!uiStore.listsLoaded} onRefresh={onRefresh} />}
         />
         <AddListModal />
         <ShareListModal navigation={navigation} />
