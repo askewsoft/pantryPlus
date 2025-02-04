@@ -11,9 +11,21 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location to automatically sort the items in your shopping lists.",
+          "isAndroidForegroundServiceEnabled": true
+        }
+      ]
+    ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.askewsoft.pantryplus"
+      "bundleIdentifier": "com.askewsoft.pantryplus",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to use your location to automatically sort the items in your shopping lists."
+      }
     },
     "android": {
       "adaptiveIcon": {

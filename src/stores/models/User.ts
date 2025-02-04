@@ -9,6 +9,7 @@ export const UserModel = t
         id: t.identifier,
         email: t.string,
         nickname: t.string,
+        locationEnabled: t.optional(t.boolean, false),
         invites: t.optional(t.array(t.late(() => GroupModel)), [])
     })
     .views(self => ({
@@ -19,7 +20,13 @@ export const UserModel = t
     .actions(self => ({
         setNickName: (nickname: string) => {
             // TODO: update shopper nickname in DB
+            // TODO: should we also update the IDP???
             self.nickname = nickname;
+        },
+        setEmail: (email: string) => {
+            // TODO: update shopper email in DB
+            // TODO: should we also update the IDP???
+            self.email = email;
         },
         getInvites: flow(function* () {
             const invitesData = yield api.shopper.getUserInvites({ user: self });
@@ -36,5 +43,8 @@ export const UserModel = t
             const shopperId = self.id!;
             yield api.shopper.declineInvite({ xAuthUser, shopperId, inviteId });
             self.invites.replace(self.invites.filter(invite => invite.id !== inviteId));
-        })
+        }),
+        setLocationEnabled: (locationEnabled: boolean) => {
+            self.locationEnabled = locationEnabled;
+        }
     }));
