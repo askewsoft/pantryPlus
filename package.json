@@ -4,6 +4,7 @@
   "main": "expo/AppEntry.js",
   "scripts": {
     "start": "NODE_NO_WARNINGS=1 expo start",
+    "prebuild": "NODE_NO_WARNINGS=1 expo prebuild --clean  # This will regenerate the native iOS files",
     "ios": "NODE_NO_WARNINGS=1 expo run:ios",
     "android": "NODE_NO_WARNINGS=1 expo run:android"
   },
