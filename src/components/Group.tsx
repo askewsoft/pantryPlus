@@ -9,7 +9,7 @@ import fonts from '@/consts/fonts';
 
 import { domainStore } from '@/stores/DomainStore';
 
-import AddShopperButton from './Buttons/AddShopperButton';
+import AddButton from './Buttons/AddButton';
 import RemoveGroupButton from './Buttons/RemoveGroupButton';
 
 import logging from '@/config/logging';
@@ -85,7 +85,7 @@ const Group = ({groupId, title, userIsGroupOwner, children}: {groupId: string, t
             <Text style={styles.title}>{title}</Text>
           )}
           {userIsGroupOwner && (
-            <AddShopperButton onPress={() => setIsAddingShopper(true)} foreground={colors.white} background={colors.lightBrandColor} />
+            <AddButton onPress={() => setIsAddingShopper(true)} foreground={colors.white} background={colors.lightBrandColor} materialIconName="person-add-alt" />
           )}
           </View>
         </Pressable>

@@ -14,7 +14,7 @@ import { uiStore } from '@/stores/UIStore';
 import { domainStore } from '@/stores/DomainStore';
 
 import logging from '@/config/logging';
-import AddProductButton from './Buttons/AddProductButton';
+import AddButton from './Buttons/AddButton';
 import RemoveCategoryButton from './Buttons/RemoveCategoryButton';
 
 const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string, title: string, drag: () => void, children: React.ReactNode}) => {
@@ -31,6 +31,11 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
       await currCategory?.setName(editedTitle, xAuthUser);
     }
     setIsEditing(false);
+  }
+
+  const onPressAddProduct = () => {
+    uiStore.setOpenCategory(categoryId, true);
+    uiStore.addItemToCategoryID !== categoryId ? uiStore.setAddItemToCategoryID(categoryId) : uiStore.setAddItemToCategoryID('');
   }
 
   const prepareToEditName = () => {
@@ -86,7 +91,7 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
               )}
               {/* TODO: encapsulate drag-indicator in a custom button */}
               <View style={styles.buttonContainer}>
-                <AddProductButton categoryId={categoryId} foreground={colors.white} background={colors.lightBrandColor} />
+                <AddButton onPress={onPressAddProduct} foreground={colors.white} background={colors.lightBrandColor} materialIconName="add-task" />
                 <MaterialIcons.Button
                   name="drag-indicator"
                   size={fonts.rowIconSize}

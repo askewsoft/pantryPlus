@@ -7,7 +7,7 @@ import stackNavScreenOptions from '@/consts/stackNavOptions';
 
 import MyGroups from './MyGroups';
 import MyInvites from './MyInvites';
-import AddGroupButton from '@/components/Buttons/AddGroupButton';
+import AddButton from '@/components/Buttons/AddButton';
 
 import colors from '@/consts/colors';
 import { uiStore } from '@/stores/UIStore';
@@ -21,9 +21,10 @@ const { Navigator, Screen } = createStackNavigator<GroupsStackParamList>();
 const renderHeader = () => {
   return (
     <View style={styles.headerContainer}>
-      <AddGroupButton onPress={onPressAddGroup}
+      <AddButton onPress={onPressAddGroup}
         foreground={colors.white}
         background={colors.brandColor}
+        materialIconName="add-circle"
       />
     </View>
   );

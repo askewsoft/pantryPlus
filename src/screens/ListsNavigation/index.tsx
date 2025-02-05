@@ -7,9 +7,7 @@ import MyLists from './MyLists';
 import ShoppingList from './ShoppingList';
 import PurchaseHistory from './PurchaseHistory';
 
-import AddListButton from '@/components/Buttons/AddListButton';
-import AddProductButton from '@/components/Buttons/AddProductButton';
-import AddCategoryButton from '@/components/Buttons/AddCategoryButton';
+import AddButton from '@/components/Buttons/AddButton';
 import { uiStore } from '@/stores/UIStore';
 import stackNavScreenOptions from '@/consts/stackNavOptions';
 import colors from '@/consts/colors';
@@ -26,6 +24,8 @@ const onBackPress = () => {
 */
 
 const ListsNavigation = () => {
+  const listId = uiStore.selectedShoppingList || '';
+
   const onPressAddList = () => {
     uiStore.setAddListModalVisible(true);
   };
@@ -34,11 +34,16 @@ const ListsNavigation = () => {
     uiStore.setAddCategoryModalVisible(true);
   };
 
+  const onPressAddProduct = () => {
+    // uiStore.setSelectedShoppingList(listId);
+    uiStore.addItemToListID !== listId ? uiStore.setAddItemToListID(listId) : uiStore.setAddItemToListID('');
+  }
+
   const ListHeaderRight = () => {
     return (
       <>
-        <AddProductButton foreground={colors.white} background={colors.brandColor} listId={uiStore.selectedShoppingList!} />
-        <AddCategoryButton foreground={colors.white} background={colors.brandColor} onPress={onPressAddCategory} />
+        <AddButton foreground={colors.white} background={colors.brandColor} materialIconName="add-task" onPress={onPressAddProduct} />
+        <AddButton foreground={colors.white} background={colors.brandColor} materialIconName="create-new-folder" onPress={onPressAddCategory} />
       </>
     );
   }
@@ -51,7 +56,7 @@ const ListsNavigation = () => {
           title: 'My Lists',
           headerMode: 'float', // ensures consistent header behavior on Android
           headerRight: () =>
-            <AddListButton dark={true} onPress={onPressAddList} />,
+            <AddButton foreground={colors.white} background={colors.brandColor} materialIconName="add-circle" onPress={onPressAddList} />,
         }}
       />
       <Screen name="ShoppingList"

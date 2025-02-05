@@ -1,12 +1,16 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { observer } from 'mobx-react-lite';
+
+import fonts from '@/consts/fonts';
 import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 
-const AddGroupButton = ({onPress, foreground, background}: {onPress: () => void, foreground: string, background: string}) => {
+type MaterialIconName = React.ComponentProps<typeof MaterialIcons>['name'];
+
+const AddButton = ({onPress, foreground, background, materialIconName}: {onPress: () => void, foreground: string, background: string, materialIconName: MaterialIconName}) => {
   return (
     <MaterialIcons.Button
-      name="add-circle"
-      size={24}
+      name={materialIconName}
+      size={fonts.topNavIconSize}
       color={foreground}
       backgroundColor={background}
       borderRadius={0}
@@ -18,4 +22,4 @@ const AddGroupButton = ({onPress, foreground, background}: {onPress: () => void,
   )
 }
 
-export default observer(AddGroupButton);
+export default observer(AddButton);
