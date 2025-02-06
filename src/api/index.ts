@@ -3,6 +3,7 @@ import listService from './listService';
 import categoryService from './categoryService';
 import itemService from './itemService';
 import groupService from './groupService';
+import locationService from './locationService';
 
 import {
     LocationsApi,
@@ -14,13 +15,11 @@ const configuration = new Configuration({
   basePath: cognitoConfig.apiUrl,
 });
 
-const locationsApi = new LocationsApi(configuration);
-
 const api = {
     shopper: shopperService,
     list: listService,
     item: itemService,
-    location: locationsApi,
+    location: locationService,
     group: groupService,
     category: categoryService,
 };

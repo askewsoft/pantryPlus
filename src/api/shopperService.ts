@@ -4,6 +4,7 @@ import {
     Configuration,
     List,
     Group,
+    Location,
 } from 'pantryPlusApiClient';
 
 import cognitoConfig from '@/config/cognito';
@@ -77,6 +78,18 @@ const getUserInvites = async ({ user }: { user: Shopper }): Promise<Array<Group>
     }
 };
 
+const getUserLocations = async ({ user }: { user: Shopper }): Promise<Array<Location>> => {
+    const xAuthUser = user.email!;
+    const shopperId = user.id!;
+    try {
+        const locationsData = await shopperApi.getLocations(xAuthUser, shopperId);
+        return locationsData.data;
+    } catch (error) {
+        console.error('Unable to get user locations:', error);
+        return [];
+    }
+};
+
 const acceptInvite = async ({ xAuthUser, shopperId, inviteId }: { xAuthUser: string, shopperId: string, inviteId: string }): Promise<void> => {
     try {
         await shopperApi.acceptInvite(xAuthUser, shopperId, inviteId);
@@ -108,6 +121,7 @@ export default {
     getUserLists,
     getUserGroups,
     getUserInvites,
+    getUserLocations,
     acceptInvite,
     declineInvite,
     getShopper
