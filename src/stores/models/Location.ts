@@ -1,8 +1,16 @@
 import { t } from 'mobx-state-tree';
 
+
 export const LocationModel = t.model('LocationModel', {
     id: t.identifier,
     name: t.string,
-    geoLocation: t.maybe(t.string),
-    createdBy: t.maybe(t.string),
-});
+    latitude: t.maybe(t.number),
+    longitude: t.maybe(t.number)
+}).views(self => ({
+    geoLocation() {
+        return {
+            latitude: self.latitude,
+            longitude: self.longitude
+        };
+    }
+}));

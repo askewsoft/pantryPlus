@@ -9,7 +9,6 @@ export const UserModel = t
         id: t.identifier,
         email: t.string,
         nickname: t.string,
-        locationEnabled: t.optional(t.boolean, false),
         invites: t.optional(t.array(t.late(() => GroupModel)), [])
     })
     .views(self => ({
@@ -43,8 +42,5 @@ export const UserModel = t
             const shopperId = self.id!;
             yield api.shopper.declineInvite({ xAuthUser, shopperId, inviteId });
             self.invites.replace(self.invites.filter(invite => invite.id !== inviteId));
-        }),
-        setLocationEnabled: (locationEnabled: boolean) => {
-            self.locationEnabled = locationEnabled;
-        }
+        })
     }));
