@@ -9,20 +9,23 @@ const OpenCategory = t.model('OpenCategory', {
 });
 
 export const UIStoreModel = t.model('UIStoreModel', {
-    showIntroScreen: false,
-    lastScreen: t.optional(t.enumeration('lastScreen', ['IntroScreen', 'WelcomeScreen', 'MyLists']), 'IntroScreen'),
-    lastUsedVersion: t.optional(t.string, '1.0.0'),
-    signInOrUp: t.optional(t.enumeration('signInOrUp', ['signIn', 'signUp']), 'signIn'),
-    listsLoaded: false,
-    groupsLoaded: false,
-    selectedShoppingList: t.maybeNull(t.string),
-    addListModalVisible: false,
     addCategoryModalVisible: false,
     addGroupModalVisible: false,
-    openCategories: t.map(OpenCategory),
     addItemToCategoryID: t.maybeNull(t.string),
     addItemToListID: t.maybeNull(t.string),
+    addListModalVisible: false,
+    addLocationModalVisible: false,
+    groupsLoaded: false,
+    lastScreen: t.optional(t.enumeration('lastScreen', ['IntroScreen', 'WelcomeScreen', 'MyLists']), 'IntroScreen'),
+    lastUsedVersion: t.optional(t.string, '1.0.0'),
+    listsLoaded: false,
+    locationsLoaded: false,
+    openCategories: t.map(OpenCategory),
+    selectedShoppingList: t.maybeNull(t.string),
+    selectedLocation: t.maybeNull(t.string),
     shareModalVisible: false,
+    showIntroScreen: false,
+    signInOrUp: t.optional(t.enumeration('signInOrUp', ['signIn', 'signUp']), 'signIn'),
 })
 .actions(self => ({
     initialize: () => {
@@ -31,11 +34,14 @@ export const UIStoreModel = t.model('UIStoreModel', {
         // self.lastUsedVersion = '1.0.0'; // intentionally not resetting this
         self.signInOrUp = 'signIn';
         self.listsLoaded = false;
+        self.locationsLoaded = false;
         self.groupsLoaded = false;
         self.selectedShoppingList = null;
+        self.selectedLocation = null;
         self.addListModalVisible = false;
         self.addCategoryModalVisible = false;
         self.addGroupModalVisible = false;
+        self.addLocationModalVisible = false;
         self.openCategories.clear();
         self.addItemToCategoryID = null;
         self.addItemToListID = null;
@@ -56,6 +62,9 @@ export const UIStoreModel = t.model('UIStoreModel', {
     setListsLoaded(listsLoaded: boolean) {
         self.listsLoaded = listsLoaded;
     },
+    setLocationsLoaded(locationsLoaded: boolean) {
+        self.locationsLoaded = locationsLoaded;
+    },
     setGroupsLoaded(groupsLoaded: boolean) {
         self.groupsLoaded = groupsLoaded;
     },
@@ -65,11 +74,17 @@ export const UIStoreModel = t.model('UIStoreModel', {
     setSelectedShoppingList(selectedShoppingList: string | null) {
         self.selectedShoppingList = cast(selectedShoppingList);
     },
+    setSelectedLocation(selectedLocation: string | null) {
+        self.selectedLocation = cast(selectedLocation);
+    },
     setAddCategoryModalVisible(addCategoryModalVisible: boolean) {
         self.addCategoryModalVisible = addCategoryModalVisible;
     },
     setAddGroupModalVisible(addGroupModalVisible: boolean) {
         self.addGroupModalVisible = addGroupModalVisible;
+    },
+    setAddLocationModalVisible(addLocationModalVisible: boolean) {
+        self.addLocationModalVisible = addLocationModalVisible;
     },
     setOpenCategory(categoryId: string, open: boolean) {
         self.openCategories.put({ id: categoryId, open });
@@ -94,13 +109,16 @@ persist('pantryPlusUI', uiStore, {
     storage: AsyncStorage,
     jsonify: true,
     blacklist: [
+        'addGroupModalVisible',
         'addItemToCategoryID',
         'addItemToListID',
-        'addGroupModalVisible',
-        'listsLoaded',
+        'addLocationModalVisible',
         'groupsLoaded',
+        'listsLoaded',
+        'locationsLoaded',
+        'selectedShoppingList',
+        'selectedLocation',
         'shareModalVisible',
-        'selectedShoppingList'
     ]
 });
 
