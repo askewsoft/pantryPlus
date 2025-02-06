@@ -19,23 +19,20 @@ const MySettings = ({ navigation }: StackPropsMySettings) => {
   }
   return (
     <View style={styles.container}>
-      <View style={styles.loggedInTextContainer}>
-        <Text style={styles.loggedInText}>Logged in as {domainStore.user?.nickname}</Text>
-        <Text style={styles.loggedInText}>[{domainStore.user?.email}]</Text>
-      </View>
       <Pressable style={styles.buttonContainer} onPress={() => navigation.navigate('Profile')}>
         <MaterialIcons
           name="person"
           size={fonts.rowIconSize}
-          color={colors.brandColor}
+          color={colors.lightBrandColor}
         />
         <Text style={styles.buttonText}>Profile</Text>
+        <Text style={styles.loggedInText}>[{domainStore.user?.email}]</Text>
       </Pressable>
       <Pressable style={styles.buttonContainer} onPress={() => navigation.navigate('Permissions')}>
         <MaterialIcons
           name="security"
           size={fonts.rowIconSize}
-          color={colors.brandColor}
+          color={colors.lightBrandColor}
         />
         <Text style={styles.buttonText}>Permissions</Text>
       </Pressable>
@@ -43,7 +40,7 @@ const MySettings = ({ navigation }: StackPropsMySettings) => {
         <MaterialIcons
           name="logout"
           size={fonts.rowIconSize}
-          color={colors.brandColor}
+          color={colors.lightBrandColor}
         />
         <Text style={styles.buttonText}>Log Out</Text>
       </Pressable>
@@ -58,11 +55,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     backgroundColor: colors.detailsBackground,
+    paddingTop: 10,
   },
   loggedInText: {
-    fontSize: fonts.rowTextSize,
-    color: colors.brandColor,
+    fontSize: fonts.messageTextSize,
+    color: colors.lightBrandColor,
     flexWrap: 'wrap',
+    marginLeft: 10,
   },
   loggedInTextContainer: {
     flexDirection: 'column',
@@ -76,14 +75,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.detailsBackground,
     paddingHorizontal: 30,
-    paddingVertical: 20,
+    paddingVertical: 15,
     width: '100%',
   },
   buttonText: {
     marginLeft: 10,
     fontSize: fonts.rowTextSize,
     fontWeight: 'bold',
-    color: colors.brandColor,
+    color: colors.lightBrandColor,
   }
 });
 

@@ -91,12 +91,14 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navi
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
-    marginTop: 5,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: colors.itemBackground,
+    borderRadius: 10,
+    padding: 10,
+    marginHorizontal: 5,
+    marginTop: 5,
   },
   titleContainer: {
     display: 'flex',

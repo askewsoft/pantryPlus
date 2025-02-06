@@ -42,8 +42,18 @@ const ListsNavigation = () => {
   const ListHeaderRight = () => {
     return (
       <>
-        <AddButton foreground={colors.white} background={colors.brandColor} materialIconName="add-task" onPress={onPressAddProduct} />
-        <AddButton foreground={colors.white} background={colors.brandColor} materialIconName="create-new-folder" onPress={onPressAddCategory} />
+        <AddButton
+          foreground={colors.white}
+          background={colors.brandColor}
+          materialIconName="add-task"
+          onPress={onPressAddProduct}
+        />
+        <AddButton
+          foreground={colors.white}
+          background={colors.brandColor}
+          materialIconName="create-new-folder"
+          onPress={onPressAddCategory}
+        />
       </>
     );
   }
@@ -56,7 +66,12 @@ const ListsNavigation = () => {
           title: 'My Lists',
           headerMode: 'float', // ensures consistent header behavior on Android
           headerRight: () =>
-            <AddButton foreground={colors.white} background={colors.brandColor} materialIconName="add-circle" onPress={onPressAddList} />,
+            <AddButton
+              foreground={colors.white}
+              background={colors.brandColor}
+              materialIconName="add-circle"
+              onPress={onPressAddList}
+            />
         }}
       />
       <Screen name="ShoppingList"

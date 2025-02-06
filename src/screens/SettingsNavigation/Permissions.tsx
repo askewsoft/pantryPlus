@@ -14,11 +14,10 @@ const onLocationEnabledChange = async (value: boolean): Promise<void> => {
       return;
     }
   }
-  domainStore.user?.setLocationEnabled(value);
+  domainStore.setLocationEnabled(value);
 };
 
 const Permissions = () => {
-  const { user } = domainStore;
   return (
     <View style={sharedStyles.container}>
       <View style={sharedStyles.propertyContainer}>
@@ -27,9 +26,9 @@ const Permissions = () => {
         <Switch
           thumbColor={colors.white}
           trackColor={{ true: colors.lightBrandColor, false: colors.inactiveButtonColor }}
-          ios_backgroundColor={user?.locationEnabled ? colors.lightBrandColor : colors.detailsBackground}
+          ios_backgroundColor={domainStore.locationEnabled ? colors.lightBrandColor : colors.detailsBackground}
           style={sharedStyles.switch}
-          value={user?.locationEnabled}
+          value={domainStore.locationEnabled}
           onValueChange={onLocationEnabledChange}
         />
       </View>
