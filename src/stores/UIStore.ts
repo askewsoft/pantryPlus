@@ -21,8 +21,8 @@ export const UIStoreModel = t.model('UIStoreModel', {
     listsLoaded: false,
     locationsLoaded: false,
     openCategories: t.map(OpenCategory),
-    selectedShoppingList: t.maybeNull(t.string),
     selectedLocation: t.maybeNull(t.string),
+    selectedShoppingList: t.maybeNull(t.string),
     shareModalVisible: false,
     showIntroScreen: false,
     signInOrUp: t.optional(t.enumeration('signInOrUp', ['signIn', 'signUp']), 'signIn'),
@@ -116,8 +116,8 @@ persist('pantryPlusUI', uiStore, {
         'groupsLoaded',
         'listsLoaded',
         'locationsLoaded',
-        'selectedShoppingList',
         'selectedLocation',
+        'selectedShoppingList',
         'shareModalVisible',
     ]
 });
