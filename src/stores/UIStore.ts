@@ -21,6 +21,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
     listsLoaded: false,
     locationsLoaded: false,
     openCategories: t.map(OpenCategory),
+    purchaseHistoryLookbackDays: t.optional(t.number, 90),
     selectedLocation: t.maybeNull(t.string),
     selectedShoppingList: t.maybeNull(t.string),
     shareModalVisible: false,
@@ -29,23 +30,24 @@ export const UIStoreModel = t.model('UIStoreModel', {
 })
 .actions(self => ({
     initialize: () => {
-        self.showIntroScreen = false;
-        self.lastScreen = 'IntroScreen';
         // self.lastUsedVersion = '1.0.0'; // intentionally not resetting this
-        self.signInOrUp = 'signIn';
-        self.listsLoaded = false;
-        self.locationsLoaded = false;
-        self.groupsLoaded = false;
-        self.selectedShoppingList = null;
-        self.selectedLocation = null;
-        self.addListModalVisible = false;
         self.addCategoryModalVisible = false;
         self.addGroupModalVisible = false;
-        self.addLocationModalVisible = false;
-        self.openCategories.clear();
         self.addItemToCategoryID = null;
         self.addItemToListID = null;
+        self.addListModalVisible = false;
+        self.addLocationModalVisible = false;
+        self.groupsLoaded = false;
+        self.lastScreen = 'IntroScreen';
+        self.listsLoaded = false;
+        self.locationsLoaded = false;
+        self.openCategories.clear();
+        self.purchaseHistoryLookbackDays = 90;
+        self.selectedLocation = null;
+        self.selectedShoppingList = null;
         self.shareModalVisible = false;
+        self.showIntroScreen = false;
+        self.signInOrUp = 'signIn';
     },
     setSignInOrUp(signInOrUp: 'signIn' | 'signUp') {
         self.signInOrUp = cast(signInOrUp);
@@ -97,6 +99,9 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setShareModalVisible(shareModalVisible: boolean) {
         self.shareModalVisible = shareModalVisible;
+    },
+    setPurchaseHistoryLookbackDays(purchaseHistoryLookbackDays: number) {
+        self.purchaseHistoryLookbackDays = purchaseHistoryLookbackDays;
     }
 }));
 
