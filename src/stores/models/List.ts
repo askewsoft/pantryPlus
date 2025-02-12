@@ -1,6 +1,6 @@
 import { t, Instance, flow } from 'mobx-state-tree';
 import { randomUUID } from 'expo-crypto';
-import { Category, Item, List } from 'pantryPlusApiClient';
+import { Category, Item, List, LocationArea } from 'pantryPlusApiClient';
 
 import api from '@/api';
 
@@ -60,7 +60,18 @@ export const ListModel = t.model('ListModel', {
         if (!self.id) return;
 
         try {
-            const categoriesData = yield api.list.getListCategories({ listId: self.id, xAuthUser });
+            const userLocation = yield api.location.getCurrentLocation();
+            const locationArea: LocationArea = {
+                latitude: userLocation.coords.latitude,
+                longitude: userLocation.coords.longitude,
+                radius: 15000, // in meters -- TODO: make this dynamic?
+            }
+            const nearestStores = yield api.location.getNearbyLocations({ xAuthUser, locationArea });
+            console.log('nearestStores', nearestStores);
+            const xAuthLocation = nearestStores[0]?.id;
+            console.log('xAuthLocation', xAuthLocation);
+            console.log('getListCategories', { listId: self.id, xAuthUser, xAuthLocation });
+            const categoriesData = yield api.list.getListCategories({ listId: self.id, xAuthUser, xAuthLocation });
             const categories = categoriesData.map(
                 (category: Category) => {
                     const { id, name, ordinal } = category;

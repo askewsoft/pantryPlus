@@ -78,11 +78,11 @@ const getUserInvites = async ({ user }: { user: Shopper }): Promise<Array<Group>
     }
 };
 
-const getUserLocations = async ({ user }: { user: Shopper }): Promise<Array<Location>> => {
+const getRecentUserLocations = async ({ user, lookbackDays }: { user: Shopper, lookbackDays: number }): Promise<Array<Location>> => {
     const xAuthUser = user.email!;
     const shopperId = user.id!;
     try {
-        const locationsData = await shopperApi.getLocations(xAuthUser, shopperId);
+        const locationsData = await shopperApi.getLocations(xAuthUser, shopperId, lookbackDays);
         return locationsData.data;
     } catch (error) {
         console.error('Unable to get user locations:', error);
@@ -121,7 +121,7 @@ export default {
     getUserLists,
     getUserGroups,
     getUserInvites,
-    getUserLocations,
+    getRecentUserLocations,
     acceptInvite,
     declineInvite,
     getShopper

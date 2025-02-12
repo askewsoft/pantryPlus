@@ -1,3 +1,3 @@
-export function sortByOrdinal(a: any, b: any): number {
+export const sortByOrdinal = (a: any, b: any): number => {
     return a.ordinal - b.ordinal;
 }

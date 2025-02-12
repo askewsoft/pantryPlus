@@ -166,13 +166,13 @@ const DomainStoreModel = t
             const newLocation = LocationModel.create(location);
             self.locations.push(newLocation);
         }),
-        loadLocations: flow(function* () {
+        loadRecentLocations: flow(function* () {
             uiStore.setLocationsLoaded(false);
-            const locationsData = yield api.shopper.getUserLocations({ user: self.user! });
+            const locationsData = yield api.shopper.getRecentUserLocations({ user: self.user!, lookbackDays: uiStore.purchaseHistoryLookbackDays });
             const locations = locationsData.map(
                 (location: LocationType) => {
-                    const { id, name, latitude, longitude } = location;
-                    return LocationModel.create({ id, name, latitude, longitude });
+                    const { id, name, latitude, longitude, lastPurchaseDate } = location;
+                    return LocationModel.create({ id, name, latitude, longitude, lastPurchaseDate });
                 }
             );
             self.locations.replace(locations);

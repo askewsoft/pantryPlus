@@ -34,9 +34,9 @@ const removeList = async ({ listId, xAuthUser }: { listId: string, xAuthUser: st
     }
 }
 
-const getListCategories = async ({ listId, xAuthUser }: { listId: string, xAuthUser: string }): Promise<Array<Category>> => {
+const getListCategories = async ({ listId, xAuthUser, xAuthLocation }: { listId: string, xAuthUser: string, xAuthLocation: string }): Promise<Array<Category>> => {
     try {
-        const categoriesData = await listsApi.getCategories(xAuthUser, listId);
+        const categoriesData = await listsApi.getCategories(xAuthUser, xAuthLocation, listId);
         return categoriesData.data;
     } catch (error) {
         console.error(`Failed to getListCategories in DB: ${error}`);
