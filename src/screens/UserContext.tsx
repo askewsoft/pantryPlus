@@ -10,7 +10,7 @@ const UserContext = ({children}: {children: React.ReactNode}) => {
             domainStore.loadLists();
             domainStore.loadGroups();
             domainStore.user?.getInvites();
-            domainStore.loadLocations();
+            domainStore.loadRecentLocations();
         });
     } catch (error) {
         console.error('Unable to initialize user:', error);

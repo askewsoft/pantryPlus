@@ -8,6 +8,7 @@ import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 
 import InfoButton from '@/components/Buttons/InfoButton';
+import { formatAsDate } from '@/stores/utils/dateFormater';
 
 const LocationDetails = () => {
   const location = domainStore.locations.find(location => location.id === uiStore.selectedLocation);
@@ -26,6 +27,11 @@ const LocationDetails = () => {
         <Text style={styles.value} numberOfLines={1} ellipsizeMode='tail'>
           {location?.latitude?.toFixed(5)} / {location?.longitude?.toFixed(5)}
         </Text>
+      </View>
+      <View style={styles.propertyContainer}>
+        <InfoButton />
+        <Text style={styles.label}>Last Bought</Text>
+        <Text style={styles.value} numberOfLines={1} ellipsizeMode='tail'>{formatAsDate(location?.lastPurchaseDate!)}</Text>
       </View>
     </View>
   );
@@ -61,7 +67,8 @@ const styles = StyleSheet.create({
     color: colors.brandColor,
     backgroundColor: colors.detailsBackground,
     verticalAlign: 'middle',
-    marginHorizontal: 30,
+    marginLeft: 30,
+    marginRight: 10,
     padding: 5,
     borderWidth: 1,
     borderColor: colors.inactiveButtonColor,

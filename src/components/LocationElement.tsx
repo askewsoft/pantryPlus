@@ -8,6 +8,7 @@ import { uiStore } from '@/stores/UIStore';
 
 import fonts from '@/consts/fonts';
 import colors from '@/consts/colors';
+import { formatAsDate } from '@/stores/utils/dateFormater';
 
 const LocationElement = ({id, navigation}: {id: string, navigation: any}) => {
   const location = domainStore.locations.find(location => location.id === id);
@@ -42,17 +43,10 @@ const LocationElement = ({id, navigation}: {id: string, navigation: any}) => {
         onLongPress={prepareToEditName}
       >
         <MaterialIcons name="store" size={fonts.rowIconSize} color={colors.lightBrandColor} />
-        {isEditing ? (
-          <TextInput
-            style={[styles.title, styles.titleInput]}
-            value={editedTitle}
-            onSubmitEditing={onSubmit}
-            onChangeText={(text: string) => setEditedTitle(text)}
-            autoFocus={true}
-          />
-        ) : (
+        <View style={{ width: '100%' }}>
           <Text style={styles.title}>{location?.name}</Text>
-        )}
+          <Text style={styles.lastPurchaseDate}>most recent: {formatAsDate(location?.lastPurchaseDate!)}</Text>
+        </View>
       </Pressable>
     </View>
   );
@@ -71,11 +65,18 @@ const styles = StyleSheet.create({
   titleContainer: {
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   title: {
     fontSize: fonts.rowTextSize,
     fontWeight: 'bold',
+    color: colors.lightBrandColor,
+    width: '100%',
+    marginLeft: 10,
+  },
+  lastPurchaseDate: {
+    fontSize: fonts.badgeTextSize,
+    fontStyle: 'italic',
     color: colors.lightBrandColor,
     width: '100%',
     paddingVertical: 5,
