@@ -2,6 +2,7 @@ import { createContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { cast, Instance, t } from 'mobx-state-tree';
 import { persist } from 'mst-persist';
+import { Tooltip } from '@/consts/Tooltip';
 
 const OpenCategory = t.model('OpenCategory', {
     id: t.identifier,
@@ -24,6 +25,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
     purchaseHistoryLookbackDays: t.optional(t.number, 90),
     selectedLocation: t.maybeNull(t.string),
     selectedShoppingList: t.maybeNull(t.string),
+    selectedTooltip: t.maybeNull(t.enumeration('selectedTooltip', [...Object.values(Tooltip)])),
     shareModalVisible: false,
     showIntroScreen: false,
     signInOrUp: t.optional(t.enumeration('signInOrUp', ['signIn', 'signUp']), 'signIn'),
@@ -45,6 +47,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
         self.purchaseHistoryLookbackDays = 90;
         self.selectedLocation = null;
         self.selectedShoppingList = null;
+        self.selectedTooltip = null;
         self.shareModalVisible = false;
         self.showIntroScreen = false;
         self.signInOrUp = 'signIn';
@@ -78,6 +81,9 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setSelectedLocation(selectedLocation: string | null) {
         self.selectedLocation = cast(selectedLocation);
+    },
+    setSelectedTooltip(selectedTooltip: Tooltip | null) {
+        self.selectedTooltip = cast(selectedTooltip);
     },
     setAddCategoryModalVisible(addCategoryModalVisible: boolean) {
         self.addCategoryModalVisible = addCategoryModalVisible;
@@ -124,6 +130,7 @@ persist('pantryPlusUI', uiStore, {
         'selectedLocation',
         'selectedShoppingList',
         'shareModalVisible',
+        'selectedTooltip',
     ]
 });
 

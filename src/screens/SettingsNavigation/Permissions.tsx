@@ -6,6 +6,7 @@ import { domainStore } from '@/stores/DomainStore';
 import { styles as sharedStyles } from './styles';
 import colors from '@/consts/colors';
 import InfoButton from '@/components/Buttons/InfoButton';
+import { Tooltip } from '@/consts/Tooltip';
 
 const onLocationEnabledChange = async (value: boolean): Promise<void> => {
   if (value) {
@@ -21,7 +22,7 @@ const Permissions = () => {
   return (
     <View style={sharedStyles.container}>
       <View style={sharedStyles.propertyContainer}>
-        <InfoButton />
+        <InfoButton tooltipId={Tooltip.location} />
         <Text style={sharedStyles.label}>Location</Text>
         <Switch
           thumbColor={colors.white}
