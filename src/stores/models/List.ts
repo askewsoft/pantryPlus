@@ -62,8 +62,6 @@ export const ListModel = t.model('ListModel', {
 
         try {
             const xAuthLocation = yield api.location.getNearestStore(xAuthUser);
-            console.log('xAuthLocation', xAuthLocation);
-            console.log('getListCategories', { listId: self.id, xAuthUser, xAuthLocation });
             const categoriesData = yield api.list.getListCategories({ listId: self.id, xAuthUser, xAuthLocation });
             const categories = categoriesData.map(
                 (category: Category) => {
