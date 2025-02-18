@@ -43,13 +43,13 @@ const GroupMembers = ({ groupId, userIsGroupOwner }: { groupId: string, userIsGr
 
   const renderShopper = (member: ShopperType) => {
     return (
-      <Shopper shopper={member} onRemoveItem={onRemoveShopper(member.id)} indent={30} userIsGroupOwner={userIsGroupOwner}/>
+      <Shopper shopper={member} onRemoveShopper={onRemoveShopper(member.id)} indent={30} userIsGroupOwner={userIsGroupOwner}/>
     );
   }
 
   const renderInvitee = (member: InviteeType) => {
     return (
-      <Invitee invitee={member} onRemoveItem={onRemoveInvitee(member.email)} indent={30} userIsGroupOwner={userIsGroupOwner}/>
+      <Invitee invitee={member} onRemoveInvitee={onRemoveInvitee(member.email)} indent={30} userIsGroupOwner={userIsGroupOwner}/>
     );
   }
 
