@@ -15,7 +15,7 @@ import { domainStore } from '@/stores/DomainStore';
 
 import logging from '@/config/logging';
 import AddButton from './Buttons/AddButton';
-import RemoveCategoryButton from './Buttons/RemoveCategoryButton';
+import RemoveButton from './Buttons/RemoveButton';
 
 const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string, title: string, drag: () => void, children: React.ReactNode}) => {
   const open = uiStore.openCategories.get(categoryId)?.open ?? false;
@@ -36,6 +36,13 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
   const onPressAddProduct = () => {
     uiStore.setOpenCategory(categoryId, true);
     uiStore.addItemToCategoryID !== categoryId ? uiStore.setAddItemToCategoryID(categoryId) : uiStore.setAddItemToCategoryID('');
+  }
+
+  const onRemoveCategory = (categoryId: string) => {
+    return () => {
+      const xAuthUser = domainStore.user?.email!;
+      currList?.removeCategory({ categoryId, xAuthUser });
+    }
   }
 
   const prepareToEditName = () => {
@@ -62,7 +69,7 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
         overSwipe={20}
         snapPointsLeft={[70]}
         renderUnderlayLeft={() => (
-          <RemoveCategoryButton categoryId={categoryId} listId={currList!.id} />
+          <RemoveButton onPress={onRemoveCategory(categoryId)} />
         )}
       >
         <View style={styles.container}>
