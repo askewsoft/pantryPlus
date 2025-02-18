@@ -8,20 +8,21 @@ import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 
 import InfoButton from '@/components/Buttons/InfoButton';
-import { formatAsDate } from '@/stores/utils/dateFormater';
+import { Tooltip } from '@/consts/Tooltip';
+import { formatAsDate } from '@/stores/utils/dateFormatter';
 
 const LocationDetails = () => {
   const location = domainStore.locations.find(location => location.id === uiStore.selectedLocation);
   return (
     <View style={styles.container}>
       <View style={styles.propertyContainer}>
-        <InfoButton />
+        <InfoButton tooltipId={Tooltip.locationName} />
         <Text style={styles.label}>Name</Text>
         {/* TODO: implement edit toggle to TextInput */}
         <Text style={styles.value} numberOfLines={1} ellipsizeMode='tail'>{location?.name}</Text>
       </View>
       <View style={styles.propertyContainer}>
-        <InfoButton />
+        <InfoButton tooltipId={Tooltip.latitude} />
         <Text style={styles.label}>Lat / Long</Text>
         {/* TODO: implement edit toggle to Modal for picking map location? */}
         <Text style={styles.value} numberOfLines={1} ellipsizeMode='tail'>
@@ -29,7 +30,7 @@ const LocationDetails = () => {
         </Text>
       </View>
       <View style={styles.propertyContainer}>
-        <InfoButton />
+        <InfoButton tooltipId={Tooltip.lastPurchaseDate} />
         <Text style={styles.label}>Last Bought</Text>
         <Text style={styles.value} numberOfLines={1} ellipsizeMode='tail'>{formatAsDate(location?.lastPurchaseDate!)}</Text>
       </View>
