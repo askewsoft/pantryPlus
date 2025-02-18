@@ -33,12 +33,13 @@ export const ListModel = t.model('ListModel', {
         }
     }),
     addCategory: flow(function*({ name, xAuthUser }: { name: string, xAuthUser: string }): Generator<any, any, any> {
+        const xAuthLocation = yield api.location.getNearestStore(xAuthUser);
         const newCategoryId = randomUUID();
         const ordinal = self.categories.length;
         const newCategory = CategoryModel.create({ id: newCategoryId, name, ordinal });
         const listId = self.id;
         try {
-            yield api.list.addListCategory({ listId, category: { id: newCategoryId, name, ordinal, listId }, xAuthUser });
+            yield api.list.addListCategory({ listId, category: { id: newCategoryId, name, ordinal, listId }, xAuthUser, xAuthLocation });
             self.categories.push(newCategory);
         } catch (error) {
             console.error(`Error adding category to list: ${error}`);
@@ -60,15 +61,7 @@ export const ListModel = t.model('ListModel', {
         if (!self.id) return;
 
         try {
-            const userLocation = yield api.location.getCurrentLocation();
-            const locationArea: LocationArea = {
-                latitude: userLocation.coords.latitude,
-                longitude: userLocation.coords.longitude,
-                radius: 15000, // in meters -- TODO: make this dynamic?
-            }
-            const nearestStores = yield api.location.getNearbyLocations({ xAuthUser, locationArea });
-            console.log('nearestStores', nearestStores);
-            const xAuthLocation = nearestStores[0]?.id;
+            const xAuthLocation = yield api.location.getNearestStore(xAuthUser);
             console.log('xAuthLocation', xAuthLocation);
             console.log('getListCategories', { listId: self.id, xAuthUser, xAuthLocation });
             const categoriesData = yield api.list.getListCategories({ listId: self.id, xAuthUser, xAuthLocation });

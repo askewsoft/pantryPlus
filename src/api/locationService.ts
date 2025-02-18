@@ -55,9 +55,25 @@ const getCurrentLocation = async (): Promise<expoLocation.LocationObject | undef
     return currentLocation;
 }
 
+const getNearestStore = async (xAuthUser: string): Promise<string | undefined> => {
+    const userLocation = await getCurrentLocation();
+    if (!userLocation) return;
+
+    const locationArea: LocationArea = {
+        latitude: userLocation.coords.latitude,
+        longitude: userLocation.coords.longitude,
+        // TODO: make radius dynamic so that distance can be adjusted by the user?
+        radius: 15000, // in meters
+    }
+    const nearestStores = await getNearbyLocations({ xAuthUser, locationArea });
+    console.log('nearestStores', nearestStores);
+    return nearestStores[0]?.id;
+}
+
 export default {
     createLocation,
     updateLocationName,
     getCurrentLocation,
     getNearbyLocations,
+    getNearestStore,
 };
