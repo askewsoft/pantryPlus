@@ -10,7 +10,7 @@ import fonts from '@/consts/fonts';
 import { domainStore } from '@/stores/DomainStore';
 
 import AddButton from './Buttons/AddButton';
-import RemoveGroupButton from './Buttons/RemoveGroupButton';
+import RemoveButton from './Buttons/RemoveButton';
 
 import logging from '@/config/logging';
 
@@ -49,6 +49,10 @@ const Group = ({groupId, title, userIsGroupOwner, children}: {groupId: string, t
     setNewShopperEmail('');
   }
 
+  const onRemoveGroup = () => {
+    domainStore.removeGroup(currGroup!.id);
+  }
+
   return (
     <SwipeableItem
       key={groupId}
@@ -56,7 +60,7 @@ const Group = ({groupId, title, userIsGroupOwner, children}: {groupId: string, t
       overSwipe={20}
       snapPointsLeft={[70]}
       renderUnderlayLeft={() => (
-        <RemoveGroupButton groupId={groupId} />
+        <RemoveButton onPress={onRemoveGroup} />
       )}
       swipeEnabled={userIsGroupOwner}
     >
