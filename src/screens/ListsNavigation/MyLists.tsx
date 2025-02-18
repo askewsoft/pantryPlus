@@ -6,7 +6,7 @@ import SwipeableItem from "react-native-swipeable-item";
 
 import { StackPropsListsMyLists } from '@/types/ListNavTypes';
 import ListElement from '@/components/ListElement';
-import RemoveListButton from '@/components/Buttons/RemoveListButton';
+import RemoveButton from '@/components/Buttons/RemoveButton';
 import AddListModal from './modals/AddListModal';
 import ShareListModal from './modals/ShareListModal';
 
@@ -28,7 +28,7 @@ const renderListElement = (navigation: any) => {
           overSwipe={20}
           snapPointsLeft={[70]}
           renderUnderlayLeft={() => (
-            <RemoveListButton listId={item.id} />
+            <RemoveButton onPress={onRemoveList(item.id)} />
           )}
           swipeEnabled={userIsListOwner}
         >
@@ -36,6 +36,12 @@ const renderListElement = (navigation: any) => {
         </SwipeableItem>
       </ScaleDecorator>
     );
+  }
+}
+
+const onRemoveList = (listId: string) => {
+  return () => {
+    domainStore.removeList(listId);
   }
 }
 

@@ -2,14 +2,14 @@ import { View, Text, StyleSheet } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import SwipeableItem from "react-native-swipeable-item";
-import RemoveItemButton from './Buttons/RemoveItemButton';
+import RemoveButton from './Buttons/RemoveButton';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { iconStyle } from '@/consts/iconButtons';
 import { ShopperType } from '@/stores/DomainStore';
 
-const Shopper = ({ shopper, indent, userIsGroupOwner, onRemoveItem }: { shopper: ShopperType, indent: number, userIsGroupOwner: boolean, onRemoveItem: () => void }) => {
+const Shopper = ({ shopper, indent, userIsGroupOwner, onRemoveShopper }: { shopper: ShopperType, indent: number, userIsGroupOwner: boolean, onRemoveShopper: () => void }) => {
   return (
     <SwipeableItem
       key={shopper.id}
@@ -17,7 +17,7 @@ const Shopper = ({ shopper, indent, userIsGroupOwner, onRemoveItem }: { shopper:
       overSwipe={20}
       snapPointsLeft={[70]}
       renderUnderlayLeft={() => (
-        <RemoveItemButton onPress={onRemoveItem} />
+        <RemoveButton onPress={onRemoveShopper} />
       )}
       swipeEnabled={userIsGroupOwner}
     >

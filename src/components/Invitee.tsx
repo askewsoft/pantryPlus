@@ -2,14 +2,14 @@ import { View, Text, StyleSheet } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import SwipeableItem from "react-native-swipeable-item";
-import RemoveItemButton from './Buttons/RemoveItemButton';
+import RemoveButton from './Buttons/RemoveButton';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { iconStyle } from '@/consts/iconButtons';
 import { InviteeType } from '@/stores/DomainStore';
 
-const Invitee = ({ invitee, indent, userIsGroupOwner, onRemoveItem }: { invitee: InviteeType, indent: number, userIsGroupOwner: boolean, onRemoveItem: () => void }) => {
+const Invitee = ({ invitee, indent, userIsGroupOwner, onRemoveInvitee }: { invitee: InviteeType, indent: number, userIsGroupOwner: boolean, onRemoveInvitee: () => void }) => {
   return (
     <SwipeableItem
       key={invitee.email}
@@ -17,7 +17,7 @@ const Invitee = ({ invitee, indent, userIsGroupOwner, onRemoveItem }: { invitee:
       overSwipe={20}
       snapPointsLeft={[70]}
       renderUnderlayLeft={() => (
-        <RemoveItemButton onPress={onRemoveItem} />
+        <RemoveButton onPress={onRemoveInvitee} />
       )}
       swipeEnabled={userIsGroupOwner}
     >

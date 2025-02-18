@@ -5,7 +5,7 @@ import { ScaleDecorator } from 'react-native-draggable-flatlist';
 import SwipeableItem from "react-native-swipeable-item";
 import { ItemType } from '@/stores/models/Category';
 import CheckBoxButton from './Buttons/CheckBoxButton';
-import RemoveItemButton from './Buttons/RemoveItemButton';
+import RemoveButton from './Buttons/RemoveButton';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
@@ -20,7 +20,7 @@ const Item = ({ item, onRemoveItem, drag, indent }: { item: ItemType, onRemoveIt
         overSwipe={20}
         snapPointsLeft={[70]}
         renderUnderlayLeft={() => (
-          <RemoveItemButton onPress={onRemoveItem} />
+          <RemoveButton onPress={onRemoveItem} />
         )}
       >
         <View style={[styles.itemLine, { paddingLeft: indent }]}>
