@@ -8,7 +8,7 @@ import { uiStore } from '@/stores/UIStore';
 
 import fonts from '@/consts/fonts';
 import colors from '@/consts/colors';
-import { formatAsDate } from '@/stores/utils/dateFormater';
+import { formatAsDate } from '@/stores/utils/dateFormatter';
 
 const LocationElement = ({id, navigation}: {id: string, navigation: any}) => {
   const location = domainStore.locations.find(location => location.id === id);

@@ -44,10 +44,10 @@ const getListCategories = async ({ listId, xAuthUser, xAuthLocation }: { listId:
     }
 }
 
-const addListCategory = async ({ listId, category, xAuthUser }: { listId: string, category: Category, xAuthUser: string }) => {
+const addListCategory = async ({ listId, category, xAuthUser, xAuthLocation }: { listId: string, category: Category, xAuthUser: string, xAuthLocation: string }) => {
     try {
         const { id, name, ordinal } = category;
-        await listsApi.createCategory({ id, name, listId, ordinal }, xAuthUser, listId);
+        await listsApi.createCategory({ id, name, listId, ordinal }, xAuthUser, xAuthLocation, listId);
     } catch (error) {
         console.error(`Failed to addListCategory in DB: ${error}`);
     }
