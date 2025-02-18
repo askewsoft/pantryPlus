@@ -66,7 +66,6 @@ const getNearestStore = async (xAuthUser: string): Promise<string | undefined> =
         radius: 15000, // in meters
     }
     const nearestStores = await getNearbyLocations({ xAuthUser, locationArea });
-    console.log('nearestStores', nearestStores);
     return nearestStores[0]?.id;
 }
 
