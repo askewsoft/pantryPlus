@@ -1,7 +1,7 @@
 import { flow, t } from 'mobx-state-tree';
 import api from '@/api';
 import { GroupModel } from '@/stores/models/Group';
-import { Group } from 'pantryPlusApiClient';
+import { Group } from 'pantryplus-api-client';
 import logging from '@/config/logging';
 
 export const UserModel = t

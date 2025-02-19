@@ -1,4 +1,4 @@
-import { CategoriesApi, Configuration, Item } from 'pantryPlusApiClient';
+import { CategoriesApi, Configuration, Item } from 'pantryplus-api-client';
 import cognitoConfig from '@/config/cognito';
 import logging from '@/config/logging';
 
@@ -8,9 +8,9 @@ const configuration = new Configuration({
 
 const categoriesApi = new CategoriesApi(configuration);
 
-const updateCategory = async ({ categoryId, name, ordinal, xAuthUser }: { categoryId: string, name: string, ordinal: number, xAuthUser: string }) => {
+const updateCategory = async ({ categoryId, name, ordinal, xAuthUser, xAuthLocation }: { categoryId: string, name: string, ordinal: number, xAuthUser: string, xAuthLocation: string }) => {
     try {
-        await categoriesApi.updateCategory({ name, ordinal }, xAuthUser, categoryId);
+        await categoriesApi.updateCategory(xAuthUser, xAuthLocation, categoryId, { name, ordinal });
     } catch (error) {
         console.error(`Error updating category: ${error}`);
     }

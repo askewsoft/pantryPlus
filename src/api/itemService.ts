@@ -1,4 +1,4 @@
-import { ItemsApi, Configuration, Item } from 'pantryPlusApiClient';
+import { ItemsApi, Configuration, Item } from 'pantryplus-api-client';
 import cognitoConfig from '@/config/cognito';
 import logging from '@/config/logging';
 
@@ -10,7 +10,7 @@ const itemsApi = new ItemsApi(configuration);
 
 const createItem = async ({ item, xAuthUser }: { item: Item, xAuthUser: string }) => {
     try {
-        await itemsApi.createItem(item, xAuthUser);
+        await itemsApi.createItem(xAuthUser, item);
     } catch (error) {
         console.error(`Error creating item: ${error}`);
     }
@@ -18,7 +18,7 @@ const createItem = async ({ item, xAuthUser }: { item: Item, xAuthUser: string }
 
 const updateItem = async ({ item, xAuthUser }: { item: Item, xAuthUser: string }) => {
     try {
-        await itemsApi.updateItem(item, xAuthUser, item.id);
+        await itemsApi.updateItem(xAuthUser, item.id, item);
     } catch (error) {
         console.error(`Error updating item: ${error}`);
     }

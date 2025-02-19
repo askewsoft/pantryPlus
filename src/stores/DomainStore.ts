@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { t, Instance, flow, onAction } from 'mobx-state-tree';
 import { persist } from 'mst-persist';
 import * as Location from 'expo-location';
-import { List } from 'pantryPlusApiClient';
+import { List } from 'pantryplus-api-client';
 
 import api from '@/api';
 import { uiStore } from './UIStore';
@@ -88,7 +88,7 @@ const DomainStoreModel = t
         loadLists: flow(function* () {
             const listsData = yield api.shopper.getUserLists({ user: self.user! });
             const lists = listsData.map(
-                (list: List, index: number) => {
+                (list: List) => {
                     const { id, name, ownerId, groupId, ordinal } = list;
                     return ListModel.create({ id, name, ownerId, groupId, ordinal });
                 }

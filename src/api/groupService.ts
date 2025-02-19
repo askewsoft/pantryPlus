@@ -2,11 +2,11 @@ import {
     GroupsApi,
     Shopper,
     Configuration,
-    PickGroupIdOrNameOrOwner_,
-    PickShopperEmail_,
-    PickShopperId_,
-    PickGroupName_
-} from 'pantryPlusApiClient';
+    PickGroupIdOrNameOrOwner,
+    PickShopperEmail,
+    PickShopperId,
+    PickGroupName
+} from 'pantryplus-api-client';
 
 import cognitoConfig from '@/config/cognito';
 import { randomUUID } from 'expo-crypto';
@@ -19,7 +19,7 @@ const groupApi = new GroupsApi(configuration);
 
 const createGroup = async ({ name, newGroupId, xAuthUser }: { name: string, newGroupId: string, xAuthUser: string }): Promise<void> => {
     try {
-        await groupApi.createGroup({name: name, id: newGroupId}, xAuthUser);
+        await groupApi.createGroup(xAuthUser, {name: name, id: newGroupId});
     } catch (error) {
         console.error('Unable to create group:', error);
     }
@@ -27,22 +27,22 @@ const createGroup = async ({ name, newGroupId, xAuthUser }: { name: string, newG
 };
 
 const updateGroup = async ({ name, id, xAuthUser }: { name: string, id: string, xAuthUser: string }): Promise<void> => {
-    const body: PickGroupName_ = { name: name };
+    const body: PickGroupName = { name: name };
     try {
-        await groupApi.updateGroupName(body, xAuthUser, id);
+        await groupApi.updateGroupName(xAuthUser, id, body);
     } catch (error) {
         console.error('Unable to update group:', error);
     }
     return;
 };
 
-const getGroup = async ({ groupId, xAuthUser }: { groupId: string, xAuthUser: string }): Promise<PickGroupIdOrNameOrOwner_> => {
+const getGroup = async ({ groupId, xAuthUser }: { groupId: string, xAuthUser: string }): Promise<PickGroupIdOrNameOrOwner> => {
     try {
         const groupData = await groupApi.getGroup(xAuthUser, groupId);
         return groupData.data;
     } catch (error) {
         console.error('Unable to get group:', error);
-        return {} as PickGroupIdOrNameOrOwner_;
+        return {} as PickGroupIdOrNameOrOwner;
     }
 };
 
@@ -56,9 +56,9 @@ const deleteGroup = async ({ groupId, xAuthUser }: { groupId: string, xAuthUser:
 };
 
 const addShopperToGroup = async ({ groupId, shopperId, xAuthUser }: { groupId: string, shopperId: string, xAuthUser: string }): Promise<void> => {
-    const body: PickShopperId_ = { id: shopperId };
+    const body: PickShopperId = { id: shopperId };
     try {
-        await groupApi.addShopperToGroup(body, xAuthUser, groupId);
+        await groupApi.addShopperToGroup(xAuthUser, groupId, body);
     } catch (error) {
         console.error('Unable to add shopper to group:', error);
     }
@@ -66,9 +66,9 @@ const addShopperToGroup = async ({ groupId, shopperId, xAuthUser }: { groupId: s
 };
 
 const addInviteeToGroup = async ({ groupId, inviteeEmail, xAuthUser }: { groupId: string, inviteeEmail: string, xAuthUser: string }): Promise<void> => {
-    const body: PickShopperEmail_ = { email: inviteeEmail };
+    const body: PickShopperEmail = { email: inviteeEmail };
     try {
-        await groupApi.inviteShopper(body, xAuthUser, groupId);
+        await groupApi.inviteShopper(xAuthUser, groupId, body);
     } catch (error) {
         console.error('Unable to add invitee to group:', error);
     }
@@ -85,9 +85,9 @@ const removeShopperFromGroup = async ({ groupId, shopperId, xAuthUser }: { group
 };
 
 const removeInviteeFromGroup = async ({ groupId, inviteeEmail, xAuthUser }: { groupId: string, inviteeEmail: string, xAuthUser: string }): Promise<void> => {
-    const body: PickShopperEmail_ = { email: inviteeEmail };
+    const body: PickShopperEmail = { email: inviteeEmail };
     try {
-        await groupApi.uninviteShopper(body, xAuthUser, groupId);
+        await groupApi.uninviteShopper(xAuthUser, groupId, body);
     } catch (error) {
         console.error('Unable to remove invitee from group:', error);
     }
@@ -104,7 +104,7 @@ const getGroupShoppers = async ({ groupId, xAuthUser }: { groupId: string, xAuth
     }
 };
 
-const getGroupInvitees = async ({ groupId, xAuthUser }: { groupId: string, xAuthUser: string }): Promise<Array<PickShopperEmail_>> => {
+const getGroupInvitees = async ({ groupId, xAuthUser }: { groupId: string, xAuthUser: string }): Promise<Array<PickShopperEmail>> => {
     try {
         const inviteesData = await groupApi.getInvitees(xAuthUser, groupId);
         return inviteesData.data;

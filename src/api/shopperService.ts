@@ -5,7 +5,7 @@ import {
     List,
     Group,
     Location,
-} from 'pantryPlusApiClient';
+} from 'pantryplus-api-client';
 
 import cognitoConfig from '@/config/cognito';
 import { fetchUserAttributes } from 'aws-amplify/auth';

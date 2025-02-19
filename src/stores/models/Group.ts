@@ -4,7 +4,7 @@ import { InviteeModel } from './Invitee';
 
 import api from '@/api';
 import { InviteeType, IUser, MemberType } from '../DomainStore';
-import { Shopper } from 'pantryPlusApiClient';
+import { Shopper } from 'pantryplus-api-client';
 
 import logging from '@/config/logging';
  

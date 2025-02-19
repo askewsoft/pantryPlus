@@ -7,7 +7,7 @@
     "prebuild": "NODE_NO_WARNINGS=1 expo prebuild --clean  # This will regenerate the native iOS files",
     "ios": "NODE_NO_WARNINGS=1 expo run:ios",
     "android": "NODE_NO_WARNINGS=1 expo run:android",
-    "killport": "sudo kill -9 $(sudo lsof -t -i :8081) # Do this if the Metro Bundler fails to start" 
+    "killport": "sudo kill -9 $(sudo lsof -t -i :8081) # Do this if the Metro Bundler fails to start"
   },
   "dependencies": {
     "@aws-amplify/react-native": "^1.1.6",
@@ -30,7 +30,7 @@
     "mobx-react": "^9.1.1",
     "mobx-state-tree": "^6.0.1",
     "mst-persist": "^0.1.4",
-    "pantryPlusApiClient": "github:askewsoft/pantryPlusApiClient#v0.9.23",
+    "pantryplus-api-client": "github:askewsoft/pantryPlusApiClient#v0.10.0",
     "react": "^18.2.0",
     "react-native": "^0.74.5",
     "react-native-draggable-flatlist": "^4.0.1",

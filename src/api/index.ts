@@ -5,10 +5,7 @@ import itemService from './itemService';
 import groupService from './groupService';
 import locationService from './locationService';
 
-import {
-    LocationsApi,
-    Configuration
-} from 'pantryPlusApiClient';
+import { Configuration } from 'pantryplus-api-client';
 import cognitoConfig from '@/config/cognito';
 
 const configuration = new Configuration({

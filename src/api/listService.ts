@@ -1,4 +1,4 @@
-import { ListsApi, Configuration, Category, List, Item } from 'pantryPlusApiClient';
+import { ListsApi, Configuration, Category, List, Item } from 'pantryplus-api-client';
 import cognitoConfig from '@/config/cognito';
 import logging from '@/config/logging';
 
@@ -11,7 +11,7 @@ const listsApi = new ListsApi(configuration);
 const createList = async ({ list, xAuthUser }: { list: List, xAuthUser: string }) => {
     const { id, name, ownerId }  = list;
     try {
-        const response = await listsApi.createList({ id, name, ownerId, ordinal: 0 }, xAuthUser);
+        const response = await listsApi.createList(xAuthUser, { id, name, ownerId, ordinal: 0 });
     } catch (error) {
         console.error(`Failed to createList in DB: ${error}`);
     }
@@ -20,7 +20,7 @@ const createList = async ({ list, xAuthUser }: { list: List, xAuthUser: string }
 const updateList = async ({ list, xAuthUser }: { list: Omit<List, "ownerId">, xAuthUser: string }) => {
     const { id, name, groupId = '', ordinal } = list;
     try {
-        await listsApi.updateList({ name, groupId, ordinal }, xAuthUser, id );
+        await listsApi.updateList(xAuthUser, id, { name, groupId, ordinal } );
     } catch (error) {
         console.error(`Failed to updateList in DB: ${error}`);
     }
@@ -47,7 +47,7 @@ const getListCategories = async ({ listId, xAuthUser, xAuthLocation }: { listId:
 const addListCategory = async ({ listId, category, xAuthUser, xAuthLocation }: { listId: string, category: Category, xAuthUser: string, xAuthLocation: string }) => {
     try {
         const { id, name, ordinal } = category;
-        await listsApi.createCategory({ id, name, listId, ordinal }, xAuthUser, xAuthLocation, listId);
+        await listsApi.createCategory(xAuthUser, xAuthLocation, listId, { id, name, listId, ordinal });
     } catch (error) {
         console.error(`Failed to addListCategory in DB: ${error}`);
     }
@@ -63,7 +63,7 @@ const deleteListCategory = async ({ listId, categoryId, xAuthUser }: { listId: s
 
 const getListItems = async ({ listId, xAuthUser }: { listId: string, xAuthUser: string }): Promise<Array<Item>> => {
     try {
-        const itemsData = await listsApi.getItems(xAuthUser, listId);
+        const itemsData = await listsApi.getListItems(xAuthUser, listId);
         return itemsData.data;
     } catch (error) {
         console.error(`Failed to getListItems in DB: ${error}`);

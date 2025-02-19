@@ -1,4 +1,4 @@
-import { LocationsApi, Configuration, Location, LocationArea } from 'pantryPlusApiClient';
+import { LocationsApi, Configuration, Location, LocationArea } from 'pantryplus-api-client';
 import cognitoConfig from '@/config/cognito';
 import * as expoLocation from 'expo-location';
 import logging from '@/config/logging';
@@ -12,7 +12,7 @@ const locationsApi = new LocationsApi(configuration);
 
 const createLocation = async ({ location, xAuthUser }: { location: Location, xAuthUser: string }) => {
     try {
-        await locationsApi.createLocation(location, xAuthUser);
+        await locationsApi.createLocation(xAuthUser, location);
     } catch (error) {
         console.error(`Failed to createLocation in DB: ${error}`);
     }
@@ -21,7 +21,7 @@ const createLocation = async ({ location, xAuthUser }: { location: Location, xAu
 const updateLocationName = async ({ location, xAuthUser }: { location: Location, xAuthUser: string }) => {
     const { id, name } = location;
     try {
-        await locationsApi.updateLocation({ name }, xAuthUser, id );
+        await locationsApi.updateLocation(xAuthUser, id, { name });
     } catch (error) {
         console.error(`Failed to updateLocation in DB: ${error}`);
     }
@@ -37,7 +37,7 @@ const updateLocationName = async ({ location, xAuthUser }: { location: Location,
 
 const getNearbyLocations = async ({ xAuthUser, locationArea }: { xAuthUser: string, locationArea: LocationArea }): Promise<Location[]> => {
     try {
-        const locationsData = await locationsApi.getNearbyLocations(locationArea, xAuthUser);
+        const locationsData = await locationsApi.getNearbyLocations(xAuthUser, locationArea);
         return locationsData.data;
     } catch (error) {
         console.error(`Failed to getNearbyLocations in DB: ${error}`);

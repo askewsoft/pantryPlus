@@ -4,7 +4,7 @@ import { randomUUID } from 'expo-crypto';
 
 import api from '@/api';
 import { ItemModel } from './Item';
-import { Item } from 'pantryPlusApiClient';
+import { Item } from 'pantryplus-api-client';
 export type ItemType = Instance<typeof ItemModel>;
 
 import logging from '@/config/logging';
@@ -18,7 +18,8 @@ export const CategoryModel = t.model('CategoryModel', {
     setName: flow(function*(name: string, xAuthUser: string): Generator<any, any, any> {
         const { id, ordinal = 0 } = self;
         try {
-            yield api.category.updateCategory({ categoryId: id, name, ordinal, xAuthUser });
+            const xAuthLocation = yield api.location.getNearestStore(xAuthUser);
+            yield api.category.updateCategory({ categoryId: id, name, ordinal, xAuthLocation, xAuthUser });
             self.name = name;
         } catch (error) {
             console.error(`Error setting name: ${error}`);
@@ -74,7 +75,8 @@ export const CategoryModel = t.model('CategoryModel', {
     setOrdinal: flow(function* (ordinal: number, xAuthUser: string): Generator<any, any, any> {
         self.ordinal = ordinal;
         try {
-            yield api.category.updateCategory({ categoryId: self.id, name: self.name, ordinal, xAuthUser });
+            const xAuthLocation = yield api.location.getNearestStore(xAuthUser);
+            yield api.category.updateCategory({ categoryId: self.id, name: self.name, ordinal, xAuthLocation, xAuthUser });
         } catch (error) {
             console.error(`Error setting Category ordinal: ${error}`);
         }
