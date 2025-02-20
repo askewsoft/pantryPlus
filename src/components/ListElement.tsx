@@ -102,11 +102,13 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     display: 'flex',
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     paddingLeft: 5,
   },
   title: {
+    flex: 1,
     fontSize: fonts.rowTextSize,
     fontWeight: 'bold',
     color: colors.brandColor,
