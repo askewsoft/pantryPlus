@@ -1,6 +1,6 @@
 import { View, Text, Switch } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import * as Location from 'expo-location';
+import * as expoLocation from 'expo-location';
 
 import { domainStore } from '@/stores/DomainStore';
 import { styles as sharedStyles } from './styles';
@@ -10,7 +10,7 @@ import { Tooltip } from '@/consts/Tooltip';
 
 const onLocationEnabledChange = async (value: boolean): Promise<void> => {
   if (value) {
-    const { status } = await Location.requestForegroundPermissionsAsync();
+    const { status } = await expoLocation.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
       return;
     }

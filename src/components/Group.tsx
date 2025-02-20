@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import SwipeableItem from "react-native-swipeable-item";
-import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';

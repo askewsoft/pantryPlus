@@ -2,7 +2,7 @@ import { createContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { t, Instance, flow, onAction } from 'mobx-state-tree';
 import { persist } from 'mst-persist';
-import * as Location from 'expo-location';
+import * as expoLocation from 'expo-location';
 import { List } from 'pantryplus-api-client';
 
 import api from '@/api';
@@ -150,12 +150,12 @@ const DomainStoreModel = t
             const xAuthUser = self.user?.email!;
             const newLocationId = randomUUID();
 
-            const { status } = yield Location.requestForegroundPermissionsAsync();
+            const { status } = yield expoLocation.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 Alert.alert('Location permission not granted');
                 return;
             }
-            const currentLatLongAlt = yield Location.getCurrentPositionAsync();
+            const currentLatLongAlt = yield expoLocation.getCurrentPositionAsync();
             const location = {
                 id: newLocationId,
                 name: name,

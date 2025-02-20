@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { ScaleDecorator } from 'react-native-draggable-flatlist';
 import SwipeableItem from "react-native-swipeable-item";
 import AntDesign from '@expo/vector-icons/AntDesign';
-import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';

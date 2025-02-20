@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Button } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { StackPropsMyInvites } from '@/types/GroupNavTypes';
 
 import colors from '@/consts/colors';
