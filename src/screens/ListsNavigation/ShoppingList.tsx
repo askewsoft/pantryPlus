@@ -19,8 +19,8 @@ import colors from '@/consts/colors';
 import { sortByOrdinal } from '@/stores/utils/sorter';
 
 const ShoppingList = ({ navigation }: StackPropsShoppingList) => {
-  const { selectedShoppingList: listId } = uiStore;
-  const currList = domainStore.lists.find((list) => list.id === listId);
+  const listId = uiStore.selectedShoppingList;
+  const currList = domainStore.lists.find((list) => list.id === listId) || domainStore.lists[0];
   const xAuthUser = domainStore.user?.email!;
   const [listItemsLoaded, setListItemsLoaded] = useState(true);
   const loadData = async () => {

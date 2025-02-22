@@ -17,14 +17,14 @@ const ShareListModal = ({ navigation }: { navigation: any }) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<string | null>(null);
   const [items, setItems] = useState<ItemType<string>[]>([]);
-  const [currList, setCurrList] = useState<ListType | undefined>(undefined);
+  const [currListName, setCurrListName] = useState<string>('');
 
   useEffect(() => {
     if (uiStore.selectedShoppingList) {
       const selectedList = domainStore.lists.find(list => list.id === uiStore.selectedShoppingList);
-      setCurrList(selectedList);
+      setCurrListName(selectedList?.name || '');
     }
-  }, [uiStore.selectedShoppingList]);
+  }, [uiStore.selectedShoppingList, domainStore.lists]);
 
   useEffect(() => {
     const groupsOwnedByUser = domainStore.groupsOwnedByUser.map(group => ({ 
@@ -33,13 +33,16 @@ const ShareListModal = ({ navigation }: { navigation: any }) => {
     }));
     setItems(groupsOwnedByUser);
 
-    const groupToWhomListIsShared = groupsOwnedByUser.find(group => group.value === currList?.groupId);
-    if (groupToWhomListIsShared?.value) {
-      setValue(groupToWhomListIsShared.value);
-    } else {
-      setValue(null);
+    if (uiStore.selectedShoppingList) {
+      const selectedList = domainStore.lists.find(list => list.id === uiStore.selectedShoppingList);
+      const groupToWhomListIsShared = groupsOwnedByUser.find(group => group.value === selectedList?.groupId);
+      if (groupToWhomListIsShared?.value) {
+        setValue(groupToWhomListIsShared.value);
+      } else {
+        setValue(null);
+      }
     }
-  }, [domainStore.groupsOwnedByUser, currList]);
+  }, [domainStore.groupsOwnedByUser, uiStore.selectedShoppingList]);
 
   const onCancel = () => {
     uiStore.setSelectedShoppingList(null);
@@ -47,8 +50,9 @@ const ShareListModal = ({ navigation }: { navigation: any }) => {
   }
 
   const onUnshare = () => {
-    if (currList) {
-      currList.updateList({ name: currList.name, groupId: '', xAuthUser });
+    const listToUnshare = domainStore.lists.find(list => list.id === uiStore.selectedShoppingList);
+    if (listToUnshare) {
+      listToUnshare.updateList({ name: listToUnshare.name, groupId: '', xAuthUser });
     }
     setValue(null);
     uiStore.setSelectedShoppingList(null);
@@ -56,8 +60,9 @@ const ShareListModal = ({ navigation }: { navigation: any }) => {
   }
 
   const onSelectItem = async (item: ItemType<string> | undefined) => {
-    if (currList && item && item.value) {
-      currList.updateList({ name: currList.name, groupId: item.value, xAuthUser });
+    const listToShare = domainStore.lists.find(list => list.id === uiStore.selectedShoppingList);
+    if (listToShare && item && item.value) {
+      listToShare.updateList({ name: listToShare.name, groupId: item.value, xAuthUser });
     }
     uiStore.setSelectedShoppingList(null);
     uiStore.setShareModalVisible(false);
@@ -78,7 +83,7 @@ const ShareListModal = ({ navigation }: { navigation: any }) => {
     >
       <View style={styles.modalContainer}>
         <Text style={styles.modalTitle}>Share List</Text>
-        <Text style={styles.modalSubtitle}>{currList?.name}</Text>
+        <Text style={styles.modalSubtitle}>{currListName}</Text>
         {items.length > 0 &&
           <DropDownPicker
               items={items}

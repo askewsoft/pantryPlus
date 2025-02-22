@@ -1,9 +1,13 @@
 import { StackScreenProps } from '@react-navigation/stack';
 
+export const SettingsStack = [
+  'MySettings',
+  'Profile',
+  'Permissions',
+] as const;
+
 export type SettingsStackParamList = {
-  MySettings: undefined;
-  Profile: undefined;
-  Permissions: undefined;
+  [key in typeof SettingsStack[number]]: undefined;
 };
 
 export type StackPropsMySettings = StackScreenProps<SettingsStackParamList, 'MySettings'>;

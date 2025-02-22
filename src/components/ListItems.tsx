@@ -29,10 +29,10 @@ const ListItems = ({ listId }: { listId: string }) => {
 
   return <NestableDraggableFlatList
     contentContainerStyle={styles.draggableFlatListStyle}
-    data={toJS(currList!.items).sort(sortByOrdinal)}
+    data={toJS(currList?.items || []).sort(sortByOrdinal)}
     keyExtractor={(item) => item.id}
     renderItem={renderItem}
-    onDragEnd={currList!.updateItemOrder}
+    onDragEnd={currList?.updateItemOrder}
   />;
 };
 

@@ -2,7 +2,9 @@ import { createContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { cast, Instance, t } from 'mobx-state-tree';
 import { persist } from 'mst-persist';
+
 import { Tooltip } from '@/consts/Tooltip';
+import { AppTabsMstEnum, AppTabsMstType, AppSubTabsMstEnum, AppSubTabsMstType } from '@/types/NavMSTTypes';
 
 const OpenCategory = t.model('OpenCategory', {
     id: t.identifier,
@@ -17,7 +19,8 @@ export const UIStoreModel = t.model('UIStoreModel', {
     addListModalVisible: false,
     addLocationModalVisible: false,
     groupsLoaded: false,
-    lastScreen: t.optional(t.enumeration('lastScreen', ['IntroScreen', 'WelcomeScreen', 'MyLists']), 'IntroScreen'),
+    lastViewedSection: t.optional(AppTabsMstEnum, 'IntroScreen'),
+    lastViewedSubSection: t.optional(AppSubTabsMstEnum, ''),
     lastUsedVersion: t.optional(t.string, '1.0.0'),
     listsLoaded: false,
     locationsLoaded: false,
@@ -40,7 +43,8 @@ export const UIStoreModel = t.model('UIStoreModel', {
         self.addListModalVisible = false;
         self.addLocationModalVisible = false;
         self.groupsLoaded = false;
-        self.lastScreen = 'IntroScreen';
+        self.lastViewedSection = 'IntroScreen';
+        self.lastViewedSubSection = '';
         self.listsLoaded = false;
         self.locationsLoaded = false;
         self.openCategories.clear();
@@ -58,8 +62,11 @@ export const UIStoreModel = t.model('UIStoreModel', {
     setShowIntroScreen(showIntroScreen: boolean) {
         self.showIntroScreen = showIntroScreen;
     },
-    setLastScreen(lastScreen: 'IntroScreen' | 'WelcomeScreen' | 'MyLists') {
-        self.lastScreen = cast(lastScreen);
+    setLastViewedSection(lastViewedSection: AppTabsMstType) {
+        self.lastViewedSection = lastViewedSection;
+    },
+    setLastViewedSubSection(lastViewedSubSection: AppSubTabsMstType) {
+        self.lastViewedSubSection = lastViewedSubSection;
     },
     setLastUsedVersion(lastUsedVersion: string) {
         self.lastUsedVersion = cast(lastUsedVersion);
@@ -127,8 +134,6 @@ persist('pantryPlusUI', uiStore, {
         'groupsLoaded',
         'listsLoaded',
         'locationsLoaded',
-        'selectedLocation',
-        'selectedShoppingList',
         'shareModalVisible',
         'selectedTooltip',
     ]

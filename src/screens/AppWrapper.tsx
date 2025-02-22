@@ -1,40 +1,56 @@
 import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import { observer } from 'mobx-react';
-import { NavigationContainer } from '@react-navigation/native';
+import { EventArg, NavigationContainer, TabNavigationState } from '@react-navigation/native';
 import { createBottomTabNavigator, BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-import { AppTabParamList } from '@/types/AppNavTypes';
+import { AppTabs,AppTabsParamList } from '@/types/AppNavTypes';
 import ListsNavigation from './ListsNavigation';
 import SettingsNavigation from './SettingsNavigation';
 import GroupsNavigation from './GroupsNavigation';
 import LocationsNavigation from './LocationsNavigation';
+
+import { uiStore } from '@/stores/UIStore';
 
 import colors from '@/consts/colors';
 import tabOptions from '@/consts/tabNavOptions';
 
 type MaterialIconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
-const { Navigator, Screen } = createBottomTabNavigator<AppTabParamList>();
-const screenOptions: BottomTabNavigationOptions = { headerShown: false, lazy: false };
-
-const tabBarIconCreator = (name: MaterialIconName) => {
-    return function ({ color, size }: { color: string, size: number }) {
-        return <MaterialIcons name={name} color={color} size={size} />;
-    }
-};
+const { Navigator, Screen } = createBottomTabNavigator<AppTabsParamList>();
 
 const AppWrapper = () => {
-  // TODO: set `initialRouteName` based on the uiStore.lastScreen value
+  const screenOptions: BottomTabNavigationOptions = { headerShown: false, lazy: false };
+
+  const tabBarIconCreator = (name: MaterialIconName) => {
+      return function ({ color, size }: { color: string, size: number }) {
+          return <MaterialIcons name={name} color={color} size={size} />;
+      }
+  };
+
+  const getInitialAppTabsRouteName = (): typeof AppTabs[number] => {
+    // One of those times where TypeScript is just not smart enough to infer the type
+    return AppTabs.includes(uiStore.lastViewedSection as typeof AppTabs[number]) ? uiStore.lastViewedSection as typeof AppTabs[number] : 'Lists';
+  }
+
+  const onScreenChange = (e: EventArg<"state", false, { state: TabNavigationState<AppTabsParamList> }>) => {
+    const lastTab = e.data.state.history[e.data.state.history.length - 1];
+    const routeName = lastTab.key.split('-')[0] as typeof AppTabs[number];
+    if (routeName && AppTabs.includes(routeName)) {
+      uiStore.setLastViewedSection(routeName);
+      console.log('lastViewedSection', routeName);
+    }
+  }
+
   return (
     // View is needed to push the status bar to the bottom of the screen
     // This should not be needed.
     <View style={styles.container}>
       <StatusBar style="light" />
       <NavigationContainer>
-        <Navigator initialRouteName="Lists" screenOptions={screenOptions} >
+        <Navigator initialRouteName={getInitialAppTabsRouteName()} screenOptions={screenOptions} screenListeners={{ state: onScreenChange }}>
           <Screen name="Lists" component={ListsNavigation} options={{...tabOptions({iconName: 'list-alt'}), tabBarIcon: tabBarIconCreator('list-alt')}} />
           <Screen name="Groups" component={GroupsNavigation} options={{...tabOptions({iconName: 'groups'}), tabBarIcon: tabBarIconCreator('groups')}} />
           <Screen name="Locations" component={LocationsNavigation} options={{...tabOptions({iconName: 'store'}), tabBarIcon: tabBarIconCreator('store')}} />

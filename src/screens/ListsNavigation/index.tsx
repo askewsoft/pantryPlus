@@ -1,7 +1,7 @@
+import { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { createStackNavigator } from '@react-navigation/stack';
-
-import { ListsStackParamList } from '@/types/ListNavTypes';
+import { EventArg, StackNavigationState } from '@react-navigation/native';
 
 import MyLists from './MyLists';
 import ShoppingList from './ShoppingList';
@@ -9,11 +9,13 @@ import PurchaseHistory from './PurchaseHistory';
 
 import AddButton from '@/components/Buttons/AddButton';
 import { uiStore } from '@/stores/UIStore';
+
+import { ListsStack, ListsStackParamList } from '@/types/ListNavTypes';
 import stackNavScreenOptions from '@/consts/stackNavOptions';
 import colors from '@/consts/colors';
+import { LocationsStack } from '@/types/LocationNavTypes';
 
 const { Navigator, Screen } = createStackNavigator<ListsStackParamList>();
-
 
 /* TODO: Find a way to hide the ItemInput element when the user presses the back button
    * take a look at https://reactnavigation.org/docs/stack-navigator/#transitionstart
@@ -23,7 +25,23 @@ const onBackPress = () => {
 }
 */
 
-const ListsNavigation = () => {
+const ListsNavigation = ({navigation}: {navigation: any}) => {
+  useEffect(() => {
+    if (uiStore.lastViewedSection === 'Lists' && ListsStack.includes(uiStore.lastViewedSubSection as typeof ListsStack[number])) {
+      console.log('NAVIGATE lastViewedListsSubSection', uiStore.lastViewedSubSection);
+      navigation.navigate('Lists', { screen: uiStore.lastViewedSubSection });
+    }
+  }, []);
+
+  const onScreenChange = (e: EventArg<"state", false, { state: StackNavigationState<ListsStackParamList> }>) => {
+    const lastRoute = e.data.state.routes[e.data.state.routes.length - 1];
+    const routeName = lastRoute?.name as typeof ListsStack[number];
+    if (routeName && uiStore.lastViewedSection === 'Lists') {
+      uiStore.setLastViewedSubSection(routeName);
+      console.log('SET lastViewedListsSubSection', routeName);
+    }
+  }
+
   const listId = uiStore.selectedShoppingList || '';
 
   const onPressAddList = () => {
@@ -59,7 +77,7 @@ const ListsNavigation = () => {
   }
 
   return (
-    <Navigator initialRouteName="MyLists" screenOptions={stackNavScreenOptions}>
+    <Navigator initialRouteName="MyLists" screenOptions={stackNavScreenOptions} screenListeners={{ state: onScreenChange }}>
       <Screen name="MyLists"
         component={MyLists}
         options={{

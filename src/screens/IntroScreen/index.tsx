@@ -41,7 +41,7 @@ const IntroScreen = () => {
           />
         </View>
         <View style={styles.carouselControlsContainer}>
-          <Button title="Let's begin!" onPress={() => uiStore.setLastScreen('MyLists')} color={colors.brandColor} />
+          <Button title="Let's begin!" onPress={() => uiStore.setLastViewedSection('Lists')} color={colors.brandColor} />
         </View>
       </View>
     </View>

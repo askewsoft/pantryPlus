@@ -1,8 +1,12 @@
 import { StackScreenProps } from '@react-navigation/stack';
 
+export const GroupsStack = [
+  'MyGroups',
+  'MyInvites',
+] as const;
+
 export type GroupsStackParamList = {
-  MyGroups: undefined;
-  MyInvites: undefined;
+  [key in typeof GroupsStack[number]]: undefined;
 };
 
 export type StackPropsMyGroups = StackScreenProps<GroupsStackParamList, 'MyGroups'>;

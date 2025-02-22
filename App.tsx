@@ -41,7 +41,7 @@ const App = () => {
             <Authenticator initialState={uiStore.signInOrUp as IAuthenticatorProps['initialState']}>
               <DomainStoreContextProvider value={domainStore}>
                 <UserContext>
-                  {uiStore.lastScreen === 'IntroScreen' ?
+                  {uiStore.lastViewedSection === 'IntroScreen' ?
                     <IntroScreen /> :
                     <AppWrapper />
                   }
