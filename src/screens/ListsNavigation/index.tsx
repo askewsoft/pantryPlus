@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import { createStackNavigator } from '@react-navigation/stack';
 import { EventArg, StackNavigationState } from '@react-navigation/native';
@@ -26,6 +26,10 @@ const onBackPress = () => {
 */
 
 const ListsNavigation = ({navigation}: {navigation: any}) => {
+  const listId = uiStore.selectedShoppingList || '';
+  // Add a ref to track the previous route so we can detect when the user navigates to a non-default screen explicitly
+  const prevRoute = useRef<string | null>(null);
+
   useEffect(() => {
     if (uiStore.lastViewedSection === 'Lists' && ListsStack.includes(uiStore.lastViewedSubSection as typeof ListsStack[number])) {
       console.log('NAVIGATE lastViewedListsSubSection', uiStore.lastViewedSubSection);
@@ -34,15 +38,18 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
   }, []);
 
   const onScreenChange = (e: EventArg<"state", false, { state: StackNavigationState<ListsStackParamList> }>) => {
-    const lastRoute = e.data.state.routes[e.data.state.routes.length - 1];
-    const routeName = lastRoute?.name as typeof ListsStack[number];
-    if (routeName && uiStore.lastViewedSection === 'Lists') {
-      uiStore.setLastViewedSubSection(routeName);
-      console.log('SET lastViewedListsSubSection', routeName);
-    }
-  }
+    const routesLength = e.data.state.routes.length;
+    const currentRoute = e.data.state.routes[routesLength - 1].name;
 
-  const listId = uiStore.selectedShoppingList || '';
+    // If we're on MyLists and we had a previous route, this was an explicit navigation
+    if (currentRoute === "MyLists" && prevRoute.current !== null) {
+      uiStore.setLastViewedSubSection('');
+    } else if (currentRoute !== "MyLists") {
+      uiStore.setLastViewedSubSection(currentRoute as typeof ListsStack[number]);
+    }
+
+    prevRoute.current = currentRoute;
+  }
 
   const onPressAddList = () => {
     uiStore.setAddListModalVisible(true);
@@ -53,7 +60,6 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
   };
 
   const onPressAddProduct = () => {
-    // uiStore.setSelectedShoppingList(listId);
     uiStore.addItemToListID !== listId ? uiStore.setAddItemToListID(listId) : uiStore.setAddItemToListID('');
   }
 

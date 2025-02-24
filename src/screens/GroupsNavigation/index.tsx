@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import { View, StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -33,6 +33,9 @@ const renderHeader = () => {
 }
 
 const GroupsNavigation = ({navigation}: {navigation: any}) => {
+  // Add a ref to track the previous route so we can detect when the user navigates to a non-default screen explicitly
+  const prevRoute = useRef<string | null>(null);
+
   useEffect(() => {
     if (uiStore.lastViewedSection === 'Groups' && GroupsStack.includes(uiStore.lastViewedSubSection as typeof GroupsStack[number])) {
       console.log('NAVIGATE lastViewedGroupsSubSection', uiStore.lastViewedSubSection);
@@ -41,12 +44,17 @@ const GroupsNavigation = ({navigation}: {navigation: any}) => {
   }, []);
 
   const onScreenChange = (e: EventArg<"state", false, { state: StackNavigationState<GroupsStackParamList> }>) => {
-    const lastRoute = e.data.state.routes[e.data.state.routes.length - 1];
-    const routeName = lastRoute?.name as typeof GroupsStack[number];
-    if (routeName && uiStore.lastViewedSection === 'Groups') {
-      uiStore.setLastViewedSubSection(routeName);
-      console.log('SET lastViewedGroupsSubSection', routeName);
+    const routesLength = e.data.state.routes.length;
+    const currentRoute = e.data.state.routes[routesLength - 1].name;
+
+    // If we're on MyGroups and we had a previous route, this was an explicit navigation
+    if (currentRoute === "MyGroups" && prevRoute.current !== null) {
+      uiStore.setLastViewedSubSection('');
+    } else if (currentRoute !== "MyGroups") {
+      uiStore.setLastViewedSubSection(currentRoute as typeof GroupsStack[number]);
     }
+
+    prevRoute.current = currentRoute;
   }
 
   return (

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import { createStackNavigator } from '@react-navigation/stack';
 import { EventArg, StackNavigationState } from '@react-navigation/native';
@@ -16,6 +16,9 @@ import { uiStore } from '@/stores/UIStore';
 const { Navigator, Screen } = createStackNavigator<LocationsStackParamList>();
 
 const LocationsNavigation = ({navigation}: {navigation: any}) => {
+  // Add a ref to track the previous route so we can detect when the user navigates to a non-default screen explicitly
+  const prevRoute = useRef<string | null>(null);
+
   useEffect(() => {
     if (uiStore.lastViewedSection === 'Locations' && LocationsStack.includes(uiStore.lastViewedSubSection as typeof LocationsStack[number])) {
       console.log('NAVIGATE lastViewedLocationsSubSection', uiStore.lastViewedSubSection);
@@ -24,12 +27,17 @@ const LocationsNavigation = ({navigation}: {navigation: any}) => {
   }, []);
 
   const onScreenChange = (e: EventArg<"state", false, { state: StackNavigationState<LocationsStackParamList> }>) => {
-    const lastRoute = e.data.state.routes[e.data.state.routes.length - 1];
-    const routeName = lastRoute?.name as typeof LocationsStack[number];
-    if (routeName && uiStore.lastViewedSection === 'Locations') {
-      uiStore.setLastViewedSubSection(routeName);
-      console.log('SET lastViewedLocationsSubSection', routeName);
+    const routesLength = e.data.state.routes.length;
+    const currentRoute = e.data.state.routes[routesLength - 1].name;
+
+    // If we're on MyLocations and we had a previous route, this was an explicit navigation
+    if (currentRoute === "MyLocations" && prevRoute.current !== null) {
+      uiStore.setLastViewedSubSection('');
+    } else if (currentRoute !== "MyLocations") {
+      uiStore.setLastViewedSubSection(currentRoute as typeof LocationsStack[number]);
     }
+
+    prevRoute.current = currentRoute;
   }
 
   const onPressAddLocation = () => {
