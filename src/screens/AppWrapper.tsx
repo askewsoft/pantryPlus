@@ -33,16 +33,15 @@ const AppWrapper = () => {
   const getInitialAppTabsRouteName = (): typeof AppTabs[number] => {
     // One of those times where TypeScript is just not smart enough to infer the type
     return AppTabs.includes(uiStore.lastViewedSection as typeof AppTabs[number]) ? uiStore.lastViewedSection as typeof AppTabs[number] : 'Lists';
-  }
+  };
 
   const onScreenChange = (e: EventArg<"state", false, { state: TabNavigationState<AppTabsParamList> }>) => {
     const lastTab = e.data.state.history[e.data.state.history.length - 1];
     const routeName = lastTab.key.split('-')[0] as typeof AppTabs[number];
     if (routeName && AppTabs.includes(routeName)) {
       uiStore.setLastViewedSection(routeName);
-      console.log('lastViewedSection', routeName);
     }
-  }
+  };
 
   return (
     // View is needed to push the status bar to the bottom of the screen
