@@ -20,84 +20,69 @@ import { sortByOrdinal } from '@/stores/utils/sorter';
 
 const ShoppingList = ({ navigation }: StackPropsShoppingList) => {
   const listId = uiStore.selectedShoppingList;
-  const xAuthUser = domainStore.user?.email!;
+  const xAuthUser = domainStore.user?.email;
   const [isRefreshing, setIsRefreshing] = useState(false);
+  
+  // Get current list as a computed value and ensure it exists
+  const currentList = domainStore.lists.find((list) => list.id === listId);
 
   const loadData = async () => {
+    if (!currentList || !xAuthUser) return;
+    
     setIsRefreshing(true);
-    const currList = domainStore.lists.find((list) => list.id === listId) || domainStore.lists[0];
-    if (!currList) return;
-    
-    navigation.setOptions({ title: currList.name });
-    
-    // Always load categories and items on initial mount or refresh
     try {
-      await currList.loadCategories({ xAuthUser });
-      await currList.loadListItems({ xAuthUser });
+      // Load data sequentially to avoid race conditions
+      await currentList.loadCategories({ xAuthUser });
+      await currentList.loadListItems({ xAuthUser });
     } catch (error) {
       console.error('Problem in ShoppingList loading Categories or Items:', error);
-      if (!currList.categories.length && !currList.items.length) {
-        Alert.alert('Network Error', 'Unable to load data. Please try refreshing.');
-      }
+      Alert.alert('Network Error', 'Unable to load data. Please try refreshing.');
     } finally {
       setIsRefreshing(false);
     }
   };
 
-  const renderCategoryElement = ({ item, drag }: { item: CategoryType, drag: () => void }) => {
-    const categoryId = item.id;
-    return (
-        <CategoryFolder key={categoryId} categoryId={categoryId} title={item.name} drag={drag}>
-          <ItemInput categoryId={categoryId} />
-          <CategoryItems listId={listId || ''} categoryId={categoryId} />
-        </CategoryFolder>
-    );
-  }
-
-  const getCurrentCategories = () => {
-    const currList = domainStore.lists.find((list) => list.id === listId) || domainStore.lists[0];
-    return currList ? toJS(currList.categories).sort(sortByOrdinal) : [];
-  }
+  const renderCategoryElement = ({ item, drag }: { item: CategoryType, drag: () => void }) => (
+    <CategoryFolder key={item.id} categoryId={item.id} title={item.name} drag={drag}>
+      <ItemInput categoryId={item.id} />
+      <CategoryItems listId={listId || ''} categoryId={item.id} />
+    </CategoryFolder>
+  );
 
   const onDragEnd = ({ data }: DragEndParams<CategoryType>) => {
-    const currList = domainStore.lists.find((list) => list.id === listId) || domainStore.lists[0];
+    if (!currentList || !xAuthUser) return;
+    
     data.forEach((category, index) => {
       if (category.ordinal !== index) {
-          /* each category in data is a copy of the CategoryModel's properties only
-          * It is not an instance of CategoryModel and lacks actions & views
-          * We must find the CategoryModel instance to execute the self-mutating action
-          */
-          const updatedCategory = currList!.categories.find(c => c.id === category.id);
-          updatedCategory!.setOrdinal(index, xAuthUser);
+        const updatedCategory = currentList.categories.find(c => c.id === category.id);
+        updatedCategory?.setOrdinal(index, xAuthUser);
       }
     });
-  }
+  };
 
-  // Load data on mount and when list changes
   useEffect(() => {
-    if (listId && domainStore.user && uiStore.listsLoaded) {
-      // loadData();
-      const currList = domainStore.lists.find((list) => list.id === listId) || domainStore.lists[0];
-      console.log('ShoppingList mount/update:', { lists: domainStore.lists.length, listId, id: domainStore.lists[0].id, groceryItems: currList.items.length, groceryCategories: currList.categories.length });
-      navigation.setOptions({ title: currList.name });
-    }
-  }, [listId, uiStore.listsLoaded, domainStore.user]);
+    if (!currentList || !xAuthUser || !uiStore.listsLoaded) return;
+
+    loadData();
+    navigation.setOptions({ title: currentList.name });
+  }, [listId, uiStore.listsLoaded, xAuthUser]);
+
+  if (!currentList || !xAuthUser) {
+    return null;
+  }
 
   return (
     <NestableScrollContainer 
       style={styles.container} 
       refreshControl={
-        <RefreshControl 
-          refreshing={isRefreshing} 
-          onRefresh={loadData}
-        />
+        <RefreshControl refreshing={isRefreshing} onRefresh={loadData} />
       }
     >
       <ItemInput listId={listId || ''} />
       <ListItems listId={listId || ''} />
       <NestableDraggableFlatList
         contentContainerStyle={styles.draggableFlatListStyle}
-        data={getCurrentCategories()}
+        data={toJS(currentList.categories).sort(sortByOrdinal)}
         renderItem={renderCategoryElement}
         keyExtractor={category => category.id}
         onDragEnd={onDragEnd}
@@ -105,7 +90,7 @@ const ShoppingList = ({ navigation }: StackPropsShoppingList) => {
       <AddCategoryModal />
     </NestableScrollContainer>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
