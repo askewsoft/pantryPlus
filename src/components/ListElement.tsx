@@ -33,7 +33,7 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navi
     }
   }
 
-  const handlePress = ({ id }: { id: string }) => {
+  const handlePress = () => {
     uiStore.setSelectedShoppingList(id);
     navigation.navigate('ShoppingList');
   }
@@ -46,7 +46,7 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navi
   return (
     <View style={styles.container}>
       <Pressable style={styles.titleContainer}
-        onPress={() => handlePress({ id })}
+        onPress={handlePress}
         onLongPress={prepareToEditName}
       >
         <MaterialIcons name="format-list-bulleted" size={fonts.rowIconSize} color={colors.brandColor} />
@@ -70,9 +70,9 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navi
             backgroundColor={colors.itemBackground}
             color={colors.brandColor}
             iconStyle={iconStyleStyle}
-          style={iconStyle}
-          underlayColor={colors.lightBrandColor}
-          onPress={openShareModal}
+            style={iconStyle}
+            underlayColor={colors.lightBrandColor}
+            onPress={openShareModal}
           />
         )}
         <MaterialIcons.Button

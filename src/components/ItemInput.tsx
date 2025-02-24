@@ -8,13 +8,11 @@ import { domainStore, ListType } from "@/stores/DomainStore";
 import { CategoryType } from "@/stores/models/List";
 
 type ItemInputProps = {
-  list?: ListType;
-  category?: CategoryType;
-} & ({list: ListType} | {category: CategoryType});
+  listId?: string;
+  categoryId?: string;
+} & ({listId: string} | {categoryId: string});
 
-const ItemInput = ({ list, category }: ItemInputProps) => {
-    const { id: categoryId } = category || {};
-    const { id: listId } = list || {};
+const ItemInput = ({ listId, categoryId }: ItemInputProps) => {
     const [editedName, setEditedName] = useState('');
     const [isAddingItem, setIsAddingItem] = useState(false);
     const {addItemToCategoryID, addItemToListID} = uiStore;
@@ -35,11 +33,13 @@ const ItemInput = ({ list, category }: ItemInputProps) => {
 
     const onSubmit = () => {
         const trimmedName = editedName.trim();
+        const currList = domainStore.lists.find((list) => list.id === listId) || domainStore.lists[0];
         if (trimmedName !== '' && (categoryId || listId)) {
             if (categoryId) {
-                category!.addItem({ item: { name: trimmedName, upc: '' }, xAuthUser });
+                const currCategory = currList?.categories.find(c => c.id === categoryId);
+                currCategory!.addItem({ item: { name: trimmedName, upc: '' }, xAuthUser });
             } else if (listId) {
-                list!.addItem({ item: { name: trimmedName, upc: '' }, xAuthUser });
+                currList!.addItem({ item: { name: trimmedName, upc: '' }, xAuthUser });
             }
         }
         setIsAddingItem(false);
