@@ -33,12 +33,12 @@ const ItemInput = ({ listId, categoryId }: ItemInputProps) => {
 
     const onSubmit = () => {
         const trimmedName = editedName.trim();
-        const currList = domainStore.lists.find((list) => list.id === listId) || domainStore.lists[0];
+        const currList = domainStore.lists.find((list) => list.id === listId);
         if (trimmedName !== '' && (categoryId || listId)) {
-            if (categoryId) {
+            if (currList && categoryId) {
                 const currCategory = currList?.categories.find(c => c.id === categoryId);
                 currCategory!.addItem({ item: { name: trimmedName, upc: '' }, xAuthUser });
-            } else if (listId) {
+            } else if (currList && listId) {
                 currList!.addItem({ item: { name: trimmedName, upc: '' }, xAuthUser });
             }
         }

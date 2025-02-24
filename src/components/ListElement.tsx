@@ -13,7 +13,6 @@ import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navigation: any}) => {
   const list = domainStore.lists.find(list => list.id === id);
   const userIsListOwner = list?.ownerId === domainStore.user?.id;
-  const xAuthUser = domainStore.user!.email;
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(list!.name);
@@ -36,16 +35,6 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navi
 
   const handlePress = async () => {
     uiStore.setSelectedShoppingList(id);
-    const currList = domainStore.lists.find((list) => list.id === id) || domainStore.lists[0];
-    try {
-      await currList.loadCategories({ xAuthUser });
-      await currList.loadListItems({ xAuthUser });
-    } catch (error) {
-      console.error('Problem in ShoppingList loading Categories or Items:', error);
-      if (!currList.categories.length && !currList.items.length) {
-        Alert.alert('Network Error', 'Unable to load data. Please try refreshing.');
-      }
-    }
     navigation.navigate('ShoppingList');
   }
 
