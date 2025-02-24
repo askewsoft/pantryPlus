@@ -79,10 +79,15 @@ const ShoppingList = observer(({ navigation }: StackPropsShoppingList) => {
 
     // Small delay to ensure store is stable
     const timer = setTimeout(() => {
+      // Get a fresh reference to the list
+      const currentList = domainStore.lists.find((list) => list.id === listId);
       if (!currentList || !xAuthUser) return;
       
       loadData();
-      navigation.setOptions({ title: currentList.name });
+      // Only update navigation title if list still exists
+      if (currentList && currentList.name) {
+        navigation.setOptions({ title: currentList.name });
+      }
     }, 100);
 
     return () => clearTimeout(timer);
