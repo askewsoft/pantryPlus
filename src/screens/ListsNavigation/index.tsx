@@ -26,7 +26,6 @@ const onBackPress = () => {
 */
 
 const ListsNavigation = ({navigation}: {navigation: any}) => {
-  const listId = uiStore.selectedShoppingList || '';
   // Add a ref to track the previous route so we can detect when the user navigates to a non-default screen explicitly
   const prevRoute = useRef<string | null>(null);
 
@@ -60,6 +59,7 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
   };
 
   const onPressAddProduct = () => {
+    const listId = uiStore.selectedShoppingList || '';
     uiStore.addItemToListID !== listId ? uiStore.setAddItemToListID(listId) : uiStore.setAddItemToListID('');
   }
 
