@@ -18,7 +18,7 @@ import { CategoryType } from '@/stores/models/List';
 import colors from '@/consts/colors';
 import { sortByOrdinal } from '@/stores/utils/sorter';
 
-const ShoppingList = ({ navigation }: StackPropsShoppingList) => {
+const ShoppingList = observer(({ navigation }: StackPropsShoppingList) => {
   const listId = uiStore.selectedShoppingList;
   const xAuthUser = domainStore.user?.email;
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -27,16 +27,29 @@ const ShoppingList = ({ navigation }: StackPropsShoppingList) => {
   const currentList = domainStore.lists.find((list) => list.id === listId);
 
   const loadData = async () => {
-    if (!currentList || !xAuthUser) return;
+    // Verify list still exists in store before loading
+    const listStillExists = domainStore.lists.find((list) => list.id === listId);
+    if (!listStillExists || !xAuthUser) return;
     
     setIsRefreshing(true);
     try {
-      // Load data sequentially to avoid race conditions
-      await currentList.loadCategories({ xAuthUser });
-      await currentList.loadListItems({ xAuthUser });
+      // Create a reference to the current list's ID to verify it hasn't changed
+      const loadingListId = listId;
+      
+      // Verify list ID hasn't changed before each operation
+      if (loadingListId === uiStore.selectedShoppingList) {
+        await listStillExists.loadCategories({ xAuthUser });
+      }
+      
+      if (loadingListId === uiStore.selectedShoppingList) {
+        await listStillExists.loadListItems({ xAuthUser });
+      }
     } catch (error) {
       console.error('Problem in ShoppingList loading Categories or Items:', error);
-      Alert.alert('Network Error', 'Unable to load data. Please try refreshing.');
+      // Only show alert if we're still on the same list
+      if (listId === uiStore.selectedShoppingList) {
+        Alert.alert('Network Error', 'Unable to load data. Please try refreshing.');
+      }
     } finally {
       setIsRefreshing(false);
     }
@@ -61,12 +74,21 @@ const ShoppingList = ({ navigation }: StackPropsShoppingList) => {
   };
 
   useEffect(() => {
-    if (!currentList || !xAuthUser || !uiStore.listsLoaded) return;
+    // Don't load data until lists are fully loaded
+    if (!uiStore.listsLoaded) return;
 
-    loadData();
-    navigation.setOptions({ title: currentList.name });
+    // Small delay to ensure store is stable
+    const timer = setTimeout(() => {
+      if (!currentList || !xAuthUser) return;
+      
+      loadData();
+      navigation.setOptions({ title: currentList.name });
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [listId, uiStore.listsLoaded, xAuthUser]);
 
+  // Render null if no list is selected or user isn't authenticated
   if (!currentList || !xAuthUser) {
     return null;
   }
@@ -75,22 +97,30 @@ const ShoppingList = ({ navigation }: StackPropsShoppingList) => {
     <NestableScrollContainer 
       style={styles.container} 
       refreshControl={
-        <RefreshControl refreshing={isRefreshing} onRefresh={loadData} />
+        <RefreshControl 
+          refreshing={isRefreshing} 
+          onRefresh={loadData}
+        />
       }
     >
-      <ItemInput listId={listId || ''} />
-      <ListItems listId={listId || ''} />
-      <NestableDraggableFlatList
-        contentContainerStyle={styles.draggableFlatListStyle}
-        data={toJS(currentList.categories).sort(sortByOrdinal)}
-        renderItem={renderCategoryElement}
-        keyExtractor={category => category.id}
-        onDragEnd={onDragEnd}
-      />
-      <AddCategoryModal />
+      {/* Only render content if we have a valid list */}
+      {currentList && (
+        <>
+          <ItemInput listId={listId || ''} />
+          <ListItems listId={listId || ''} />
+          <NestableDraggableFlatList
+            contentContainerStyle={styles.draggableFlatListStyle}
+            data={toJS(currentList.categories).sort(sortByOrdinal)}
+            renderItem={renderCategoryElement}
+            keyExtractor={category => category.id}
+            onDragEnd={onDragEnd}
+          />
+          <AddCategoryModal />
+        </>
+      )}
     </NestableScrollContainer>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -101,4 +131,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default observer(ShoppingList);
+export default ShoppingList;
