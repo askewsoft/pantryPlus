@@ -1,5 +1,5 @@
 import { t, flow } from 'mobx-state-tree';
-import api from '@/api';
+import { api } from '@/api';
 
 export const ItemModel = t.model('ItemModel', {
     id: t.identifier,

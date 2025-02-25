@@ -1,4 +1,3 @@
-import { Amplify } from "aws-amplify";
 import type { ResourcesConfig } from "aws-amplify";
 import cognitoConfig from '@/config/cognito';
 

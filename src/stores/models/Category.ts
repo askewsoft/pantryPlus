@@ -2,12 +2,10 @@ import { runInAction } from 'mobx';
 import { flow, Instance, t } from 'mobx-state-tree';
 import { randomUUID } from 'expo-crypto';
 
-import api from '@/api';
+import { api } from '@/api';
 import { ItemModel } from './Item';
 import { Item } from 'pantryplus-api-client';
 export type ItemType = Instance<typeof ItemModel>;
-
-import logging from '@/config/logging';
 
 export const CategoryModel = t.model('CategoryModel', {
     id: t.identifier,

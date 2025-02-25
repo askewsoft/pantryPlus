@@ -2,12 +2,10 @@ import { flow, t } from 'mobx-state-tree';
 import { ShopperModel } from './Shopper';
 import { InviteeModel } from './Invitee';
 
-import api from '@/api';
+import { api } from '@/api';
 import { InviteeType, IUser, MemberType } from '../DomainStore';
 import { Shopper } from 'pantryplus-api-client';
 
-import logging from '@/config/logging';
- 
 export const GroupModel = t.model('GroupModel', {
     id: t.identifier,
     name: t.string,

@@ -1,10 +1,7 @@
 import { ItemsApi, Configuration, Item } from 'pantryplus-api-client';
-import cognitoConfig from '@/config/cognito';
-import logging from '@/config/logging';
+import appConfig from '@/config/app';
 
-const configuration = new Configuration({
-  basePath: cognitoConfig.apiUrl,
-});
+const configuration = new Configuration({ basePath: appConfig.apiUrl });
 
 const itemsApi = new ItemsApi(configuration);
 

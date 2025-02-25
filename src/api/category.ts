@@ -1,11 +1,7 @@
 import { CategoriesApi, Configuration, Item } from 'pantryplus-api-client';
-import cognitoConfig from '@/config/cognito';
-import logging from '@/config/logging';
+import appConfig from '@/config/app';
 
-const configuration = new Configuration({
-  basePath: cognitoConfig.apiUrl,
-});
-
+const configuration = new Configuration({ basePath: appConfig.apiUrl });
 const categoriesApi = new CategoriesApi(configuration);
 
 const updateCategory = async ({ categoryId, name, ordinal, xAuthUser, xAuthLocation }: { categoryId: string, name: string, ordinal: number, xAuthUser: string, xAuthLocation: string }) => {
@@ -34,6 +30,7 @@ const loadCategoryItems = async ({ categoryId, xAuthUser }: { categoryId: string
     }
     return returnItems;
 }
+
 const removeCategoryItem = async ({ categoryId, itemId, xAuthUser }: { categoryId?: string, itemId?: string, xAuthUser: string }): Promise<void> => {
     try {
         if (!categoryId || !itemId) {

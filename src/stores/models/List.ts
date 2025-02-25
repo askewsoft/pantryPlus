@@ -2,12 +2,10 @@ import { t, Instance, flow } from 'mobx-state-tree';
 import { randomUUID } from 'expo-crypto';
 import { Category, Item } from 'pantryplus-api-client';
 
-import api from '@/api';
+import { api } from '@/api';
 
 import { CategoryModel } from './Category';
 import { ItemModel } from './Item';
-
-import logging from '@/config/logging';
 
 export type ItemType = Instance<typeof ItemModel>;
 export type CategoryType = Instance<typeof CategoryModel>;

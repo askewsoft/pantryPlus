@@ -1,13 +1,10 @@
 import { LocationsApi, Configuration, Location, LocationArea } from 'pantryplus-api-client';
-import cognitoConfig from '@/config/cognito';
+import appConfig from '@/config/app';
 import * as expoLocation from 'expo-location';
-import logging from '@/config/logging';
 import { Alert } from 'react-native';
+import { locationSubscription } from '@/consts/locationSubscriptionOptions';
 
-const configuration = new Configuration({
-  basePath: cognitoConfig.apiUrl,
-});
-
+const configuration = new Configuration({ basePath: appConfig.apiUrl });
 const locationsApi = new LocationsApi(configuration);
 
 const createLocation = async ({ location, xAuthUser }: { location: Location, xAuthUser: string }) => {
@@ -55,15 +52,17 @@ const getCurrentLocation = async (): Promise<expoLocation.LocationObject | undef
     return currentLocation;
 }
 
-const getNearestStore = async (xAuthUser: string): Promise<string | undefined> => {
-    const userLocation = await getCurrentLocation();
+const getNearestStore = async (xAuthUser: string, locationObject?: expoLocation.LocationObject): Promise<string | undefined> => {
+    let userLocation = locationObject;
+    if (!userLocation) {
+        userLocation = await getCurrentLocation();
+    }
     if (!userLocation) return;
 
     const locationArea: LocationArea = {
         latitude: userLocation.coords.latitude,
         longitude: userLocation.coords.longitude,
-        // TODO: make radius dynamic so that distance can be adjusted by the user?
-        radius: 15000, // in meters
+        radius: locationSubscription.nearestStoreRadius, // TODO: consider making radius user adjustable
     }
     const nearestStores = await getNearbyLocations({ xAuthUser, locationArea });
     return nearestStores[0]?.id;

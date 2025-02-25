@@ -7,14 +7,10 @@ import {
     Location,
 } from 'pantryplus-api-client';
 
-import cognitoConfig from '@/config/cognito';
+import appConfig from '@/config/app';
 import { fetchUserAttributes } from 'aws-amplify/auth';
-import logging from '@/config/logging';
 
-const configuration = new Configuration({
-  basePath: cognitoConfig.apiUrl,
-});
-
+const configuration = new Configuration({ basePath: appConfig.apiUrl });
 const shopperApi = new ShoppersApi(configuration);
 
 const registerUser = async () => {
