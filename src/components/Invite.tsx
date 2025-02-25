@@ -7,7 +7,6 @@ import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 
 import { domainStore } from '@/stores/DomainStore';
-import logging from '@/config/logging';
 
 const Invite = ({navigation, inviteId}: {navigation: StackPropsMyInvites['navigation'], inviteId: string}) => {
   const invite = domainStore.user?.invites.find(i => i.id === inviteId);

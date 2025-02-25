@@ -6,7 +6,6 @@ import { domainStore } from '@/stores/DomainStore';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
-import logging from '@/config/logging';
 
 const AddLocationModal = () => {
   return (

@@ -6,7 +6,6 @@ import { domainStore, ListType } from '@/stores/DomainStore';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
-import logging from '@/config/logging';
 
 const AddListModal = () => {
   return (

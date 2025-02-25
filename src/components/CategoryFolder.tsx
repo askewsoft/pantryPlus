@@ -13,7 +13,6 @@ import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 import { uiStore } from '@/stores/UIStore';
 import { domainStore } from '@/stores/DomainStore';
 
-import logging from '@/config/logging';
 import AddButton from './Buttons/AddButton';
 import RemoveButton from './Buttons/RemoveButton';
 

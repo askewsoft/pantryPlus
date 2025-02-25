@@ -12,8 +12,6 @@ import { domainStore } from '@/stores/DomainStore';
 import AddButton from './Buttons/AddButton';
 import RemoveButton from './Buttons/RemoveButton';
 
-import logging from '@/config/logging';
-
 const Group = ({groupId, title, userIsGroupOwner, children}: {groupId: string, title: string, userIsGroupOwner: boolean, children: React.ReactNode}) => {
   const currGroup = domainStore.groups.find(g => g.id === groupId);
   const xAuthUser = domainStore.user?.email!;
