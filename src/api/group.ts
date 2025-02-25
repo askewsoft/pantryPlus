@@ -8,11 +8,11 @@ import {
     PickGroupName
 } from 'pantryplus-api-client';
 
-import cognitoConfig from '@/config/cognito';
+import appConfig from '@/config/app';
 import { randomUUID } from 'expo-crypto';
 
 const configuration = new Configuration({
-  basePath: cognitoConfig.apiUrl,
+  basePath: appConfig.apiUrl,
 });
 
 const groupApi = new GroupsApi(configuration);
