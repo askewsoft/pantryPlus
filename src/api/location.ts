@@ -2,7 +2,7 @@ import { LocationsApi, Configuration, Location, LocationArea } from 'pantryplus-
 import appConfig from '@/config/app';
 import * as expoLocation from 'expo-location';
 import { Alert } from 'react-native';
-import { locationSubscription } from '@/consts/locationSubscriptionOptions';
+import { locationSubscription } from '@/config/locationSubscription';
 
 const configuration = new Configuration({ basePath: appConfig.apiUrl });
 const locationsApi = new LocationsApi(configuration);
