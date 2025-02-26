@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import { observer } from 'mobx-react';
 import { EventArg, NavigationContainer, TabNavigationState } from '@react-navigation/native';
@@ -12,7 +12,9 @@ import SettingsNavigation from './SettingsNavigation';
 import GroupsNavigation from './GroupsNavigation';
 import LocationsNavigation from './LocationsNavigation';
 
+import { domainStore } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
+import { locationService } from '@/services/LocationService';
 
 import colors from '@/consts/colors';
 import tabOptions from '@/consts/tabNavOptions';
@@ -42,6 +44,17 @@ const AppWrapper = () => {
       uiStore.setLastViewedSection(routeName);
     }
   };
+
+  useEffect(() => {
+    if (domainStore.locationEnabled) {
+      locationService.startTracking();
+    }
+    return () => {
+      if (!domainStore.locationEnabled) {
+        locationService.stopTracking();
+      }
+    }
+  }, [domainStore.locationEnabled]);
 
   return (
     // View is needed to push the status bar to the bottom of the screen
