@@ -72,6 +72,5 @@ export default {
     createLocation,
     updateLocationName,
     getCurrentLocation,
-    getNearbyLocations,
     getNearestStore,
 };

@@ -22,12 +22,14 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
   const currCategory = currList?.categories.find(c => c.id === categoryId);
   const xAuthUser = domainStore.user?.email!;
 
+
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
 
   const onSubmit = async () => {
     if (editedTitle.trim().toLowerCase() !== currCategory?.name.trim().toLowerCase()) {
-      await currCategory?.setName(editedTitle, xAuthUser);
+      const xAuthLocation = domainStore.nearestKnownLocationId ?? '';
+      await currCategory?.setName(editedTitle, xAuthUser, xAuthLocation);
     }
     setIsEditing(false);
   }

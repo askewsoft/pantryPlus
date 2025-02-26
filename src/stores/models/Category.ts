@@ -13,10 +13,9 @@ export const CategoryModel = t.model('CategoryModel', {
     ordinal: t.number, // zero-based index
     items: t.optional(t.array(ItemModel), []),
 }).actions(self => ({
-    setName: flow(function*(name: string, xAuthUser: string): Generator<any, any, any> {
+    setName: flow(function*(name: string, xAuthUser: string, xAuthLocation: string): Generator<any, any, any> {
         const { id, ordinal = 0 } = self;
         try {
-            const xAuthLocation = yield api.location.getNearestStore(xAuthUser);
             yield api.category.updateCategory({ categoryId: id, name, ordinal, xAuthLocation, xAuthUser });
             self.name = name;
         } catch (error) {
@@ -70,10 +69,9 @@ export const CategoryModel = t.model('CategoryModel', {
             }
         });
     },
-    setOrdinal: flow(function* (ordinal: number, xAuthUser: string): Generator<any, any, any> {
+    setOrdinal: flow(function* (ordinal: number, xAuthUser: string, xAuthLocation: string): Generator<any, any, any> {
         self.ordinal = ordinal;
         try {
-            const xAuthLocation = yield api.location.getNearestStore(xAuthUser);
             yield api.category.updateCategory({ categoryId: self.id, name: self.name, ordinal, xAuthLocation, xAuthUser });
         } catch (error) {
             console.error(`Error setting Category ordinal: ${error}`);

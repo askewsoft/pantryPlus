@@ -38,7 +38,8 @@ const ShoppingList = observer(({ navigation }: StackPropsShoppingList) => {
       
       // Verify list ID hasn't changed before each operation
       if (loadingListId === uiStore.selectedShoppingList) {
-        await listStillExists.loadCategories({ xAuthUser });
+        const xAuthLocation = domainStore.nearestKnownLocationId ?? '';
+        await listStillExists.loadCategories({ xAuthUser, xAuthLocation });
       }
       
       if (loadingListId === uiStore.selectedShoppingList) {
@@ -68,7 +69,8 @@ const ShoppingList = observer(({ navigation }: StackPropsShoppingList) => {
     data.forEach((category, index) => {
       if (category.ordinal !== index) {
         const updatedCategory = currentList.categories.find(c => c.id === category.id);
-        updatedCategory?.setOrdinal(index, xAuthUser);
+        const xAuthLocation = domainStore.nearestKnownLocationId ?? '';
+        updatedCategory?.setOrdinal(index, xAuthUser, xAuthLocation);
       }
     });
   };

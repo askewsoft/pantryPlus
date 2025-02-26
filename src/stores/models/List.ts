@@ -30,8 +30,7 @@ export const ListModel = t.model('ListModel', {
             console.error(`Error updating list: ${error}`);
         }
     }),
-    addCategory: flow(function*({ name, xAuthUser }: { name: string, xAuthUser: string }): Generator<any, any, any> {
-        const xAuthLocation = yield api.location.getNearestStore(xAuthUser);
+    addCategory: flow(function*({ name, xAuthUser, xAuthLocation }: { name: string, xAuthUser: string, xAuthLocation: string }): Generator<any, any, any> {
         const newCategoryId = randomUUID();
         const ordinal = self.categories.length;
         const newCategory = CategoryModel.create({ id: newCategoryId, name, ordinal });
@@ -54,12 +53,11 @@ export const ListModel = t.model('ListModel', {
             console.error(`Error removing category from list: ${error}`);
         }
     }),
-    loadCategories: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
+    loadCategories: flow(function*({ xAuthUser, xAuthLocation }: { xAuthUser: string, xAuthLocation: string }): Generator<any, any, any> {
         // Check if the node is still in the tree
         if (!self.id) return;
 
         try {
-            const xAuthLocation = yield api.location.getNearestStore(xAuthUser);
             const categoriesData = yield api.list.getListCategories({ listId: self.id, xAuthUser, xAuthLocation });
             const categories = categoriesData.map(
                 (category: Category) => {
@@ -132,18 +130,6 @@ export const ListModel = t.model('ListModel', {
         } catch (error) {
             console.error(`Error associating item to list: ${error}`);
         }
-    }),
-    updateCategoryOrder: flow(function* ({ data, xAuthUser }: { data: CategoryType[], xAuthUser: string }): Generator<any, any, any> {
-        data.forEach((category, index) => {
-            if (category.ordinal !== index) {
-                /* each category in data is a copy of the CategoryModel's properties only
-                * It is not an instance of CategoryModel and lacks actions & views
-                * We must find the CategoryModel instance to execute the self-mutating action
-                */
-                const updatedCategory = self.categories.find(c => c.id === category.id);
-                updatedCategory!.setOrdinal(index, xAuthUser);
-            }
-        });
     }),
     updateItemOrder: ({ data, from, to }: { data: ItemType[], from: number, to: number }) => {
         data.forEach((item, index) => {

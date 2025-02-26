@@ -43,8 +43,8 @@ const onSubmit = async (evt: any) => {
     const { selectedShoppingList: listId } = uiStore; 
     const currList = domainStore.lists.find((list) => list.id === listId);
     const user = domainStore.user;
-
-    currList?.addCategory({ name: evt.nativeEvent.text, xAuthUser: user?.email! });
+    const xAuthLocation = domainStore.nearestKnownLocationId ?? '';
+    currList?.addCategory({ name: evt.nativeEvent.text, xAuthUser: user?.email!, xAuthLocation });
     uiStore.setAddCategoryModalVisible(false);
 }
 
