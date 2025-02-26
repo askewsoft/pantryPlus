@@ -15,5 +15,5 @@ export const locationSubscription = {
     timeUpdateInterval: 5 * 60 * 1000, // in milliseconds
     distanceUpdateInterval: 100, // in meters
     accuracy: expoLocation.Accuracy.High,
-    nearestStoreRadius: 15000, // in meters
+    nearestStoreRadius: 500, // in meters
 };

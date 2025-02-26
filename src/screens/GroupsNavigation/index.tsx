@@ -38,7 +38,6 @@ const GroupsNavigation = ({navigation}: {navigation: any}) => {
 
   useEffect(() => {
     if (uiStore.lastViewedSection === 'Groups' && GroupsStack.includes(uiStore.lastViewedSubSection as typeof GroupsStack[number])) {
-      console.log('NAVIGATE lastViewedGroupsSubSection', uiStore.lastViewedSubSection);
       navigation.navigate('Groups', { screen: uiStore.lastViewedSubSection });
     }
   }, []);

@@ -31,7 +31,6 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
 
   useEffect(() => {
     if (uiStore.lastViewedSection === 'Lists' && ListsStack.includes(uiStore.lastViewedSubSection as typeof ListsStack[number])) {
-      console.log('NAVIGATE lastViewedListsSubSection', uiStore.lastViewedSubSection);
       navigation.navigate('Lists', { screen: uiStore.lastViewedSubSection });
     }
   }, []);
