@@ -3,9 +3,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { t, Instance, flow, onAction } from 'mobx-state-tree';
 import { persist } from 'mst-persist';
 import * as expoLocation from 'expo-location';
+import { randomUUID } from 'expo-crypto';
 import { List } from 'pantryplus-api-client';
 
-import api from '@/api';
+import { api } from '@/api';
 import { uiStore } from './UIStore';
 
 import { UserModel } from './models/User';
@@ -15,11 +16,6 @@ import { InviteeModel } from './models/Invitee';
 import { GroupModel } from './models/Group';
 import { LocationModel } from './models/Location';
 
-import { randomUUID } from 'expo-crypto';
-import logging from '@/config/logging';
-import { Alert } from 'react-native';
-
-const debug = logging.debug;
 export type UserType = Instance<typeof UserModel>;
 export type ShopperType = Instance<typeof ShopperModel>;
 export type InviteeType = Instance<typeof InviteeModel>;
@@ -42,6 +38,7 @@ const DomainStoreModel = t
         groups: t.array(GroupModel),
         locations: t.array(LocationModel),
         locationEnabled: t.optional(t.boolean, false),
+        nearestKnownLocationId: t.maybeNull(t.string),
     })
     .views(self => ({
         get groupsOwnedByUser() {
@@ -59,6 +56,7 @@ const DomainStoreModel = t
             self.lists.spliceWithArray(0, self.lists.length, []);
             self.groups.spliceWithArray(0, self.groups.length, []);
             self.locations.spliceWithArray(0, self.locations.length, []);
+            self.nearestKnownLocationId = null;
         },
         setLocationEnabled: (locationEnabled: boolean) => {
             self.locationEnabled = locationEnabled;
@@ -147,14 +145,10 @@ const DomainStoreModel = t
             });
         },
         addLocation: flow(function* ({name}: {name: string}) {
-            const xAuthUser = self.user?.email!;
+            const xAuthUser = self.user?.email;
+            if (!self.locationEnabled || !xAuthUser) return;
             const newLocationId = randomUUID();
 
-            const { status } = yield expoLocation.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                Alert.alert('Location permission not granted');
-                return;
-            }
             const currentLatLongAlt = yield expoLocation.getCurrentPositionAsync();
             const location = {
                 id: newLocationId,
@@ -178,12 +172,9 @@ const DomainStoreModel = t
             self.locations.replace(locations);
             uiStore.setLocationsLoaded(true);
         }),
-        debugStorage: flow(function* () {
-            const keys = yield AsyncStorage.getAllKeys();
-            const items = yield AsyncStorage.multiGet(keys);
-            console.log('AsyncStorage contents:', items);
-            return items;
-        }),
+        setNearestKnownLocationId(nearestKnownLocationId: string | null) {
+            self.nearestKnownLocationId = nearestKnownLocationId;
+        }
     }));
 
 type DomainStoreType = Instance<typeof DomainStoreModel>;
@@ -193,8 +184,7 @@ export const domainStore = DomainStoreModel.create({});
 // saves to and loads from device storage
 persist('pantryPlusDomain', domainStore, {
     storage: AsyncStorage,
-    jsonify: true,
-    blacklist: ['locations']
+    jsonify: true
 });
 
 // this avoids circular dependencies in UserModel.ts
