@@ -1,20 +1,14 @@
 import { View, Text, Switch } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import * as expoLocation from 'expo-location';
 
 import { domainStore } from '@/stores/DomainStore';
+
 import { styles as sharedStyles } from './styles';
 import colors from '@/consts/colors';
 import InfoButton from '@/components/Buttons/InfoButton';
 import { Tooltip } from '@/consts/Tooltip';
 
-const onLocationEnabledChange = async (value: boolean): Promise<void> => {
-  if (value) {
-    const { status } = await expoLocation.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      return;
-    }
-  }
+const onLocationEnabledChange = async (value: boolean) => {
   domainStore.setLocationEnabled(value);
 };
 
