@@ -9,8 +9,9 @@ import { uiStore } from '@/stores/UIStore';
 import fonts from '@/consts/fonts';
 import colors from '@/consts/colors';
 import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
+import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
-const ListElement = ({id, drag, navigation}: {id: string, drag: () => void, navigation: any}) => {
+const ListElement = ({id, drag, navigation}: {id: string, drag: FnReturnVoid, navigation: any}) => {
   const list = domainStore.lists.find(list => list.id === id);
   const userIsListOwner = list?.ownerId === domainStore.user?.id;
 

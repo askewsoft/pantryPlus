@@ -9,6 +9,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
+import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
 import { uiStore } from '@/stores/UIStore';
 import { domainStore } from '@/stores/DomainStore';
@@ -16,7 +17,7 @@ import { domainStore } from '@/stores/DomainStore';
 import AddButton from './Buttons/AddButton';
 import RemoveButton from './Buttons/RemoveButton';
 
-const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string, title: string, drag: () => void, children: React.ReactNode}) => {
+const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string, title: string, drag: FnReturnVoid, children: React.ReactNode}) => {
   const open = uiStore.openCategories.get(categoryId)?.open ?? false;
   const currList = domainStore.lists.find(l => l.categories.find(c => c.id === categoryId));
   const currCategory = currList?.categories.find(c => c.id === categoryId);

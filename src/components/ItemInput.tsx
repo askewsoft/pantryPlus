@@ -4,8 +4,7 @@ import { TextInput, View, StyleSheet } from "react-native"
 import colors from "@/consts/colors";
 import fonts from "@/consts/fonts";
 import { uiStore } from "@/stores/UIStore";
-import { domainStore, ListType } from "@/stores/DomainStore";
-import { CategoryType } from "@/stores/models/List";
+import { domainStore } from "@/stores/DomainStore";
 
 type ItemInputProps = {
   listId?: string;
@@ -48,6 +47,12 @@ const ItemInput = ({ listId, categoryId }: ItemInputProps) => {
         setEditedName('');
     }
 
+    /* TODO:
+        Move the logic up a component in the stack for deciding whether to mount the item input.
+        Using isAddingItem to determine if the item input should be visible is not a good solution.
+        The current implementation is more complicated than it needs to be.
+        The onSubmit handler could be much simpler and the useEffect could be removed entirely.
+    */
     return (
       <View style={[styles.itemLine, { display: isAddingItem ? 'flex' : 'none' }]}>
         <View style={styles.itemContainer}>

@@ -6,10 +6,12 @@ import RemoveButton from './Buttons/RemoveButton';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
+import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
+
 import { iconStyle } from '@/consts/iconButtons';
 import { ShopperType } from '@/stores/DomainStore';
 
-const Shopper = ({ shopper, indent, userIsGroupOwner, onRemoveShopper }: { shopper: ShopperType, indent: number, userIsGroupOwner: boolean, onRemoveShopper: () => void }) => {
+const Shopper = ({ shopper, indent, userIsGroupOwner, onRemoveShopper }: { shopper: ShopperType, indent: number, userIsGroupOwner: boolean, onRemoveShopper: FnReturnVoid }) => {
   return (
     <SwipeableItem
       key={shopper.id}

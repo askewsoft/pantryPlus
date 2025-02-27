@@ -8,8 +8,9 @@ import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { iconStyle } from '@/consts/iconButtons';
 import { InviteeType } from '@/stores/DomainStore';
+import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
-const Invitee = ({ invitee, indent, userIsGroupOwner, onRemoveInvitee }: { invitee: InviteeType, indent: number, userIsGroupOwner: boolean, onRemoveInvitee: () => void }) => {
+const Invitee = ({ invitee, indent, userIsGroupOwner, onRemoveInvitee }: { invitee: InviteeType, indent: number, userIsGroupOwner: boolean, onRemoveInvitee: FnReturnVoid }) => {
   return (
     <SwipeableItem
       key={invitee.email}
