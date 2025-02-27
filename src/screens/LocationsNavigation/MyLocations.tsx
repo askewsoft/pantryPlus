@@ -5,8 +5,11 @@ import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatli
 import SwipeableItem from "react-native-swipeable-item";
 
 import { StackPropsMyLocations } from '@/types/LocationNavTypes';
+import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
+
 import { domainStore, LocationType } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
+
 import fonts from '@/consts/fonts';
 import colors from '@/consts/colors';
 
@@ -16,7 +19,7 @@ import LocationElement from '@/components/LocationElement';
 
 const MyLocations = ({navigation}: StackPropsMyLocations) => {
   const renderLocationElement = (navigation: any) => {
-    return ({ item, drag }: { item: LocationType, drag: () => void }) => {
+    return ({ item, drag }: { item: LocationType, drag: FnReturnVoid }) => {
       return (
         <ScaleDecorator activeScale={1.04}>
           <SwipeableItem

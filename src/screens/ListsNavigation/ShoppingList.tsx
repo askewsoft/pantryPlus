@@ -6,6 +6,7 @@ import { DragEndParams } from 'react-native-draggable-flatlist';
 import { NestableScrollContainer, NestableDraggableFlatList } from "react-native-draggable-flatlist";
 
 import { StackPropsShoppingList } from '@/types/ListNavTypes';
+import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 import CategoryFolder from '@/components/CategoryFolder';
 import CategoryItems from '@/components/CategoryItems';
 import ListItems from '@/components/ListItems';
@@ -56,10 +57,10 @@ const ShoppingList = observer(({ navigation }: StackPropsShoppingList) => {
     }
   };
 
-  const renderCategoryElement = ({ item, drag }: { item: CategoryType, drag: () => void }) => (
-    <CategoryFolder key={item.id} categoryId={item.id} title={item.name} drag={drag}>
-      <ItemInput categoryId={item.id} />
-      <CategoryItems listId={listId || ''} categoryId={item.id} />
+  const renderCategoryElement = ({ item: category, drag }: { item: CategoryType, drag: FnReturnVoid }) => (
+    <CategoryFolder key={category.id} categoryId={category.id} title={category.name} drag={drag}>
+      <ItemInput categoryId={category.id} />
+      <CategoryItems listId={listId || ''} categoryId={category.id} />
     </CategoryFolder>
   );
 
@@ -93,7 +94,7 @@ const ShoppingList = observer(({ navigation }: StackPropsShoppingList) => {
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [listId, uiStore.listsLoaded, xAuthUser]);
+  }, [listId, uiStore.listsLoaded, xAuthUser, domainStore.nearestKnownLocationId]);
 
   // Render null if no list is selected or user isn't authenticated
   if (!currentList || !xAuthUser) {

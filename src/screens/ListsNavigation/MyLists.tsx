@@ -11,6 +11,7 @@ import AddListModal from './modals/AddListModal';
 import ShareListModal from './modals/ShareListModal';
 
 import { domainStore, ListType } from '@/stores/DomainStore';
+import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
@@ -18,7 +19,7 @@ import { uiStore } from '@/stores/UIStore';
 import { sortByOrdinal } from '@/stores/utils/sorter';
 
 const renderListElement = (navigation: any) => {
-  return ({ item, drag }: { item: ListType, drag: () => void }) => {
+  return ({ item, drag }: { item: ListType, drag: FnReturnVoid }) => {
     const userIsListOwner = item.ownerId === domainStore.user?.id;
     return (
       <ScaleDecorator activeScale={1.04}>
