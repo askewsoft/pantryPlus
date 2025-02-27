@@ -3,19 +3,18 @@ import { observer } from 'mobx-react-lite';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
+import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
-// TODO: Add check box functionality
-const CheckBoxButton = () => {
+const CheckBoxButton = ({ isChecked, onPress }: { isChecked: boolean, onPress: FnReturnVoid }) => {
   return (
     <MaterialIcons.Button
-      name="check-box-outline-blank"
+      name={isChecked ? "check-circle-outline" : "radio-button-unchecked"}
       size={fonts.rowIconSize}
       backgroundColor={colors.itemBackground}
       color={colors.brandColor}
       iconStyle={{ padding: 0, margin: 0 }}
       underlayColor={colors.lightBrandColor}
-      onPress={() => {
-      }}
+      onPress={onPress}
     />
   );
 };

@@ -5,22 +5,22 @@ import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
-const RemoveButton = ({ onPress }: { onPress: FnReturnVoid }) => {
-    const onPressDelete = () => {
+const DisassociateButton = ({ onPress }: { onPress: FnReturnVoid }) => {
+    const onPressDisassociate = () => {
         onPress();
     }
     return (
         <MaterialIcons.Button
-            name="delete"
+            name="link-off"
             size={fonts.rowIconSize}
             backgroundColor={'transparent'}
             color={colors.brandColor}
             iconStyle={{ padding: 0, margin: 0 }}
             style={{ alignSelf: 'flex-end', height: '95%', padding: 0, margin: 0 }}
             underlayColor={colors.itemBackground}
-            onLongPress={onPressDelete}
+            onLongPress={onPressDisassociate}
         />
     );
 }
 
-export default observer(RemoveButton);
+export default observer(DisassociateButton);
