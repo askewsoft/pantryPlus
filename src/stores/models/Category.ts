@@ -33,15 +33,28 @@ export const CategoryModel = t.model('CategoryModel', {
             console.error(`Error adding item to category: ${error}`);
         }
     }),
-    removeItem: flow(function*({ itemId, xAuthUser }: { itemId: string, xAuthUser: string }): Generator<any, any, any> {
+    removeItem: ({ itemId }: { itemId: string }): void => {
         try {
+            // we intentionally do not call the API, we do not want to remove the item from the category
+            // the component will remove the item from the shopping list
+            const index = self.items?.findIndex(i => i.id === itemId);
+            if (index !== undefined && index >= 0) {
+                self.items!.splice(index, 1);
+            }
+        } catch (error) {
+            console.error(`Error removing item from shopping list: ${error}`);
+        }
+    },
+    unCategorizeItem: flow(function*({ itemId, xAuthUser }: { itemId: string, xAuthUser: string }): Generator<any, any, any> {
+        try {
+            // disassociate the item from the category and remove the item from the shopping list
             yield api.category.removeCategoryItem({ categoryId: self.id, itemId, xAuthUser });
             const index = self.items?.findIndex(i => i.id === itemId);
             if (index !== undefined && index >= 0) {
                 self.items!.splice(index, 1);
             }
         } catch (error) {
-            console.error(`Error removing item from category: ${error}`);
+            console.error(`Error un-categorizing item: ${error}`);
         }
     }),
     loadCategoryItems: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {

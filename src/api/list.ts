@@ -87,6 +87,14 @@ const removeListItem = async ({ listId, itemId, xAuthUser }: { listId?: string, 
     }
 }
 
+const purchaseItem = async ({ listId, itemId, xAuthUser, xAuthLocation }: { listId: string, itemId: string, xAuthUser: string, xAuthLocation: string }) => {
+    try {
+        await listsApi.purchaseItem(xAuthUser, xAuthLocation, listId, itemId);
+    } catch (error) {
+        console.error(`Failed to purchaseItem in DB: ${error}`);
+    }
+}
+
 export default {
     createList,
     getListCategories,
@@ -97,4 +105,5 @@ export default {
     removeListItem,
     updateList,
     removeList,
+    purchaseItem,
 };

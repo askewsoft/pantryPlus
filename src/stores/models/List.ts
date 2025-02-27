@@ -123,6 +123,13 @@ export const ListModel = t.model('ListModel', {
             console.error(`Error removing item from list: ${error}`);
         }
     }),
+    purchaseItem: flow(function*({ itemId, xAuthUser, xAuthLocation }: { itemId: string, xAuthUser: string, xAuthLocation: string }): Generator<any, any, any> {
+        try {
+            yield api.list.purchaseItem({ listId: self.id, itemId, xAuthUser, xAuthLocation });
+        } catch (error) {
+            console.error(`Error purchasing item: ${error}`);
+        }
+    }),
     associateItemToList: flow(function*({ item, xAuthUser }: { item: Item, xAuthUser: string }): Generator<any, any, any> {
         try {
             yield api.list.associateListItem({ listId: self.id, itemId: item.id, xAuthUser });
