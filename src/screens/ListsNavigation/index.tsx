@@ -5,7 +5,6 @@ import { EventArg, StackNavigationState } from '@react-navigation/native';
 
 import MyLists from './MyLists';
 import ShoppingList from './ShoppingList';
-import PurchaseHistory from './PurchaseHistory';
 
 import AddButton from '@/components/Buttons/AddButton';
 import { uiStore } from '@/stores/UIStore';
@@ -104,7 +103,6 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
             <ListHeaderRight />
         }}
       />
-      <Screen name="PurchaseHistory" component={PurchaseHistory} />
     </Navigator>
   );
 }
