@@ -39,7 +39,6 @@ class LocationService {
             this.subscription = await expoLocation.watchPositionAsync(
                 locationSubscriptionOptions,
                 async (location) => {
-                    if (appConfig.debug) console.log('TIMED LOCATION UPDATE:', JSON.stringify(location.coords));
                     const email = domainStore.user?.email;
                     if (!email) return;
 
