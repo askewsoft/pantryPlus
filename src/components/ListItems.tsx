@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { NestableDraggableFlatList } from 'react-native-draggable-flatlist';
 
 import { domainStore } from '@/stores/DomainStore';
+import { uiStore } from '@/stores/UIStore';
 import Item from './Item';
 import { ItemType } from '@/stores/models/List';
 import { sortByOrdinal } from '@/stores/utils/sorter';
@@ -27,6 +28,9 @@ const ListItems = ({ listId }: { listId: string }) => {
   const onPurchaseListItem = (itemId: string) => {
     return async () => {
       const xAuthLocation = domainStore.nearestKnownLocationId ?? '';
+      if (xAuthLocation !== '') {
+        uiStore.setRecentLocationsNeedRefresh(true);
+      }
       // TODO: how do we handle the case where there is no known nearest location?
       if (debug) console.log('purchaseListItem', JSON.stringify({ itemId, xAuthLocation, listName: currList?.name }));
       if (currList) {

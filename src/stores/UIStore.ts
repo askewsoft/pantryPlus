@@ -32,6 +32,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
     shareModalVisible: false,
     showIntroScreen: false,
     signInOrUp: t.optional(t.enumeration('signInOrUp', ['signIn', 'signUp']), 'signIn'),
+    recentLocationsNeedRefresh: false,
 })
 .actions(self => ({
     initialize: () => {
@@ -49,6 +50,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
         self.locationsLoaded = false;
         self.openCategories.clear();
         self.purchaseHistoryLookbackDays = 90;
+        self.recentLocationsNeedRefresh = false;
         self.selectedLocation = null;
         self.selectedShoppingList = null;
         self.selectedTooltip = null;
@@ -115,6 +117,9 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setPurchaseHistoryLookbackDays(purchaseHistoryLookbackDays: number) {
         self.purchaseHistoryLookbackDays = purchaseHistoryLookbackDays;
+    },
+    setRecentLocationsNeedRefresh(recentLocationsNeedRefresh: boolean) {
+        self.recentLocationsNeedRefresh = recentLocationsNeedRefresh;
     }
 }));
 
@@ -134,6 +139,7 @@ persist('pantryPlusUI', uiStore, {
         'groupsLoaded',
         'listsLoaded',
         'locationsLoaded',
+        'recentLocationsNeedRefresh',
         'shareModalVisible',
         'selectedTooltip',
     ]

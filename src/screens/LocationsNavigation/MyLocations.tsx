@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { View, RefreshControl, Button, Text, StyleSheet, Pressable } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { toJS } from 'mobx';
@@ -18,6 +19,15 @@ import AddLocationModal from './modals/AddLocationModal';
 import LocationElement from '@/components/LocationElement';
 
 const MyLocations = ({navigation}: StackPropsMyLocations) => {
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      if (uiStore.recentLocationsNeedRefresh) {
+        domainStore.loadRecentLocations();
+        uiStore.setRecentLocationsNeedRefresh(false);
+      }
+    });
+  }, []);
+
   const renderLocationElement = (navigation: any) => {
     return ({ item, drag }: { item: LocationType, drag: FnReturnVoid }) => {
       return (
@@ -54,7 +64,7 @@ const MyLocations = ({navigation}: StackPropsMyLocations) => {
       {domainStore.locations?.length === 0 && (
         <Button title="Reload Locations" onPress={() => domainStore.loadRecentLocations()} />
       )}
-        <AddLocationModal />
+      <AddLocationModal />
     </View>
   );
 }

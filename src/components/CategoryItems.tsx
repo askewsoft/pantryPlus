@@ -39,6 +39,9 @@ const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: str
   const onPurchaseCategoryItem = (itemId: string) => {
     return async () => {
       const xAuthLocation = domainStore.nearestKnownLocationId ?? '';
+      if (xAuthLocation !== '') {
+        uiStore.setRecentLocationsNeedRefresh(true);
+      }
       // TODO: how do we handle the case where there is no known nearest location?
       if (debug) console.log('onPurchaseCategoryItem', itemId, xAuthLocation, currList?.name);
       if (currList) {
