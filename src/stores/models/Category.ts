@@ -5,6 +5,7 @@ import { randomUUID } from 'expo-crypto';
 import { api } from '@/api';
 import { ItemModel } from './Item';
 import { Item } from 'pantryplus-api-client';
+
 export type ItemType = Instance<typeof ItemModel>;
 
 export const CategoryModel = t.model('CategoryModel', {
@@ -23,9 +24,9 @@ export const CategoryModel = t.model('CategoryModel', {
         }
     }),
     addItem: flow(function*({ item, xAuthUser }: { item: Pick<ItemType, 'name' | 'upc'>, xAuthUser: string }): Generator<any, any, any> {
-        const newItemId = randomUUID(); 
-        const newItem = ItemModel.create({ id: newItemId, name: item.name, upc: item.upc, ordinal: self.items.length });
         try {
+            const newItemId = randomUUID(); 
+            const newItem = ItemModel.create({ id: newItemId, name: item.name, upc: item.upc, ordinal: self.items.length });
             yield newItem.saveItem(xAuthUser);
             yield api.category.associateCategoryItem({ categoryId: self.id, itemId: newItemId, xAuthUser });
             self.items.push(newItem);

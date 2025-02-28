@@ -102,9 +102,9 @@ export const ListModel = t.model('ListModel', {
         }
     }),
     addItem: flow(function*({ item, xAuthUser }: { item: Pick<ItemType, 'name' | 'upc'>, xAuthUser: string }): Generator<any, any, any> {
-        const newItemId = randomUUID();
-        const newItem = ItemModel.create({ id: newItemId, name: item.name, upc: item.upc, ordinal: self.items.length });
         try {
+            const newItemId = randomUUID();
+            const newItem = ItemModel.create({ id: newItemId, name: item.name, upc: item.upc, ordinal: self.items.length });
             yield newItem.saveItem(xAuthUser);
             yield api.list.associateListItem({ listId: self.id, itemId: newItemId, xAuthUser });
             self.items.push(newItem);

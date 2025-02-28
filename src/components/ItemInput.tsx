@@ -1,15 +1,17 @@
 import { observer } from "mobx-react-lite";
 import { useState, useEffect } from "react";
 import { TextInput, View, StyleSheet } from "react-native"
+
 import colors from "@/consts/colors";
 import fonts from "@/consts/fonts";
+
 import { uiStore } from "@/stores/UIStore";
 import { domainStore } from "@/stores/DomainStore";
 
 type ItemInputProps = {
-  listId?: string;
+  listId: string;
   categoryId?: string;
-} & ({listId: string} | {categoryId: string});
+};
 
 const ItemInput = ({ listId, categoryId }: ItemInputProps) => {
     const [editedName, setEditedName] = useState('');
@@ -52,6 +54,13 @@ const ItemInput = ({ listId, categoryId }: ItemInputProps) => {
         Using isAddingItem to determine if the item input should be visible is not a good solution.
         The current implementation is more complicated than it needs to be.
         The onSubmit handler could be much simpler and the useEffect could be removed entirely.
+
+        This also appears to be causing a race condition. The triggered error appears in the terminal:
+        > [RemoteTextInput] -[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]
+        > perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+        
+        Issue is likely because setting the TextInput display: 'none' while also trying to handle the submit action.
+        On submit, the code immediately sets isAddingItem to false, which hides the TextInput component while the keyboard might still be trying to interact with it.
     */
     return (
       <View style={[styles.itemLine, { display: isAddingItem ? 'flex' : 'none' }]}>
@@ -76,6 +85,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.itemBackground,
     },
     itemContainer: {
+        flex: 1,
         flexDirection: 'row',
         alignContent: 'flex-start',
         alignItems: 'center',
@@ -85,10 +95,11 @@ const styles = StyleSheet.create({
         color: colors.brandColor,
         fontSize: fonts.rowTextSize,
         paddingHorizontal: 5,
-        marginHorizontal: 5,
+        marginLeft: 5,
+        marginRight: 30,
         marginVertical: 5,
         backgroundColor: colors.white,
-        minWidth: '85%',
+        flex: 1,
     }
 });
 

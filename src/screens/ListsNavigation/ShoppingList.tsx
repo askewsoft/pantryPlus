@@ -59,8 +59,8 @@ const ShoppingList = observer(({ navigation }: StackPropsShoppingList) => {
 
   const renderCategoryElement = ({ item: category, drag }: { item: CategoryType, drag: FnReturnVoid }) => (
     <CategoryFolder key={category.id} categoryId={category.id} title={category.name} drag={drag}>
-      <ItemInput categoryId={category.id} />
-      <CategoryItems listId={listId || ''} categoryId={category.id} />
+      <ItemInput listId={listId!} categoryId={category.id} />
+      <CategoryItems listId={listId!} categoryId={category.id} />
     </CategoryFolder>
   );
 
@@ -114,8 +114,8 @@ const ShoppingList = observer(({ navigation }: StackPropsShoppingList) => {
       {/* Only render content if we have a valid list */}
       {currentList && (
         <>
-          <ItemInput listId={listId || ''} />
-          <ListItems listId={listId || ''} />
+          <ItemInput listId={listId!} />
+          <ListItems listId={listId!} />
           <NestableDraggableFlatList
             contentContainerStyle={styles.draggableFlatListStyle}
             data={toJS(currentList.categories).sort(sortByOrdinal)}
