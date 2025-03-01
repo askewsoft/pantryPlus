@@ -5,3 +5,10 @@ export const iconStyleStyle = {
 export const iconStyle = {
   padding: 5,
 }
+
+export const iconSize = {
+  infoIconSize: 12,
+  editIconSize: 18,
+  rowIconSize: 22,
+  topNavIconSize: 24,
+}

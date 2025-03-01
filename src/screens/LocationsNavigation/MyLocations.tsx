@@ -78,9 +78,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   title: {
-    fontSize: fonts.messageTextSize,
+    fontSize: fonts.infoTextSize,
     color: colors.lightBrandColor,
-    margin: 10,
+    marginTop: 5,
   },
 });
 

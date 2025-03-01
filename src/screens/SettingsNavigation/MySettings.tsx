@@ -9,6 +9,7 @@ import { uiStore } from '@/stores/UIStore';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
+import { iconSize } from '@/consts/iconButtons';
 
 const MySettings = ({ navigation }: StackPropsMySettings) => {
   const { signOut } = useAuthenticator();
@@ -22,7 +23,7 @@ const MySettings = ({ navigation }: StackPropsMySettings) => {
       <Pressable style={styles.buttonContainer} onPress={() => navigation.navigate('Profile')}>
         <MaterialIcons
           name="person"
-          size={fonts.rowIconSize}
+          size={iconSize.rowIconSize}
           color={colors.lightBrandColor}
         />
         <Text style={styles.buttonText}>Profile</Text>
@@ -31,7 +32,7 @@ const MySettings = ({ navigation }: StackPropsMySettings) => {
       <Pressable style={styles.buttonContainer} onPress={() => navigation.navigate('Permissions')}>
         <MaterialIcons
           name="security"
-          size={fonts.rowIconSize}
+          size={iconSize.rowIconSize}
           color={colors.lightBrandColor}
         />
         <Text style={styles.buttonText}>Permissions</Text>
@@ -39,7 +40,7 @@ const MySettings = ({ navigation }: StackPropsMySettings) => {
       <Pressable style={styles.buttonContainer} onPress={logout}>
         <MaterialIcons
           name="logout"
-          size={fonts.rowIconSize}
+          size={iconSize.rowIconSize}
           color={colors.lightBrandColor}
         />
         <Text style={styles.buttonText}>Log Out</Text>

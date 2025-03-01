@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, RefreshControl, Alert } from 'react-native';
+import { StyleSheet, RefreshControl, Alert, View } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { DragEndParams } from 'react-native-draggable-flatlist';
@@ -12,6 +12,7 @@ import CategoryItems from '@/components/CategoryItems';
 import ListItems from '@/components/ListItems';
 import ItemInput from '@/components/ItemInput';
 import AddCategoryModal from './modals/AddCategoryModal';
+import CurrentLocation from '@/components/CurrentLocation';
 
 import { uiStore } from '@/stores/UIStore';
 import { domainStore } from '@/stores/DomainStore';
@@ -101,38 +102,46 @@ const ShoppingList = observer(({ navigation }: StackPropsShoppingList) => {
     return null;
   }
 
+  const onEditCurrentLocation = () => {
+    console.log('Current location pressed');
+  }
+
   return (
-    <NestableScrollContainer 
-      style={styles.container} 
-      refreshControl={
-        <RefreshControl 
-          refreshing={isRefreshing} 
-          onRefresh={loadData}
-        />
-      }
-    >
-      {/* Only render content if we have a valid list */}
-      {currentList && (
-        <>
-          <ItemInput listId={listId!} />
-          <ListItems listId={listId!} />
-          <NestableDraggableFlatList
-            contentContainerStyle={styles.draggableFlatListStyle}
-            data={toJS(currentList.categories).sort(sortByOrdinal)}
-            renderItem={renderCategoryElement}
-            keyExtractor={category => category.id}
-            onDragEnd={onDragEnd}
-          />
-          <AddCategoryModal />
-        </>
-      )}
-    </NestableScrollContainer>
+    <View style={styles.container}>
+      <CurrentLocation onPress={onEditCurrentLocation} />
+      <NestableScrollContainer 
+        style={styles.scrollContainer} 
+        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={loadData} />}
+      >
+        {/* Only render content if we have a valid list */}
+        {currentList && (
+          <>
+            <ItemInput listId={listId!} />
+            <ListItems listId={listId!} />
+            <NestableDraggableFlatList
+              contentContainerStyle={styles.draggableFlatListStyle}
+              data={toJS(currentList.categories).sort(sortByOrdinal)}
+              renderItem={renderCategoryElement}
+              keyExtractor={category => category.id}
+              onDragEnd={onDragEnd}
+            />
+            <AddCategoryModal />
+          </>
+        )}
+      </NestableScrollContainer>
+    </View>
   );
 });
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     flexDirection: 'column',
+  },
+  scrollContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    marginTop: 5,
   },
   draggableFlatListStyle: {
     backgroundColor: colors.detailsBackground,

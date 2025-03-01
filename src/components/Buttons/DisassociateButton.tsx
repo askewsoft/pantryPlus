@@ -3,6 +3,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
+import { iconSize } from '@/consts/iconButtons';
+
 import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
 const DisassociateButton = ({ onPress }: { onPress: FnReturnVoid }) => {
@@ -12,7 +14,7 @@ const DisassociateButton = ({ onPress }: { onPress: FnReturnVoid }) => {
     return (
         <MaterialIcons.Button
             name="link-off"
-            size={fonts.rowIconSize}
+            size={iconSize.rowIconSize}
             backgroundColor={'transparent'}
             color={colors.brandColor}
             iconStyle={{ padding: 0, margin: 0 }}

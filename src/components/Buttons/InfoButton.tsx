@@ -4,6 +4,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
+import { iconSize } from '@/consts/iconButtons';
+
 import { uiStore } from '@/stores/UIStore';
 import { Tooltip, tooltipNotes } from '@/consts/Tooltip';
 
@@ -52,7 +54,7 @@ const InfoButton = ({ tooltipId }: { tooltipId: Tooltip }) => {
     <View style={styles.container}>
       <MaterialIcons.Button
         name="info-outline"
-        size={fonts.badgeTextSize}
+        size={iconSize.infoIconSize}
         color={colors.brandColor}
         backgroundColor={colors.detailsBackground}
         style={{ padding: 0 }}
@@ -62,7 +64,7 @@ const InfoButton = ({ tooltipId }: { tooltipId: Tooltip }) => {
         <Pressable style={styles.tooltip} onPress={() => uiStore.setSelectedTooltip(null)}>
           <MaterialIcons
             name="close"
-            size={fonts.infoTextSize}
+            size={iconSize.infoIconSize}
             color={colors.white}
             style={styles.closeButton}
           />

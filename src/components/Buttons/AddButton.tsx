@@ -2,6 +2,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { observer } from 'mobx-react-lite';
 
 import fonts from '@/consts/fonts';
+import { iconSize } from '@/consts/iconButtons';
 import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
@@ -11,7 +12,7 @@ const AddButton = ({onPress, foreground, background, materialIconName}: {onPress
   return (
     <MaterialIcons.Button
       name={materialIconName}
-      size={fonts.topNavIconSize}
+      size={iconSize.topNavIconSize}
       color={foreground}
       backgroundColor={background}
       borderRadius={0}

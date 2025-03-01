@@ -12,6 +12,8 @@ import AddGroupModal from './modals/AddGroupModal';
 
 import fonts from '@/consts/fonts';
 import colors from '@/consts/colors';
+import { iconSize } from '@/consts/iconButtons';
+
 import { StackPropsMyGroups } from '@/types/GroupNavTypes';
 
 const MyGroups = ({navigation}: StackPropsMyGroups) => {
@@ -34,7 +36,7 @@ const MyGroups = ({navigation}: StackPropsMyGroups) => {
   const InviteNotice = () => {
     return (
       <Pressable onPress={onPressInvites} style={styles.inviteBadge}>
-        <MaterialIcons name="notifications-active" size={fonts.rowIconSize} color={'white'} style={{padding: 5}} />
+        <MaterialIcons name="notifications-active" size={iconSize.rowIconSize} color={'white'} style={{padding: 5}} />
         <Text style={styles.badgeText}>Awaiting Invites: {numInvites}</Text>
       </Pressable>
     );
