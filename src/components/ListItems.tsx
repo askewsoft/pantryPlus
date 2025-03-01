@@ -11,9 +11,6 @@ import { sortByOrdinal } from '@/stores/utils/sorter';
 
 import colors from '@/consts/colors';
 import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
-import appConfig from '@/config/app';
-
-const { debug } = appConfig;
 
 const ListItems = ({ listId }: { listId: string }) => {
   const currList = domainStore.lists.find((list) => list.id === listId);
@@ -32,13 +29,9 @@ const ListItems = ({ listId }: { listId: string }) => {
         uiStore.setRecentLocationsNeedRefresh(true);
       }
       // TODO: how do we handle the case where there is no known nearest location?
-      if (debug) console.log('purchaseListItem', JSON.stringify({ itemId, xAuthLocation, listName: currList?.name }));
       if (currList) {
-        if (debug) console.log('purchasingListItem', itemId);
         await currList.purchaseItem({ itemId, xAuthUser, xAuthLocation });
-        if (debug) console.log('removingListItem', itemId);
         currList.removeItem({ itemId, xAuthUser });
-        if (debug) console.log('purchasedListItem', itemId);
       }
     }
   }

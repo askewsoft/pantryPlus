@@ -14,9 +14,6 @@ import fonts from '@/consts/fonts';
 import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 import { FnReturnVoid, FnReturnPromiseVoid } from '@/types/FunctionArgumentTypes';
 
-import appConfig from '@/config/app';
-const { debug } = appConfig;
-
 type ItemProps = {
   item: ItemType;
   onRemoveItem: FnReturnVoid;
@@ -31,14 +28,11 @@ const Item = ({ item, onRemoveItem, onPurchaseItem, onUncategorizeItem, drag, in
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   const onPress = () => {
-    if (debug) console.log('before onPress', item.name, isChecked);
     const newIsChecked = !isChecked;
     setIsChecked(newIsChecked);
-    if (debug) console.log('after onPress', item.name, newIsChecked);
     
     const timeoutId = setTimeout(() => {
       if (newIsChecked) {
-        if (debug) console.log('setTimeout inside isChecked', JSON.stringify({ item: item.name, newIsChecked }));
         onPurchaseItem();
       }
       setTimeoutId(null);

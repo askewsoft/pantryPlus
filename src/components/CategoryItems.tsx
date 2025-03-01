@@ -12,9 +12,6 @@ import { sortByOrdinal } from '@/stores/utils/sorter';
 import colors from '@/consts/colors';
 import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
-import appConfig from '@/config/app';
-const { debug } = appConfig;
-
 const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: string }) => {
   const open = uiStore.openCategories.get(categoryId)?.open ?? false;
   const heightAnim = useRef(new Animated.Value(0)).current;
@@ -43,13 +40,9 @@ const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: str
         uiStore.setRecentLocationsNeedRefresh(true);
       }
       // TODO: how do we handle the case where there is no known nearest location?
-      if (debug) console.log('onPurchaseCategoryItem', itemId, xAuthLocation, currList?.name);
       if (currList) {
-        if (debug) console.log('purchasingCategoryItem', itemId);
         await currList.purchaseItem({ itemId, xAuthUser, xAuthLocation });
-        if (debug) console.log('removingCategoryItem', itemId);
         await onRemoveItem(itemId)();
-        if (debug) console.log('purchasedCategoryItem', itemId);
       }
     }
   }
