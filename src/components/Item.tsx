@@ -11,6 +11,8 @@ import DisassociateButton from './Buttons/DisassociateButton';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
+import { iconSize } from '@/consts/iconButtons';
+
 import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 import { FnReturnVoid, FnReturnPromiseVoid } from '@/types/FunctionArgumentTypes';
 
@@ -68,12 +70,12 @@ const Item = ({ item, onRemoveItem, onPurchaseItem, onUncategorizeItem, drag, in
         </View>
         <MaterialIcons.Button
           name="drag-indicator"
-          size={fonts.rowIconSize}
+          size={iconSize.rowIconSize}
           backgroundColor={colors.itemBackground}
           color={colors.brandColor}
           iconStyle={iconStyleStyle}
           style={iconStyle}
-          underlayColor={colors.lightBrandColor}
+          underlayColor={colors.itemBackground}
           onLongPress={drag}
           />
         </View>
@@ -87,8 +89,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: colors.itemBackground,
-    borderWidth: 1,
-    borderColor: 'white',
+    borderRadius: 5,
+    marginHorizontal: 5,
+    marginBottom: 5,
   },
   itemContainer: {
     flexDirection: 'row',

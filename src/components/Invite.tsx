@@ -5,6 +5,7 @@ import { StackPropsMyInvites } from '@/types/GroupNavTypes';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
+import { iconSize } from '@/consts/iconButtons';
 
 import { domainStore } from '@/stores/DomainStore';
 
@@ -35,7 +36,7 @@ const Invite = ({navigation, inviteId}: {navigation: StackPropsMyInvites['naviga
     <View style={styles.cardContainer}>
       <MaterialIcons
         name="message"
-        size={fonts.rowIconSize}
+        size={iconSize.rowIconSize}
         backgroundColor={colors.lightBrandColor}
         color={colors.white}
         style={{ marginTop: 10 }}

@@ -6,6 +6,8 @@ import RemoveButton from './Buttons/RemoveButton';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
+import { iconSize } from '@/consts/iconButtons';
+
 import { iconStyle } from '@/consts/iconButtons';
 import { InviteeType } from '@/stores/DomainStore';
 import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
@@ -26,7 +28,7 @@ const Invitee = ({ invitee, indent, userIsGroupOwner, onRemoveInvitee }: { invit
         <View style={styles.itemContainer}>
           <MaterialIcons
             name="person-outline"
-            size={fonts.rowIconSize}
+            size={iconSize.rowIconSize}
             color={colors.lightBrandColor}
             style={iconStyle}
           />
@@ -42,8 +44,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: colors.itemBackground,
-    borderWidth: 1,
-    borderColor: 'white',
+    borderRadius: 5,
+    marginHorizontal: 5,
+    marginBottom: 5,
   },
   itemContainer: {
     flexDirection: 'row',

@@ -4,6 +4,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
+import { iconSize } from '@/consts/iconButtons';
 import { iconStyle } from '@/consts/iconButtons';
 import { ShopperType } from '@/stores/DomainStore';
 
@@ -11,7 +12,7 @@ const Owner = ({ owner, indent }: { owner: ShopperType, indent: number }) => {
   return (
     <View style={[styles.itemLine, { paddingLeft: indent }]}>
       <View style={styles.itemContainer}>
-        <Ionicons name="person-circle-outline" size={fonts.rowIconSize} color={colors.lightBrandColor} style={iconStyle} />
+        <Ionicons name="person-circle-outline" size={iconSize.rowIconSize} color={colors.lightBrandColor} style={iconStyle} />
         <Text style={styles.item}>{owner.nickname}</Text>
       </View>
     </View>
@@ -23,8 +24,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: colors.itemBackground,
-    borderWidth: 1,
-    borderColor: 'white',
+    borderRadius: 5,
+    margin: 5,
   },
   itemContainer: {
     flexDirection: 'row',

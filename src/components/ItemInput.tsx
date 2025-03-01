@@ -83,13 +83,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         backgroundColor: colors.itemBackground,
+        borderRadius: 5,
+        marginHorizontal: 5,
+        marginVertical: 5,
     },
     itemContainer: {
         flex: 1,
         flexDirection: 'row',
         alignContent: 'flex-start',
         alignItems: 'center',
-        paddingLeft: 30,
     },
     item: {
         color: colors.brandColor,

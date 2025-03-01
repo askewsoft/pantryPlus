@@ -6,6 +6,8 @@ import RemoveButton from './Buttons/RemoveButton';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
+import { iconSize } from '@/consts/iconButtons';
+
 import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
 import { iconStyle } from '@/consts/iconButtons';
@@ -27,7 +29,7 @@ const Shopper = ({ shopper, indent, userIsGroupOwner, onRemoveShopper }: { shopp
         <View style={styles.itemContainer}>
           <MaterialIcons
             name="person"
-            size={fonts.rowIconSize}
+            size={iconSize.rowIconSize}
             color={colors.lightBrandColor}
             style={iconStyle}
           />
@@ -43,8 +45,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: colors.itemBackground,
-    borderWidth: 1,
-    borderColor: 'white',
+    borderRadius: 5,
+    marginHorizontal: 5,
+    marginBottom: 5,
   },
   itemContainer: {
     flexDirection: 'row',

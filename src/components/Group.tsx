@@ -6,6 +6,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
+import { iconSize } from '@/consts/iconButtons';
 
 import { domainStore } from '@/stores/DomainStore';
 
@@ -70,7 +71,7 @@ const Group = ({groupId, title, userIsGroupOwner, children}: {groupId: string, t
         <View style={styles.titleContainer}>
           <MaterialIcons
             name="group"
-            size={fonts.rowIconSize}
+            size={iconSize.rowIconSize}
             backgroundColor={colors.lightBrandColor}
             color={colors.white}
             iconStyle={{ padding: 0, margin: 0 }}
@@ -87,7 +88,7 @@ const Group = ({groupId, title, userIsGroupOwner, children}: {groupId: string, t
             <Text style={styles.title}>{title}</Text>
           )}
           {userIsGroupOwner && (
-            <AddButton onPress={() => setIsAddingShopper(true)} foreground={colors.white} background={colors.lightBrandColor} materialIconName="person-add-alt" />
+            <AddButton onPress={() => setIsAddingShopper(!isAddingShopper)} foreground={colors.white} background={colors.lightBrandColor} materialIconName="person-add-alt" />
           )}
           </View>
         </Pressable>
@@ -109,7 +110,7 @@ const Group = ({groupId, title, userIsGroupOwner, children}: {groupId: string, t
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
-    backgroundColor: colors.itemBackground,
+    backgroundColor: colors.detailsBackground,
   },
   titleContainer: {
     display: 'flex',
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
     paddingLeft: 20,
     paddingVertical: 7,
-    minHeight: fonts.rowIconSize + 24,
+    minHeight: iconSize.rowIconSize + 24,
   },
   title: {
     flex: 1,

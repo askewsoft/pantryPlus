@@ -8,6 +8,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
+import { iconSize } from '@/consts/iconButtons';
 import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
@@ -82,7 +83,7 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
             <View style={styles.titleContainer}>
               <AntDesign
                 name={open ? "folderopen" : "folder1"}
-                size={fonts.rowIconSize}
+                size={iconSize.rowIconSize}
                 backgroundColor={colors.lightBrandColor}
                 color={colors.white}
                 iconStyle={{ padding: 0, margin: 0 }}
@@ -103,7 +104,7 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
                 <AddButton onPress={onPressAddProduct} foreground={colors.white} background={colors.lightBrandColor} materialIconName="add-task" />
                 <MaterialIcons.Button
                   name="drag-indicator"
-                  size={fonts.rowIconSize}
+                  size={iconSize.rowIconSize}
                   color={colors.white}
                   backgroundColor={colors.lightBrandColor}
                   onLongPress={drag}
@@ -124,14 +125,13 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
-    backgroundColor: colors.itemBackground,
+    backgroundColor: colors.detailsBackground,
   },
   titleContainer: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.lightBrandColor,
-    marginTop: 2,
     paddingLeft: 20,
     paddingVertical: 7,
   },

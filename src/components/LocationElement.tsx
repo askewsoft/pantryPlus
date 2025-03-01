@@ -8,6 +8,7 @@ import { uiStore } from '@/stores/UIStore';
 
 import fonts from '@/consts/fonts';
 import colors from '@/consts/colors';
+import { iconSize } from '@/consts/iconButtons';
 import { formatAsDate } from '@/stores/utils/dateFormatter';
 
 const LocationElement = ({id, navigation}: {id: string, navigation: any}) => {
@@ -42,7 +43,7 @@ const LocationElement = ({id, navigation}: {id: string, navigation: any}) => {
         onPress={() => handlePress({ id })}
         onLongPress={prepareToEditName}
       >
-        <MaterialIcons name="store" size={fonts.rowIconSize} color={colors.lightBrandColor} />
+        <MaterialIcons name="store" size={iconSize.rowIconSize} color={colors.lightBrandColor} />
         <View style={{ width: '100%' }}>
           <Text style={styles.title}>{location?.name}</Text>
           <Text style={styles.lastPurchaseDate}>most recent: {formatAsDate(location?.lastPurchaseDate!)}</Text>
@@ -57,8 +58,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     backgroundColor: colors.itemBackground,
-    borderRadius: 10,
-    padding: 10,
+    borderRadius: 5,
+    padding: 5,
     marginHorizontal: 5,
     marginTop: 5,
   },
@@ -79,7 +80,6 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     color: colors.lightBrandColor,
     width: '100%',
-    paddingVertical: 5,
     marginLeft: 10,
   },
   titleInput: {

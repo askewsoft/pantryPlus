@@ -8,6 +8,7 @@ import { uiStore } from '@/stores/UIStore';
 
 import fonts from '@/consts/fonts';
 import colors from '@/consts/colors';
+import { iconSize } from '@/consts/iconButtons';
 import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
@@ -50,7 +51,7 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: FnReturnVoid, na
         onPress={handlePress}
         onLongPress={prepareToEditName}
       >
-        <MaterialIcons name="format-list-bulleted" size={fonts.rowIconSize} color={colors.brandColor} />
+        <MaterialIcons name="format-list-bulleted" size={iconSize.rowIconSize} color={colors.brandColor} />
         {isEditing ? (
           <TextInput
             style={[styles.title, styles.titleInput]}
@@ -67,7 +68,7 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: FnReturnVoid, na
         {userIsListOwner && (
           <MaterialIcons.Button
             name="ios-share"
-            size={fonts.rowIconSize}
+            size={iconSize.rowIconSize}
             backgroundColor={colors.itemBackground}
             color={colors.brandColor}
             iconStyle={iconStyleStyle}
@@ -78,7 +79,7 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: FnReturnVoid, na
         )}
         <MaterialIcons.Button
           name="drag-indicator"
-          size={fonts.rowIconSize}
+          size={iconSize.rowIconSize}
           backgroundColor={colors.itemBackground}
           color={colors.brandColor}
           iconStyle={iconStyleStyle}

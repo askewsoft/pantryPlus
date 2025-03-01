@@ -96,6 +96,7 @@ const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: str
 const styles = StyleSheet.create({
   draggableFlatListStyle: {
     backgroundColor: colors.detailsBackground,
+    marginTop: 5,
   }
 });
 
