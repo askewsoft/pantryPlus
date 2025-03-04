@@ -25,6 +25,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
     listsLoaded: false,
     locationsLoaded: false,
     openCategories: t.map(OpenCategory),
+    pickLocationPromptVisible: false,
     purchaseHistoryLookbackDays: t.optional(t.number, 90),
     selectedLocation: t.maybeNull(t.string),
     selectedShoppingList: t.maybeNull(t.string),
@@ -49,6 +50,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
         self.listsLoaded = false;
         self.locationsLoaded = false;
         self.openCategories.clear();
+        self.pickLocationPromptVisible = false;
         self.purchaseHistoryLookbackDays = 90;
         self.recentLocationsNeedRefresh = false;
         self.selectedLocation = null;
@@ -114,6 +116,9 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setShareModalVisible(shareModalVisible: boolean) {
         self.shareModalVisible = shareModalVisible;
+    },
+    setPickLocationPromptVisible(pickLocationPromptVisible: boolean) {
+        self.pickLocationPromptVisible = pickLocationPromptVisible;
     },
     setPurchaseHistoryLookbackDays(purchaseHistoryLookbackDays: number) {
         self.purchaseHistoryLookbackDays = purchaseHistoryLookbackDays;
