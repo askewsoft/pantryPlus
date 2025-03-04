@@ -52,7 +52,7 @@ const getCurrentLocation = async (): Promise<expoLocation.LocationObject | undef
     return currentLocation;
 }
 
-const getNearestStore = async (xAuthUser: string, locationObject?: expoLocation.LocationObject): Promise<string | undefined> => {
+const getNearestStore = async (xAuthUser: string, locationObject?: expoLocation.LocationObject): Promise<Location | undefined> => {
     let userLocation = locationObject;
     if (!userLocation) {
         userLocation = await getCurrentLocation();
@@ -65,7 +65,7 @@ const getNearestStore = async (xAuthUser: string, locationObject?: expoLocation.
         radius: locationSubscription.nearestStoreRadius, // TODO: consider making radius user adjustable
     }
     const nearestStores = await getNearbyLocations({ xAuthUser, locationArea });
-    return nearestStores[0]?.id;
+    return nearestStores[0];
 }
 
 export default {

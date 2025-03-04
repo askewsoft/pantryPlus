@@ -38,7 +38,8 @@ const DomainStoreModel = t
         groups: t.array(GroupModel),
         locations: t.array(LocationModel),
         locationEnabled: t.optional(t.boolean, false),
-        nearestKnownLocationId: t.maybeNull(t.string),
+        nearestKnownLocation: t.maybeNull(LocationModel),
+        selectedKnownLocationId: t.maybeNull(t.string),
     })
     .views(self => ({
         get groupsOwnedByUser() {
@@ -56,7 +57,8 @@ const DomainStoreModel = t
             self.lists.spliceWithArray(0, self.lists.length, []);
             self.groups.spliceWithArray(0, self.groups.length, []);
             self.locations.spliceWithArray(0, self.locations.length, []);
-            self.nearestKnownLocationId = null;
+            self.nearestKnownLocation = null;
+            self.selectedKnownLocationId = null;
         },
         setLocationEnabled: (locationEnabled: boolean) => {
             self.locationEnabled = locationEnabled;
@@ -172,8 +174,11 @@ const DomainStoreModel = t
             self.locations.replace(locations);
             uiStore.setLocationsLoaded(true);
         }),
-        setNearestKnownLocationId(nearestKnownLocationId: string | null) {
-            self.nearestKnownLocationId = nearestKnownLocationId;
+        setNearestKnownLocation(nearestKnownLocation: LocationType | null) {
+            self.nearestKnownLocation = nearestKnownLocation ? LocationModel.create(nearestKnownLocation) : null;
+        },
+        setSelectedKnownLocationId(selectedKnownLocationId: string | null) {
+            self.selectedKnownLocationId = selectedKnownLocationId;
         }
     }));
 

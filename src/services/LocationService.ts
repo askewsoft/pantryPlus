@@ -2,9 +2,8 @@ import { Alert } from 'react-native';
 import * as expoLocation from 'expo-location';
 
 import { locationSubscription } from '@/config/locationSubscription';
-import { domainStore } from '@/stores/DomainStore';
+import { domainStore, LocationType } from '@/stores/DomainStore';
 import { api } from '@/api';
-import appConfig from '@/config/app';
 
 class LocationService {
     private subscription: expoLocation.LocationSubscription | null = null;
@@ -15,6 +14,20 @@ class LocationService {
             return false;
         }
         return true;
+    }
+
+    async setNearestKnownLocation(): Promise<void> {
+        const email = domainStore.user?.email;
+        if (!email) return;
+        try {
+            const location = await expoLocation.getCurrentPositionAsync();
+            if (!location) return;
+            const nearestLocationProps = await api.location.getNearestStore(email, location) as LocationType;
+            if (!nearestLocationProps) return;
+            domainStore.setNearestKnownLocation(nearestLocationProps);
+        } catch (error) {
+            console.error('unable to setNearestKnownLocation:', error);
+        }
     }
 
     async startTracking() {
@@ -42,9 +55,11 @@ class LocationService {
                     const email = domainStore.user?.email;
                     if (!email) return;
 
-                    const nearestKnownLocationId = await api.location.getNearestStore(email, location);
-                    if (nearestKnownLocationId !== domainStore.nearestKnownLocationId) {
-                        domainStore.setNearestKnownLocationId(nearestKnownLocationId ?? null);
+                    const nearestKnownLocationProps = await api.location.getNearestStore(email, location) as LocationType;
+                    if (!nearestKnownLocationProps) return;
+                    if (nearestKnownLocationProps.id !== domainStore.selectedKnownLocationId) {
+                        domainStore.setNearestKnownLocation(nearestKnownLocationProps);
+                        domainStore.setSelectedKnownLocationId(nearestKnownLocationProps.id ?? null);
                     }
                 }
             );
