@@ -30,7 +30,7 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
 
   const onSubmit = async () => {
     if (editedTitle.trim().toLowerCase() !== currCategory?.name.trim().toLowerCase()) {
-      const xAuthLocation = domainStore.nearestKnownLocationId ?? '';
+      const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
       await currCategory?.setName(editedTitle, xAuthUser, xAuthLocation);
     }
     setIsEditing(false);
@@ -134,6 +134,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightBrandColor,
     paddingLeft: 20,
     paddingVertical: 7,
+    borderTopWidth: 1,
+    // borderBottomWidth: 1,
+    borderColor: colors.brandColor,
   },
   title: {
     flex: 1,

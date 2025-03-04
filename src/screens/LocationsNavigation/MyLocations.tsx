@@ -1,12 +1,8 @@
 import { useEffect } from 'react';
-import { View, RefreshControl, Button, Text, StyleSheet, Pressable } from 'react-native';
+import { View, RefreshControl, Button, Text, StyleSheet } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { toJS } from 'mobx';
-import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
-import SwipeableItem from "react-native-swipeable-item";
-
-import { StackPropsMyLocations } from '@/types/LocationNavTypes';
-import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
+import DraggableFlatList from 'react-native-draggable-flatlist';
 
 import { domainStore, LocationType } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
@@ -18,7 +14,9 @@ import colors from '@/consts/colors';
 import AddLocationModal from './modals/AddLocationModal';
 import LocationElement from '@/components/LocationElement';
 
-const MyLocations = ({navigation}: StackPropsMyLocations) => {
+const MyLocations = ({navigation, route}: {navigation: any, route: any}) => {
+  const returnToList = route.params?.returnToList;
+
   useEffect(() => {
     navigation.addListener('focus', () => {
       if (uiStore.recentLocationsNeedRefresh) {
@@ -29,17 +27,9 @@ const MyLocations = ({navigation}: StackPropsMyLocations) => {
   }, []);
 
   const renderLocationElement = (navigation: any) => {
-    return ({ item, drag }: { item: LocationType, drag: FnReturnVoid }) => {
+    return ({ item: location }: { item: LocationType }) => {
       return (
-        <ScaleDecorator activeScale={1.04}>
-          <SwipeableItem
-            item={item}
-            overSwipe={20}
-            snapPointsLeft={[70]}
-          >
-            <LocationElement id={item.id} navigation={navigation} />
-          </SwipeableItem>
-        </ScaleDecorator>
+        <LocationElement id={location.id} navigation={navigation} returnToList={returnToList} />
       );
     }
   }
@@ -52,9 +42,8 @@ const MyLocations = ({navigation}: StackPropsMyLocations) => {
 
   return (
     <View style={styles.container}>
-      <Pressable onLongPress={onRefresh}>
-        <Text style={styles.title}>Locations of past purchases</Text>
-      </Pressable>
+      <LocationElement id={domainStore.nearestKnownLocation?.id ?? ''} navigation={navigation} returnToList={returnToList}/>
+      <Text style={styles.title}>Locations of past purchases</Text>
       <DraggableFlatList
         data={toJS(domainStore.locations)}
         renderItem={renderLocationElement(navigation)}

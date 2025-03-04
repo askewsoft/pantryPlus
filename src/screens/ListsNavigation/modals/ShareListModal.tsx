@@ -10,7 +10,7 @@ import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 
 const ShareListModal = ({ navigation }: { navigation: any }) => {
-  const xAuthUser = domainStore.user?.email;
+  const xAuthUser = domainStore.user?.email ?? '';
   const placeholder = 'Select a Group';
   
   const [open, setOpen] = useState(false);

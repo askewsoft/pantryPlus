@@ -12,7 +12,6 @@ import { uiStore } from '@/stores/UIStore';
 import { ListsStack, ListsStackParamList } from '@/types/ListNavTypes';
 import stackNavScreenOptions from '@/consts/stackNavOptions';
 import colors from '@/consts/colors';
-import { LocationsStack } from '@/types/LocationNavTypes';
 
 const { Navigator, Screen } = createStackNavigator<ListsStackParamList>();
 

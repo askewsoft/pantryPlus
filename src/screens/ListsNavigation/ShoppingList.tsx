@@ -5,13 +5,13 @@ import { observer } from 'mobx-react-lite';
 import { DragEndParams } from 'react-native-draggable-flatlist';
 import { NestableScrollContainer, NestableDraggableFlatList } from "react-native-draggable-flatlist";
 
-import { StackPropsShoppingList } from '@/types/ListNavTypes';
 import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 import CategoryFolder from '@/components/CategoryFolder';
 import CategoryItems from '@/components/CategoryItems';
 import ListItems from '@/components/ListItems';
 import ItemInput from '@/components/ItemInput';
 import AddCategoryModal from './modals/AddCategoryModal';
+import PickLocationPrompt from './modals/PickLocationPrompt';
 import CurrentLocation from '@/components/CurrentLocation';
 
 import { uiStore } from '@/stores/UIStore';
@@ -20,7 +20,7 @@ import { CategoryType } from '@/stores/models/List';
 import colors from '@/consts/colors';
 import { sortByOrdinal } from '@/stores/utils/sorter';
 
-const ShoppingList = observer(({ navigation }: StackPropsShoppingList) => {
+const ShoppingList = observer(({ navigation }: { navigation: any }) => {
   const listId = uiStore.selectedShoppingList;
   const xAuthUser = domainStore.user?.email;
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -40,7 +40,7 @@ const ShoppingList = observer(({ navigation }: StackPropsShoppingList) => {
       
       // Verify list ID hasn't changed before each operation
       if (loadingListId === uiStore.selectedShoppingList) {
-        const xAuthLocation = domainStore.nearestKnownLocationId ?? '';
+        const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
         await listStillExists.loadCategories({ xAuthUser, xAuthLocation });
       }
       
@@ -65,16 +65,42 @@ const ShoppingList = observer(({ navigation }: StackPropsShoppingList) => {
     </CategoryFolder>
   );
 
+  const onDragBegin = () => {
+    const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
+    if (xAuthLocation === '') {
+      uiStore.setPickLocationPromptVisible(true);
+    }
+  }
+
   const onDragEnd = ({ data }: DragEndParams<CategoryType>) => {
     if (!currentList || !xAuthUser) return;
-    
-    data.forEach((category, index) => {
-      if (category.ordinal !== index) {
-        const updatedCategory = currentList.categories.find(c => c.id === category.id);
-        const xAuthLocation = domainStore.nearestKnownLocationId ?? '';
-        updatedCategory?.setOrdinal(index, xAuthUser, xAuthLocation);
+
+    const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
+    if (xAuthLocation === '') {
+      // Prompt the user to select a location, if there is no nearest known location already set
+      uiStore.setPickLocationPromptVisible(true);
+      return;
+    }
+
+    // Update the ordinals in sequence to avoid race conditions
+    const updateOrdinals = async () => {
+      try {
+        for (let i = 0; i < data.length; i++) {
+          const category = data[i];
+          if (category.ordinal !== i) {
+            const updatedCategory = currentList.categories.find(c => c.id === category.id);
+            if (updatedCategory) {
+              await updatedCategory.setOrdinal(i, xAuthUser, xAuthLocation);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error updating category order:', error);
+        Alert.alert('Error', 'Failed to update category order. Please try again.');
       }
-    });
+    };
+
+    updateOrdinals();
   };
 
   useEffect(() => {
@@ -95,20 +121,21 @@ const ShoppingList = observer(({ navigation }: StackPropsShoppingList) => {
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [listId, uiStore.listsLoaded, xAuthUser, domainStore.nearestKnownLocationId]);
+  }, [listId, uiStore.listsLoaded, xAuthUser, domainStore.selectedKnownLocationId]);
 
   // Render null if no list is selected or user isn't authenticated
   if (!currentList || !xAuthUser) {
     return null;
   }
 
-  const onEditCurrentLocation = () => {
-    console.log('Current location pressed');
+  const setCurrentLocation = () => {
+    uiStore.setPickLocationPromptVisible(false);
+    navigation.navigate('Locations', { screen: 'MyLocations', params: { returnToList: true } });
   }
 
   return (
     <View style={styles.container}>
-      <CurrentLocation onPress={onEditCurrentLocation} />
+      <CurrentLocation onPress={setCurrentLocation} />
       <NestableScrollContainer 
         style={styles.scrollContainer} 
         refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={loadData} />}
@@ -123,9 +150,11 @@ const ShoppingList = observer(({ navigation }: StackPropsShoppingList) => {
               data={toJS(currentList.categories).sort(sortByOrdinal)}
               renderItem={renderCategoryElement}
               keyExtractor={category => category.id}
+              onDragBegin={onDragBegin}
               onDragEnd={onDragEnd}
             />
             <AddCategoryModal />
+            <PickLocationPrompt onPress={setCurrentLocation} />
           </>
         )}
       </NestableScrollContainer>

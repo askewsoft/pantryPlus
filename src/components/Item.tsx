@@ -12,42 +12,52 @@ import DisassociateButton from './Buttons/DisassociateButton';
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { iconSize } from '@/consts/iconButtons';
-
 import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 import { FnReturnVoid, FnReturnPromiseVoid } from '@/types/FunctionArgumentTypes';
+import { useItemActions } from '@/hooks/useItemActions';
 
 type ItemProps = {
   item: ItemType;
-  onRemoveItem: FnReturnVoid;
-  onPurchaseItem: FnReturnPromiseVoid;
-  onUncategorizeItem?: FnReturnPromiseVoid;
+  listId: string;
+  categoryId?: string;
   drag: FnReturnVoid;
   indent: number;
 }
 
-const Item = ({ item, onRemoveItem, onPurchaseItem, onUncategorizeItem, drag, indent }: ItemProps) => {
-  const [isChecked, setIsChecked] = useState(false);
+const Item = ({ 
+  item, 
+  listId,
+  categoryId,
+  drag, 
+  indent,
+}: ItemProps) => {
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
+  const { handleCheck, onRemoveItem, onUncategorizeItem } = useItemActions({
+    itemId: item.id,
+    listId,
+    categoryId,
+  });
+
   const onPress = () => {
-    const newIsChecked = !isChecked;
-    setIsChecked(newIsChecked);
+    const newIsChecked = !item.isChecked;
+    handleCheck(newIsChecked);
     
     const timeoutId = setTimeout(() => {
       if (newIsChecked) {
-        onPurchaseItem();
+        onRemoveItem();
       }
       setTimeoutId(null);
-    }, 1500);
+    }, 1200);
     setTimeoutId(timeoutId);
   }
 
   useEffect(() => {
-    if (timeoutId && !isChecked) {
+    if (timeoutId && !item.isChecked) {
       clearTimeout(timeoutId);
       setTimeoutId(null);
     }
-  }, [timeoutId, isChecked]);
+  }, [timeoutId, item.isChecked]);
 
   return (
     <ScaleDecorator activeScale={1.04}>
@@ -65,18 +75,18 @@ const Item = ({ item, onRemoveItem, onPurchaseItem, onUncategorizeItem, drag, in
       >
         <View style={[styles.itemLine, { paddingLeft: indent }]}>
           <View style={styles.itemContainer}>
-          <CheckBoxButton isChecked={isChecked} onPress={onPress}/>
-          <Text style={styles.item}>{item.name}</Text>
-        </View>
-        <MaterialIcons.Button
-          name="drag-indicator"
-          size={iconSize.rowIconSize}
-          backgroundColor={colors.itemBackground}
-          color={colors.brandColor}
-          iconStyle={iconStyleStyle}
-          style={iconStyle}
-          underlayColor={colors.itemBackground}
-          onLongPress={drag}
+            <CheckBoxButton isChecked={item.isChecked} onPress={onPress}/>
+            <Text style={styles.item}>{item.name}</Text>
+          </View>
+          <MaterialIcons.Button
+            name="drag-indicator"
+            size={iconSize.rowIconSize}
+            backgroundColor={colors.itemBackground}
+            color={colors.brandColor}
+            iconStyle={iconStyleStyle}
+            style={iconStyle}
+            underlayColor={colors.itemBackground}
+            onLongPress={drag}
           />
         </View>
       </SwipeableItem>

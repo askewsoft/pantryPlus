@@ -1,14 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { StyleSheet, Animated, Easing } from 'react-native';
-import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { NestableDraggableFlatList } from 'react-native-draggable-flatlist';
+import { DragEndParams } from 'react-native-draggable-flatlist';
 
 import { domainStore } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
-import Item from './Item';
+import ItemsList from './ItemsList';
 import { ItemType } from '@/stores/models/List';
-import { sortByOrdinal } from '@/stores/utils/sorter';
 import colors from '@/consts/colors';
 import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
@@ -19,31 +17,12 @@ const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: str
   const xAuthUser = domainStore.user?.email!;
   const currCategory = currList?.categories.find((category) => category.id === categoryId);
 
-  const unCategorizeItem = (itemId: string) => {
-    return async () => {
-      await currCategory?.unCategorizeItem({ itemId, xAuthUser });
-      await currList?.removeItem({ itemId, xAuthUser });
-    }
-  }
-
-  const onRemoveItem = (itemId: string) => {
-    return async () => {
-      currCategory?.removeItem({ itemId });
-      await currList?.removeItem({ itemId, xAuthUser });
-    }
-  }
-
-  const onPurchaseCategoryItem = (itemId: string) => {
-    return async () => {
-      const xAuthLocation = domainStore.nearestKnownLocationId ?? '';
-      if (xAuthLocation !== '') {
-        uiStore.setRecentLocationsNeedRefresh(true);
-      }
-      // TODO: how do we handle the case where there is no known nearest location?
-      if (currList) {
-        await currList.purchaseItem({ itemId, xAuthUser, xAuthLocation });
-        await onRemoveItem(itemId)();
-      }
+  const onDragEnd = ({ data, from, to }: DragEndParams<ItemType>) => {
+    const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
+    if (xAuthLocation === '') {
+      return;
+    } else {
+      currCategory?.updateItemOrder({ data, from, to });
     }
   }
 
@@ -60,19 +39,6 @@ const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: str
     }).start();
   }, [open]);
 
-  const renderItem = ({ item, drag }: { item: ItemType, drag: FnReturnVoid }) => {
-    return (
-      <Item
-        item={item}
-        onRemoveItem={onRemoveItem(item.id)}
-        onPurchaseItem={onPurchaseCategoryItem(item.id)}
-        onUncategorizeItem={unCategorizeItem(item.id)}
-        drag={drag}
-        indent={30}
-      />
-    );
-  }
-
   return (
     <Animated.View style={{
       maxHeight: heightAnim.interpolate({
@@ -81,13 +47,12 @@ const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: str
       }),
       overflow: 'hidden',
     }}>
-      <NestableDraggableFlatList
-        contentContainerStyle={[styles.draggableFlatListStyle]}
-        data={toJS(currCategory!.items).sort(sortByOrdinal)}
-        onDragEnd={currCategory!.updateItemOrder}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        dragItemOverflow={true}
+      <ItemsList
+        items={currCategory?.items ?? []}
+        listId={listId}
+        categoryId={categoryId}
+        onDragEnd={onDragEnd}
+        indent={30}
       />
     </Animated.View>
   );
