@@ -15,22 +15,8 @@ type ItemInputProps = {
 
 const ItemInput = ({ listId, categoryId }: ItemInputProps) => {
     const [editedName, setEditedName] = useState('');
-    const [isAddingItem, setIsAddingItem] = useState(false);
-    const {addItemToCategoryID, addItemToListID} = uiStore;
     const { user } = domainStore;
     const xAuthUser = user?.email || '';
-
-    useEffect(() => {
-        if (!addItemToCategoryID && !addItemToListID) {
-            setIsAddingItem(false);
-        } else if (addItemToCategoryID === categoryId && uiStore.openCategories.get(categoryId)?.open) {
-            setIsAddingItem(true);
-        } else if (addItemToListID === listId && listId === uiStore.selectedShoppingList) {
-            setIsAddingItem(true);
-        } else {
-            setIsAddingItem(false);
-        }
-    }, [addItemToCategoryID, addItemToListID]);
 
     const onSubmit = () => {
         const trimmedName = editedName.trim();
@@ -43,27 +29,13 @@ const ItemInput = ({ listId, categoryId }: ItemInputProps) => {
                 currList!.addItem({ item: { name: trimmedName, upc: '' }, xAuthUser });
             }
         }
-        setIsAddingItem(false);
         uiStore.setAddItemToCategoryID('');
         uiStore.setAddItemToListID('');
         setEditedName('');
     }
 
-    /* TODO:
-        Move the logic up a component in the stack for deciding whether to mount the item input.
-        Using isAddingItem to determine if the item input should be visible is not a good solution.
-        The current implementation is more complicated than it needs to be.
-        The onSubmit handler could be much simpler and the useEffect could be removed entirely.
-
-        This also appears to be causing a race condition. The triggered error appears in the terminal:
-        > [RemoteTextInput] -[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]
-        > perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
-        
-        Issue is likely because setting the TextInput display: 'none' while also trying to handle the submit action.
-        On submit, the code immediately sets isAddingItem to false, which hides the TextInput component while the keyboard might still be trying to interact with it.
-    */
     return (
-      <View style={[styles.itemLine, { display: isAddingItem ? 'flex' : 'none' }]}>
+      <View style={styles.itemLine}>
         <View style={styles.itemContainer}>
           <TextInput
             style={styles.item}
@@ -80,6 +52,7 @@ const ItemInput = ({ listId, categoryId }: ItemInputProps) => {
 
 const styles = StyleSheet.create({
     itemLine: {
+        display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
         backgroundColor: colors.itemBackground,

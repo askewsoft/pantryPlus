@@ -60,7 +60,6 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
 
   const renderCategoryElement = ({ item: category, drag }: { item: CategoryType, drag: FnReturnVoid }) => (
     <CategoryFolder key={category.id} categoryId={category.id} title={category.name} drag={drag}>
-      <ItemInput listId={listId!} categoryId={category.id} />
       <CategoryItems listId={listId!} categoryId={category.id} />
     </CategoryFolder>
   );
@@ -143,7 +142,7 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
         {/* Only render content if we have a valid list */}
         {currentList && (
           <>
-            <ItemInput listId={listId!} />
+            { uiStore.addItemToListID === listId && <ItemInput listId={listId!} /> }
             <ListItems listId={listId!} />
             <NestableDraggableFlatList
               contentContainerStyle={styles.draggableFlatListStyle}

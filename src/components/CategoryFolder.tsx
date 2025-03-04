@@ -17,6 +17,7 @@ import { domainStore } from '@/stores/DomainStore';
 
 import AddButton from './Buttons/AddButton';
 import RemoveButton from './Buttons/RemoveButton';
+import ItemInput from './ItemInput';
 
 const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string, title: string, drag: FnReturnVoid, children: React.ReactNode}) => {
   const open = uiStore.openCategories.get(categoryId)?.open ?? false;
@@ -38,6 +39,7 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
 
   const onPressAddProduct = () => {
     uiStore.setOpenCategory(categoryId, true);
+    uiStore.setAddItemToListID('');
     uiStore.addItemToCategoryID !== categoryId ? uiStore.setAddItemToCategoryID(categoryId) : uiStore.setAddItemToCategoryID('');
   }
 
@@ -115,6 +117,7 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
               </View>
             </View>
           </Pressable>
+          {uiStore.addItemToCategoryID === categoryId && <ItemInput listId={currList!.id} categoryId={categoryId} />}
           {children}
         </View>
       </SwipeableItem>

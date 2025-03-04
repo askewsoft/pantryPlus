@@ -57,6 +57,7 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
 
   const onPressAddProduct = () => {
     const listId = uiStore.selectedShoppingList || '';
+    uiStore.setAddItemToCategoryID('');
     uiStore.addItemToListID !== listId ? uiStore.setAddItemToListID(listId) : uiStore.setAddItemToListID('');
   }
 
