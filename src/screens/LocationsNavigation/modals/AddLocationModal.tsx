@@ -28,6 +28,7 @@ const AddLocationModal = () => {
             placeholder="Location Name"
             placeholderTextColor={colors.lightBrandColor}
             returnKeyType="done"
+            blurOnSubmit={true}
             onSubmitEditing={onSubmitCurrentLocation}
         />
         <Button

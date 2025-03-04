@@ -28,6 +28,7 @@ const AddListModal = () => {
             placeholder="List Name"
             placeholderTextColor={colors.lightBrandColor}
             returnKeyType="done"
+            blurOnSubmit={true}
             onSubmitEditing={onSubmit}
         />
         <Button

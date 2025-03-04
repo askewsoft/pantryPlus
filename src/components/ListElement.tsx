@@ -59,6 +59,13 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: FnReturnVoid, na
             onSubmitEditing={onSubmit}
             onChangeText={(text: string) => setEditedTitle(text)}
             autoFocus={true}
+            inputMode="text"
+            lineBreakStrategyIOS="none"
+            clearButtonMode="while-editing"
+            enablesReturnKeyAutomatically={true}
+            keyboardAppearance="light"
+            returnKeyType="done"
+            blurOnSubmit={true}
           />
         ) : (
           <Text style={styles.title}>{list?.name}</Text>

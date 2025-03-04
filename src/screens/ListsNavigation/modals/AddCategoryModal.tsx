@@ -27,6 +27,7 @@ const AddCategoryModal = () => {
             placeholder="Category Name"
             placeholderTextColor={colors.lightBrandColor}
             returnKeyType="done"
+            blurOnSubmit={true}
             onSubmitEditing={onSubmit}
         />
         <Button

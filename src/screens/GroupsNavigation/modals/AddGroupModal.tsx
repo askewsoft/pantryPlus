@@ -53,6 +53,7 @@ const AddGroupModal = ({ navigation }: { navigation: any }) => {
             placeholder="Group Name"
             placeholderTextColor={colors.lightBrandColor}
             returnKeyType="done"
+            blurOnSubmit={true}
             onSubmitEditing={onSubmit}
         />
         <Button

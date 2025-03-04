@@ -31,20 +31,29 @@ const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: str
   }, [xAuthUser]);
 
   useEffect(() => {
-    Animated.timing(heightAnim, {
+    const animation = Animated.timing(heightAnim, {
       toValue: open ? 1 : 0,
       duration: 250,
       easing: Easing.cubic,
-      useNativeDriver: false,
-    }).start();
+      useNativeDriver: true,
+    });
+    
+    animation.start();
+    
+    return () => {
+      animation.stop();
+    };
   }, [open]);
 
   return (
     <Animated.View style={{
-      maxHeight: heightAnim.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, 1000]
-      }),
+      transform: [{
+        scale: heightAnim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, 1]
+        })
+      }],
+      opacity: heightAnim,
       overflow: 'hidden',
     }}>
       <ItemsList

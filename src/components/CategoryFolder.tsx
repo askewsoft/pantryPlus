@@ -97,6 +97,13 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
                   onSubmitEditing={onSubmit}
                   onChangeText={(text) => setEditedTitle(text)}
                   autoFocus={true}
+                  inputMode="text"
+                  lineBreakStrategyIOS="none"
+                  clearButtonMode="while-editing"
+                  enablesReturnKeyAutomatically={true}
+                  keyboardAppearance="light"
+                  returnKeyType="done"
+                  blurOnSubmit={true}
                 />
               ) : (
                 <Text style={styles.title}>{title}</Text>

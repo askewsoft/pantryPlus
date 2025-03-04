@@ -83,6 +83,13 @@ const Group = ({groupId, title, userIsGroupOwner, children}: {groupId: string, t
               onSubmitEditing={onSubmit}
               onChangeText={(text) => setEditedTitle(text)}
               autoFocus={true}
+              inputMode="text"
+              lineBreakStrategyIOS="none"
+              clearButtonMode="while-editing"
+              enablesReturnKeyAutomatically={true}
+              keyboardAppearance="light"
+              returnKeyType="done"
+              blurOnSubmit={true}
             />
           ) : (
             <Text style={styles.title}>{title}</Text>
@@ -99,6 +106,16 @@ const Group = ({groupId, title, userIsGroupOwner, children}: {groupId: string, t
             onSubmitEditing={onAddShopper}
             onChangeText={onChangeShopperEmail}
             autoFocus={true}
+            inputMode="email"
+            lineBreakStrategyIOS="none"
+            clearButtonMode="while-editing"
+            enablesReturnKeyAutomatically={true}
+            keyboardAppearance="light"
+            returnKeyType="done"
+            blurOnSubmit={true}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
           />
         )}
         {children}

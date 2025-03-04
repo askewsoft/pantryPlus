@@ -44,6 +44,13 @@ const ItemInput = ({ listId, categoryId }: ItemInputProps) => {
             onChangeText={(text) => setEditedName(text.toLowerCase())}
             onSubmitEditing={onSubmit}
             autoFocus={true}
+            inputMode="text"
+            lineBreakStrategyIOS="none"
+            clearButtonMode="while-editing"
+            enablesReturnKeyAutomatically={true}
+            keyboardAppearance="light"
+            returnKeyType="done"
+            blurOnSubmit={true}
           />
         </View>
       </View>
