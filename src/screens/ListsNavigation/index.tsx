@@ -79,30 +79,30 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
       </>
     );
   }
+  
+  const myListsOptions = {
+    title: 'My Lists',
+    headerMode: 'float' as const,
+    headerRight: () => {
+      return (
+        <AddButton
+          foreground={colors.white}
+          background={colors.brandColor}
+          materialIconName="add-circle"
+          onPress={onPressAddList}
+        />
+      );
+    }
+  }
+
+  const shoppingListOptions = {
+    headerRight: () => <ListHeaderRight />
+  }
 
   return (
     <Navigator initialRouteName="MyLists" screenOptions={stackNavScreenOptions} screenListeners={{ state: onScreenChange }}>
-      <Screen name="MyLists"
-        component={MyLists}
-        options={{
-          title: 'My Lists',
-          headerMode: 'float', // ensures consistent header behavior on Android
-          headerRight: () =>
-            <AddButton
-              foreground={colors.white}
-              background={colors.brandColor}
-              materialIconName="add-circle"
-              onPress={onPressAddList}
-            />
-        }}
-      />
-      <Screen name="ShoppingList"
-        component={ShoppingList}
-        options={{
-          headerRight: () =>
-            <ListHeaderRight />
-        }}
-      />
+      <Screen name="MyLists" component={MyLists} options={myListsOptions} />
+      <Screen name="ShoppingList" component={ShoppingList} options={shoppingListOptions} />
     </Navigator>
   );
 }

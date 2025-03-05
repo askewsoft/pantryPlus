@@ -62,11 +62,7 @@ const MyLocations = ({navigation, route}: {navigation: any, route: any}) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
     alignItems: 'center',
-    width: '100%',
   },
   title: {
     fontSize: fonts.infoTextSize,

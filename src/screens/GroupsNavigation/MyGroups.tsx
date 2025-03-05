@@ -51,7 +51,7 @@ const MyGroups = ({navigation}: StackPropsMyGroups) => {
 
   return (
     <ErrorBoundary>
-      <NestableScrollContainer style={styles.container} refreshControl={<RefreshControl refreshing={!uiStore.groupsLoaded} onRefresh={onRefresh} />}>
+      <NestableScrollContainer refreshControl={<RefreshControl refreshing={!uiStore.groupsLoaded} onRefresh={onRefresh} />}>
         {numInvites > 0 && <InviteNotice />}
         <NestableDraggableFlatList
           data={toJS(domainStore.groups)}
@@ -65,9 +65,6 @@ const MyGroups = ({navigation}: StackPropsMyGroups) => {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'column',
-  },
   inviteBadge: {
     flexDirection: 'row',
     alignItems: 'center',

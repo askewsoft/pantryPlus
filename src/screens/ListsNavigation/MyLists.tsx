@@ -47,23 +47,6 @@ const onRemoveList = (listId: string) => {
   }
 }
 
-const styles = StyleSheet.create({
-  draggableFlatListStyle: {
-    backgroundColor: colors.detailsBackground,
-  },
-  noListsContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  noListsText: {
-    fontSize: fonts.missingRowsTextSize,
-    fontStyle: 'italic',
-    color: colors.brandColor,
-    marginBottom: 20,
-  }
-});
-
 const MyLists = ({navigation}: StackPropsListsMyLists) => {
   const onPressAddList = () => {
     uiStore.setAddListModalVisible(true);
@@ -90,21 +73,36 @@ const MyLists = ({navigation}: StackPropsListsMyLists) => {
       * investigate https://github.com/fivecar/react-native-draglist
       */
       <ErrorBoundary>
-        <View>
-          <DraggableFlatList
-            contentContainerStyle={styles.draggableFlatListStyle}
-            data={toJS(domainStore.lists).sort(sortByOrdinal)}
-            onDragEnd={domainStore.updateListOrder}
-            renderItem={renderListElement(navigation)}
-            keyExtractor={list => list.id}
-            refreshControl={<RefreshControl refreshing={!uiStore.listsLoaded} onRefresh={onRefresh} />}
-          />
-          <AddListModal />
-          <ShareListModal navigation={navigation} />
-        </View>
-      </ErrorBoundary>
+        <DraggableFlatList
+          style={styles.draggableFlatListStyle}
+          data={toJS(domainStore.lists).sort(sortByOrdinal)}
+          onDragEnd={domainStore.updateListOrder}
+          renderItem={renderListElement(navigation)}
+          keyExtractor={list => list.id}
+          refreshControl={<RefreshControl refreshing={!uiStore.listsLoaded} onRefresh={onRefresh} />}
+        />
+        <AddListModal />
+        <ShareListModal navigation={navigation} />
+    </ErrorBoundary>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  draggableFlatListStyle: {
+    height: '100%',
+  },
+  noListsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noListsText: {
+    fontSize: fonts.missingRowsTextSize,
+    fontStyle: 'italic',
+    color: colors.brandColor,
+    marginBottom: 20,
+  }
+});
 
 export default observer(MyLists);
