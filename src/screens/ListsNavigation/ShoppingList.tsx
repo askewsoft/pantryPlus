@@ -13,6 +13,7 @@ import ItemInput from '@/components/ItemInput';
 import AddCategoryModal from './modals/AddCategoryModal';
 import PickLocationPrompt from './modals/PickLocationPrompt';
 import CurrentLocation from '@/components/CurrentLocation';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 import { uiStore } from '@/stores/UIStore';
 import { domainStore } from '@/stores/DomainStore';
@@ -133,31 +134,33 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
   }
 
   return (
-    <View style={styles.container}>
-      <CurrentLocation onPress={setCurrentLocation} />
-      <NestableScrollContainer 
-        style={styles.scrollContainer} 
-        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={loadData} />}
-      >
-        {/* Only render content if we have a valid list */}
-        {currentList && (
-          <>
-            { uiStore.addItemToListID === listId && <ItemInput listId={listId!} /> }
-            <ListItems listId={listId!} />
-            <NestableDraggableFlatList
-              contentContainerStyle={styles.draggableFlatListStyle}
-              data={toJS(currentList.categories).sort(sortByOrdinal)}
-              renderItem={renderCategoryElement}
-              keyExtractor={category => category.id}
-              onDragBegin={onDragBegin}
-              onDragEnd={onDragEnd}
-            />
-            <AddCategoryModal />
-            <PickLocationPrompt onPress={setCurrentLocation} />
-          </>
-        )}
-      </NestableScrollContainer>
-    </View>
+    <ErrorBoundary>
+      <View style={styles.container}>
+        <CurrentLocation onPress={setCurrentLocation} />
+        <NestableScrollContainer 
+          style={styles.scrollContainer} 
+          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={loadData} />}
+        >
+          {/* Only render content if we have a valid list */}
+          {currentList && (
+            <>
+              { uiStore.addItemToListID === listId && <ItemInput listId={listId!} /> }
+              <ListItems listId={listId!} />
+              <NestableDraggableFlatList
+                contentContainerStyle={styles.draggableFlatListStyle}
+                data={toJS(currentList.categories).sort(sortByOrdinal)}
+                renderItem={renderCategoryElement}
+                keyExtractor={category => category.id}
+                onDragBegin={onDragBegin}
+                onDragEnd={onDragEnd}
+              />
+              <AddCategoryModal />
+              <PickLocationPrompt onPress={setCurrentLocation} />
+            </>
+          )}
+        </NestableScrollContainer>
+      </View>
+    </ErrorBoundary>
   );
 });
 

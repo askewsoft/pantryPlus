@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 
 import { domainStore } from '@/stores/DomainStore';
 import Invite from '@/components/Invite';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { StackPropsMyInvites } from '@/types/GroupNavTypes';
@@ -18,18 +19,20 @@ const MyInvites = ({navigation}: StackPropsMyInvites) => {
   const invites = domainStore.user?.invites || [];
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.instructions}>
-        Only accept invites from email addresses
-        that you recognize and trust
-      </Text>
-      <FlatList
-        data={toJS(invites)}
-        renderItem={renderInvite}
-        keyExtractor={invite => invite.id}
-        style={styles.invites}
-      />
-    </View>
+    <ErrorBoundary>
+      <View style={styles.container}>
+        <Text style={styles.instructions}>
+          Only accept invites from email addresses
+          that you recognize and trust
+        </Text>
+        <FlatList
+          data={toJS(invites)}
+          renderItem={renderInvite}
+          keyExtractor={invite => invite.id}
+          style={styles.invites}
+        />
+      </View>
+    </ErrorBoundary>
   );
 }
 

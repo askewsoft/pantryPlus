@@ -9,6 +9,7 @@ import { uiStore } from '@/stores/UIStore';
 import Group from '@/components/Group';
 import GroupMembers from '@/components/GroupMembers';
 import AddGroupModal from './modals/AddGroupModal';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 import fonts from '@/consts/fonts';
 import colors from '@/consts/colors';
@@ -49,15 +50,17 @@ const MyGroups = ({navigation}: StackPropsMyGroups) => {
   }
 
   return (
-    <NestableScrollContainer style={styles.container} refreshControl={<RefreshControl refreshing={!uiStore.groupsLoaded} onRefresh={onRefresh} />}>
-      {numInvites > 0 && <InviteNotice />}
-      <NestableDraggableFlatList
-        data={toJS(domainStore.groups)}
-        renderItem={renderGroupElement}
-        keyExtractor={group => group.id}
-      />
-      <AddGroupModal navigation={navigation} />
-    </NestableScrollContainer>
+    <ErrorBoundary>
+      <NestableScrollContainer style={styles.container} refreshControl={<RefreshControl refreshing={!uiStore.groupsLoaded} onRefresh={onRefresh} />}>
+        {numInvites > 0 && <InviteNotice />}
+        <NestableDraggableFlatList
+          data={toJS(domainStore.groups)}
+          renderItem={renderGroupElement}
+          keyExtractor={group => group.id}
+        />
+        <AddGroupModal navigation={navigation} />
+      </NestableScrollContainer>
+    </ErrorBoundary>
   );
 }
 

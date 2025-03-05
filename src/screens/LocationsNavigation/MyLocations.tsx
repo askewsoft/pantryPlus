@@ -6,10 +6,10 @@ import DraggableFlatList from 'react-native-draggable-flatlist';
 
 import { domainStore, LocationType } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 import fonts from '@/consts/fonts';
 import colors from '@/consts/colors';
-
 
 import AddLocationModal from './modals/AddLocationModal';
 import LocationElement from '@/components/LocationElement';
@@ -41,20 +41,22 @@ const MyLocations = ({navigation, route}: {navigation: any, route: any}) => {
   }
 
   return (
-    <View style={styles.container}>
-      <LocationElement id={domainStore.nearestKnownLocation?.id ?? ''} navigation={navigation} returnToList={returnToList}/>
-      <Text style={styles.title}>Locations of past purchases</Text>
-      <DraggableFlatList
-        data={toJS(domainStore.locations)}
-        renderItem={renderLocationElement(navigation)}
-        keyExtractor={location => location.id}
-        refreshControl={<RefreshControl refreshing={!uiStore.locationsLoaded} onRefresh={onRefresh} />}
-      />
-      {domainStore.locations?.length === 0 && (
-        <Button title="Reload Locations" onPress={() => domainStore.loadRecentLocations()} />
-      )}
-      <AddLocationModal />
-    </View>
+    <ErrorBoundary>
+      <View style={styles.container}>
+        <LocationElement id={domainStore.nearestKnownLocation?.id ?? ''} navigation={navigation} returnToList={returnToList}/>
+        <Text style={styles.title}>Locations of past purchases</Text>
+        <DraggableFlatList
+          data={toJS(domainStore.locations)}
+          renderItem={renderLocationElement(navigation)}
+          keyExtractor={location => location.id}
+          refreshControl={<RefreshControl refreshing={!uiStore.locationsLoaded} onRefresh={onRefresh} />}
+        />
+        {domainStore.locations?.length === 0 && (
+          <Button title="Reload Locations" onPress={() => domainStore.loadRecentLocations()} />
+        )}
+        <AddLocationModal />
+      </View>
+    </ErrorBoundary>
   );
 }
 
@@ -72,6 +74,5 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 });
-
 
 export default observer(MyLocations);

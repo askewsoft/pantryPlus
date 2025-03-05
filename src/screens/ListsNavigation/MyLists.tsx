@@ -9,6 +9,7 @@ import ListElement from '@/components/ListElement';
 import RemoveButton from '@/components/Buttons/RemoveButton';
 import AddListModal from './modals/AddListModal';
 import ShareListModal from './modals/ShareListModal';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 import { domainStore, ListType } from '@/stores/DomainStore';
 import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
@@ -76,28 +77,32 @@ const MyLists = ({navigation}: StackPropsListsMyLists) => {
 
   if (domainStore.lists.length <= 0 && !uiStore.addListModalVisible) {
     return (
-      <View style={styles.noListsContainer}>
-        <Text style={styles.noListsText}>No lists yet.</Text>
-        <Button title="Click here to create a list" onPress={onPressAddList} color={colors.brandColor} />
-      </View>
+      <ErrorBoundary>
+        <View style={styles.noListsContainer}>
+          <Text style={styles.noListsText}>No lists yet.</Text>
+          <Button title="Click here to create a list" onPress={onPressAddList} color={colors.brandColor} />
+        </View>
+      </ErrorBoundary>
     );
   } else {
     return (
       /* IFF DraggableFlatList creates problems,
       * investigate https://github.com/fivecar/react-native-draglist
       */
-      <View>
-        <DraggableFlatList
-          contentContainerStyle={styles.draggableFlatListStyle}
-          data={toJS(domainStore.lists).sort(sortByOrdinal)}
-          onDragEnd={domainStore.updateListOrder}
-          renderItem={renderListElement(navigation)}
-          keyExtractor={list => list.id}
-          refreshControl={<RefreshControl refreshing={!uiStore.listsLoaded} onRefresh={onRefresh} />}
-        />
-        <AddListModal />
-        <ShareListModal navigation={navigation} />
-      </View>
+      <ErrorBoundary>
+        <View>
+          <DraggableFlatList
+            contentContainerStyle={styles.draggableFlatListStyle}
+            data={toJS(domainStore.lists).sort(sortByOrdinal)}
+            onDragEnd={domainStore.updateListOrder}
+            renderItem={renderListElement(navigation)}
+            keyExtractor={list => list.id}
+            refreshControl={<RefreshControl refreshing={!uiStore.listsLoaded} onRefresh={onRefresh} />}
+          />
+          <AddListModal />
+          <ShareListModal navigation={navigation} />
+        </View>
+      </ErrorBoundary>
     );
   }
 }

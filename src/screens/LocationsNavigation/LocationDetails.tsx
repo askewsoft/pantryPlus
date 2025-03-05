@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 
 import { domainStore } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
@@ -14,27 +15,29 @@ import { formatAsDate } from '@/stores/utils/dateFormatter';
 const LocationDetails = () => {
   const location = domainStore.locations.find(location => location.id === uiStore.selectedLocation);
   return (
-    <View style={styles.container}>
-      <View style={styles.propertyContainer}>
-        <InfoButton tooltipId={Tooltip.locationName} />
-        <Text style={styles.label}>Name</Text>
-        {/* TODO: implement edit toggle to TextInput */}
-        <Text style={styles.value} numberOfLines={1} ellipsizeMode='tail'>{location?.name}</Text>
+    <ErrorBoundary>
+      <View style={styles.container}>
+        <View style={styles.propertyContainer}>
+          <InfoButton tooltipId={Tooltip.locationName} />
+          <Text style={styles.label}>Name</Text>
+          {/* TODO: implement edit toggle to TextInput */}
+          <Text style={styles.value} numberOfLines={1} ellipsizeMode='tail'>{location?.name}</Text>
+        </View>
+        <View style={styles.propertyContainer}>
+          <InfoButton tooltipId={Tooltip.latitude} />
+          <Text style={styles.label}>Lat / Long</Text>
+          {/* TODO: implement edit toggle to Modal for picking map location? */}
+          <Text style={styles.value} numberOfLines={1} ellipsizeMode='tail'>
+            {location?.latitude?.toFixed(5)} / {location?.longitude?.toFixed(5)}
+          </Text>
+        </View>
+        <View style={styles.propertyContainer}>
+          <InfoButton tooltipId={Tooltip.lastPurchaseDate} />
+          <Text style={styles.label}>Last Bought</Text>
+          <Text style={styles.value} numberOfLines={1} ellipsizeMode='tail'>{formatAsDate(location?.lastPurchaseDate!)}</Text>
+        </View>
       </View>
-      <View style={styles.propertyContainer}>
-        <InfoButton tooltipId={Tooltip.latitude} />
-        <Text style={styles.label}>Lat / Long</Text>
-        {/* TODO: implement edit toggle to Modal for picking map location? */}
-        <Text style={styles.value} numberOfLines={1} ellipsizeMode='tail'>
-          {location?.latitude?.toFixed(5)} / {location?.longitude?.toFixed(5)}
-        </Text>
-      </View>
-      <View style={styles.propertyContainer}>
-        <InfoButton tooltipId={Tooltip.lastPurchaseDate} />
-        <Text style={styles.label}>Last Bought</Text>
-        <Text style={styles.value} numberOfLines={1} ellipsizeMode='tail'>{formatAsDate(location?.lastPurchaseDate!)}</Text>
-      </View>
-    </View>
+    </ErrorBoundary>
   );
 }
 
