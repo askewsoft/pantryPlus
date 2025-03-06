@@ -6,7 +6,7 @@ import {
     PickShopperEmail,
     PickShopperId,
     PickGroupName
-} from 'pantryplus-api-client';
+} from 'pantryplus-api-client/v1';
 
 import appConfig from '@/config/app';
 import { randomUUID } from 'expo-crypto';

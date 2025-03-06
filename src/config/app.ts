@@ -8,7 +8,7 @@ type AppConfig = {
 }
 
 const appConfig: AppConfig = {
-    apiUrl: EXPO_PUBLIC_API_URL,
+    apiUrl: `${EXPO_PUBLIC_API_URL}/v1`,
     debug: EXPO_PUBLIC_DEBUG === 'true'
 }
 

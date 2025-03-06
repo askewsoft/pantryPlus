@@ -4,7 +4,7 @@ import { randomUUID } from 'expo-crypto';
 
 import { api } from '@/api';
 import { ItemModel } from './Item';
-import { Item } from 'pantryplus-api-client';
+import { Item } from 'pantryplus-api-client/v1';
 
 export type ItemType = Instance<typeof ItemModel>;
 

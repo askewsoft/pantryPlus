@@ -1,4 +1,4 @@
-import { LocationsApi, Configuration, Location, LocationArea } from 'pantryplus-api-client';
+import { LocationsApi, Configuration, Location, LocationArea } from 'pantryplus-api-client/v1';
 import appConfig from '@/config/app';
 import * as expoLocation from 'expo-location';
 import { Alert } from 'react-native';

@@ -4,7 +4,7 @@ import { InviteeModel } from './Invitee';
 
 import { api } from '@/api';
 import { InviteeType, IUser, MemberType } from '../DomainStore';
-import { Shopper } from 'pantryplus-api-client';
+import { Shopper } from 'pantryplus-api-client/v1';
 
 export const GroupModel = t.model('GroupModel', {
     id: t.identifier,

@@ -5,7 +5,7 @@ import {
     List,
     Group,
     Location,
-} from 'pantryplus-api-client';
+} from 'pantryplus-api-client/v1';
 
 import appConfig from '@/config/app';
 import { fetchUserAttributes } from 'aws-amplify/auth';

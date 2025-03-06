@@ -4,7 +4,7 @@ import { t, Instance, flow, onAction } from 'mobx-state-tree';
 import { persist } from 'mst-persist';
 import * as expoLocation from 'expo-location';
 import { randomUUID } from 'expo-crypto';
-import { List } from 'pantryplus-api-client';
+import { List } from 'pantryplus-api-client/v1';
 
 import { api } from '@/api';
 import { uiStore } from './UIStore';

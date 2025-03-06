@@ -1,4 +1,4 @@
-import { ListsApi, Configuration, Category, List, Item } from 'pantryplus-api-client';
+import { ListsApi, Configuration, Category, List, Item } from 'pantryplus-api-client/v1';
 import appConfig from '@/config/app';
 
 const configuration = new Configuration({ basePath: appConfig.apiUrl });
