@@ -3,28 +3,55 @@
   "version": "1.0.0",
   "main": "expo/AppEntry.js",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
+    "start": "NODE_NO_WARNINGS=1 expo start",
+    "prebuild": "NODE_NO_WARNINGS=1 expo prebuild --clean  # This will regenerate the native iOS files",
+    "ios": "NODE_NO_WARNINGS=1 expo run:ios",
+    "android": "NODE_NO_WARNINGS=1 expo run:android",
+    "killport": "sudo kill -9 $(sudo lsof -t -i :8081) # Do this if the Metro Bundler fails to start"
   },
   "dependencies": {
     "@aws-amplify/react-native": "^1.1.6",
-    "@aws-amplify/ui-react-native": "2.2.16",
-    "@react-native-async-storage/async-storage": "^2.0.0",
-    "@react-native-community/netinfo": "^11.4.1",
+    "@aws-amplify/rtn-web-browser": "^1.1.1",
+    "@aws-amplify/ui-react-native": "^2.2.16",
+    "@react-native-async-storage/async-storage": "^1.23.1",
+    "@react-native-community/netinfo": "^11.3.1",
+    "@react-navigation/bottom-tabs": "^7.0.6",
+    "@react-navigation/native": "^7.0.4",
+    "@react-navigation/stack": "^7.0.6",
     "aws-amplify": "^6.6.7",
+    "date-fns": "^4.1.0",
     "expo": "^51.0.38",
-    "react": "18.2.0",
-    "react-native": "0.74.5",
+    "expo-application": "^5.9.1",
+    "expo-crypto": "~13.0.2",
+    "expo-location": "~17.0.1",
+    "expo-splash-screen": "^0.27.7",
+    "expo-status-bar": "^1.12.1",
+    "mobx": "^6.13.5",
+    "mobx-react": "^9.1.1",
+    "mobx-state-tree": "^6.0.1",
+    "mst-persist": "^0.1.4",
+    "pantryplus-api-client": "github:askewsoft/pantryPlusApiClient#v1.0.1",
+    "react": "^18.2.0",
+    "react-native": "^0.74.5",
+    "react-native-draggable-flatlist": "^4.0.1",
+    "react-native-dropdown-picker": "^5.4.6",
+    "react-native-gesture-handler": "^2.16.1",
     "react-native-get-random-values": "^1.11.0",
+    "react-native-popover-view": "^6.1.0",
     "react-native-reanimated": "3.10.1",
-    "react-native-reanimated-carousel": "3.5.1"
+    "react-native-reanimated-carousel": "^3.5.1",
+    "react-native-safe-area-context": "^4.10.5",
+    "react-native-screens": "^4.3.0",
+    "react-native-swipeable-item": "^2.0.9"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "@types/react": "~18.2.45",
-    "typescript": "^5.6.3"
+    "@types/react": "^18.2.45",
+    "expo-dev-client": "^4.0.28",
+    "typescript": "^5.3.3"
+  },
+  "overrides": {
+    "react-native-reanimated": "3.10.1"
   },
   "private": true
 }
