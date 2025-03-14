@@ -1,13 +1,12 @@
-import { LocationsApi, Configuration, Location, LocationArea } from 'pantryplus-api-client/v1';
-import appConfig from '@/config/app';
+import { LocationsApi, Location, LocationArea } from 'pantryplus-api-client/v1';
+import { getApiConfiguration } from '@/services/SessionService';
 import * as expoLocation from 'expo-location';
 import { Alert } from 'react-native';
 import { locationSubscription } from '@/config/locationSubscription';
 
-const configuration = new Configuration({ basePath: appConfig.apiUrl });
-const locationsApi = new LocationsApi(configuration);
-
 const createLocation = async ({ location, xAuthUser }: { location: Location, xAuthUser: string }) => {
+    const configuration = await getApiConfiguration();
+    const locationsApi = new LocationsApi(configuration);
     try {
         await locationsApi.createLocation(xAuthUser, location);
     } catch (error) {
@@ -16,6 +15,8 @@ const createLocation = async ({ location, xAuthUser }: { location: Location, xAu
 }
 
 const updateLocationName = async ({ location, xAuthUser }: { location: Location, xAuthUser: string }) => {
+    const configuration = await getApiConfiguration();
+    const locationsApi = new LocationsApi(configuration);
     const { id, name } = location;
     try {
         await locationsApi.updateLocation(xAuthUser, id, { name });
@@ -33,6 +34,8 @@ const updateLocationName = async ({ location, xAuthUser }: { location: Location,
 // }
 
 const getNearbyLocations = async ({ xAuthUser, locationArea }: { xAuthUser: string, locationArea: LocationArea }): Promise<Location[]> => {
+    const configuration = await getApiConfiguration();
+    const locationsApi = new LocationsApi(configuration);
     try {
         const locationsData = await locationsApi.getNearbyLocations(xAuthUser, locationArea);
         return locationsData.data;
@@ -43,6 +46,8 @@ const getNearbyLocations = async ({ xAuthUser, locationArea }: { xAuthUser: stri
 }
 
 const getCurrentLocation = async (): Promise<expoLocation.LocationObject | undefined> => {
+    const configuration = await getApiConfiguration();
+    const locationsApi = new LocationsApi(configuration);
     const { status } = await expoLocation.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
         Alert.alert('Location permission not granted');
@@ -53,6 +58,8 @@ const getCurrentLocation = async (): Promise<expoLocation.LocationObject | undef
 }
 
 const getNearestStore = async (xAuthUser: string, locationObject?: expoLocation.LocationObject): Promise<Location | undefined> => {
+    const configuration = await getApiConfiguration();
+    const locationsApi = new LocationsApi(configuration);
     let userLocation = locationObject;
     if (!userLocation) {
         userLocation = await getCurrentLocation();

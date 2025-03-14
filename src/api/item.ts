@@ -1,11 +1,9 @@
-import { ItemsApi, Configuration, Item } from 'pantryplus-api-client/v1';
-import appConfig from '@/config/app';
-
-const configuration = new Configuration({ basePath: appConfig.apiUrl });
-
-const itemsApi = new ItemsApi(configuration);
+import { ItemsApi, Item } from 'pantryplus-api-client/v1';
+import { getApiConfiguration } from '@/services/SessionService';
 
 const createItem = async ({ item, xAuthUser }: { item: Item, xAuthUser: string }) => {
+    const configuration = await getApiConfiguration();
+    const itemsApi = new ItemsApi(configuration);
     try {
         await itemsApi.createItem(xAuthUser, item);
     } catch (error) {
@@ -14,6 +12,8 @@ const createItem = async ({ item, xAuthUser }: { item: Item, xAuthUser: string }
 }
 
 const updateItem = async ({ item, xAuthUser }: { item: Item, xAuthUser: string }) => {
+    const configuration = await getApiConfiguration();
+    const itemsApi = new ItemsApi(configuration);
     try {
         await itemsApi.updateItem(xAuthUser, item.id, item);
     } catch (error) {

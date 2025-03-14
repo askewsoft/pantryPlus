@@ -1,10 +1,9 @@
-import { CategoriesApi, Configuration, Item } from 'pantryplus-api-client/v1';
-import appConfig from '@/config/app';
-
-const configuration = new Configuration({ basePath: appConfig.apiUrl });
-const categoriesApi = new CategoriesApi(configuration);
+import { CategoriesApi, Item } from 'pantryplus-api-client/v1';
+import { getApiConfiguration } from '@/services/SessionService';
 
 const updateCategory = async ({ categoryId, name, ordinal, xAuthUser, xAuthLocation }: { categoryId: string, name: string, ordinal: number, xAuthUser: string, xAuthLocation: string }) => {
+    const configuration = await getApiConfiguration();
+    const categoriesApi = new CategoriesApi(configuration);
     try {
         await categoriesApi.updateCategory(xAuthUser, xAuthLocation, categoryId, { name, ordinal });
     } catch (error) {
@@ -13,6 +12,8 @@ const updateCategory = async ({ categoryId, name, ordinal, xAuthUser, xAuthLocat
 }
 
 const associateCategoryItem = async ({ categoryId, itemId, xAuthUser }: { categoryId: string, itemId: string, xAuthUser: string }): Promise<void> => {
+    const configuration = await getApiConfiguration();
+    const categoriesApi = new CategoriesApi(configuration);
     try {
         await categoriesApi.addItemToCategory(xAuthUser, categoryId, itemId);
     } catch (error) {
@@ -21,6 +22,8 @@ const associateCategoryItem = async ({ categoryId, itemId, xAuthUser }: { catego
 }
 
 const loadCategoryItems = async ({ categoryId, xAuthUser }: { categoryId: string, xAuthUser: string }): Promise<Array<Item>> => {
+    const configuration = await getApiConfiguration();
+    const categoriesApi = new CategoriesApi(configuration);
     let returnItems: Array<Item> = [];
     try {
         const itemsData = await categoriesApi.getCategoryItems(xAuthUser, categoryId);
@@ -32,6 +35,8 @@ const loadCategoryItems = async ({ categoryId, xAuthUser }: { categoryId: string
 }
 
 const removeCategoryItem = async ({ categoryId, itemId, xAuthUser }: { categoryId?: string, itemId?: string, xAuthUser: string }): Promise<void> => {
+    const configuration = await getApiConfiguration();
+    const categoriesApi = new CategoriesApi(configuration);
     try {
         if (!categoryId || !itemId) {
             throw new Error('Category ID and item ID are required');

@@ -1,19 +1,17 @@
 import {
     ShoppersApi,
     Shopper,
-    Configuration,
     List,
     Group,
     Location,
 } from 'pantryplus-api-client/v1';
 
-import appConfig from '@/config/app';
+import { getApiConfiguration } from '@/services/SessionService';
 import { fetchUserAttributes } from 'aws-amplify/auth';
 
-const configuration = new Configuration({ basePath: appConfig.apiUrl });
-const shopperApi = new ShoppersApi(configuration);
-
 const registerUser = async () => {
+    const configuration = await getApiConfiguration();
+    const shopperApi = new ShoppersApi(configuration);
     let authenticatedUser;
     let userAttributes;
     try {
@@ -39,6 +37,8 @@ const registerUser = async () => {
 };
 
 const getUserLists = async ({ user }: { user: Shopper }): Promise<Array<List>> => {
+    const configuration = await getApiConfiguration();
+    const shopperApi = new ShoppersApi(configuration);
     const xAuthUser = user?.email!;
     const shopperId = user?.id!;
     try {
@@ -51,6 +51,8 @@ const getUserLists = async ({ user }: { user: Shopper }): Promise<Array<List>> =
 };
 
 const getUserGroups = async ({ user }: { user: Shopper }): Promise<Array<Group>> => {
+    const configuration = await getApiConfiguration();
+    const shopperApi = new ShoppersApi(configuration);
     const xAuthUser = user.email!;
     const shopperId = user.id!;
     try {
@@ -63,6 +65,8 @@ const getUserGroups = async ({ user }: { user: Shopper }): Promise<Array<Group>>
 };
 
 const getUserInvites = async ({ user }: { user: Shopper }): Promise<Array<Group>> => {
+    const configuration = await getApiConfiguration();
+    const shopperApi = new ShoppersApi(configuration);
     const xAuthUser = user.email!;
     const shopperId = user.id!;
     try {
@@ -75,6 +79,8 @@ const getUserInvites = async ({ user }: { user: Shopper }): Promise<Array<Group>
 };
 
 const getRecentUserLocations = async ({ user, lookbackDays }: { user: Shopper, lookbackDays: number }): Promise<Array<Location>> => {
+    const configuration = await getApiConfiguration();
+    const shopperApi = new ShoppersApi(configuration);
     const xAuthUser = user.email!;
     const shopperId = user.id!;
     try {
@@ -87,6 +93,8 @@ const getRecentUserLocations = async ({ user, lookbackDays }: { user: Shopper, l
 };
 
 const acceptInvite = async ({ xAuthUser, shopperId, inviteId }: { xAuthUser: string, shopperId: string, inviteId: string }): Promise<void> => {
+    const configuration = await getApiConfiguration();
+    const shopperApi = new ShoppersApi(configuration);
     try {
         await shopperApi.acceptInvite(xAuthUser, shopperId, inviteId);
     } catch (error) {
@@ -95,6 +103,8 @@ const acceptInvite = async ({ xAuthUser, shopperId, inviteId }: { xAuthUser: str
 };
 
 const declineInvite = async ({ xAuthUser, shopperId, inviteId }: { xAuthUser: string, shopperId: string, inviteId: string }): Promise<void> => {
+    const configuration = await getApiConfiguration();
+    const shopperApi = new ShoppersApi(configuration);
     try {
         await shopperApi.declineInvite(xAuthUser, shopperId, inviteId);
     } catch (error) {
@@ -103,6 +113,8 @@ const declineInvite = async ({ xAuthUser, shopperId, inviteId }: { xAuthUser: st
 };
 
 const getShopper = async ({ shopperId, xAuthUser }: { shopperId: string, xAuthUser: string }): Promise<Shopper> => {
+    const configuration = await getApiConfiguration();
+    const shopperApi = new ShoppersApi(configuration);
     try {
         const shopperData = await shopperApi.retrieveShopper(xAuthUser, shopperId);
         return shopperData.data;

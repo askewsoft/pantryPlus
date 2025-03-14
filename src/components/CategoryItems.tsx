@@ -35,7 +35,7 @@ const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: str
       toValue: open ? 1 : 0,
       duration: 250,
       easing: Easing.cubic,
-      useNativeDriver: true,
+      useNativeDriver: false,
     });
     
     animation.start();
@@ -47,12 +47,10 @@ const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: str
 
   return (
     <Animated.View style={{
-      transform: [{
-        scale: heightAnim.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, 1]
-        })
-      }],
+      maxHeight: heightAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 1000]
+      }),
       opacity: heightAnim,
       overflow: 'hidden',
     }}>
