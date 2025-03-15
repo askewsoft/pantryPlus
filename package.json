@@ -7,6 +7,7 @@
     "prebuild": "NODE_NO_WARNINGS=1 expo prebuild --clean  # This will regenerate the native iOS files",
     "ios": "NODE_NO_WARNINGS=1 expo run:ios",
     "android": "NODE_NO_WARNINGS=1 expo run:android",
+    "build:ios": "eas build --platform ios",
     "killport": "sudo kill -9 $(sudo lsof -t -i :8081) # Do this if the Metro Bundler fails to start"
   },
   "dependencies": {
