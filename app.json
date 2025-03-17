@@ -5,7 +5,9 @@
     "slug": "pantryplus",
     "owner": "askewsoft",
     "version": "1.0.0",
-    "platforms": ["ios"],
+    "platforms": [
+      "ios"
+    ],
     "jsEngine": "hermes",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -27,10 +29,14 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.askewsoft.pantryplus",
-      "buildNumber": "1.0.0",
-      "associatedDomains": ["applinks:pantryplus.askewsoft.com", "applinks:api.askewsoft.com", "applinks:askewsoft.com"],
+      "associatedDomains": [
+        "applinks:pantryplus.askewsoft.com",
+        "applinks:api.askewsoft.com",
+        "applinks:askewsoft.com"
+      ],
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to use your location to automatically sort the items in your shopping lists."
+        "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to use your location to automatically sort the items in your shopping lists.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {

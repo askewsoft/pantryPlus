@@ -1,7 +1,7 @@
 {
   "name": "pantryplus",
   "version": "1.0.0",
-  "main": "expo/AppEntry.js",
+  "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "NODE_NO_WARNINGS=1 expo start",
     "prebuild": "NODE_NO_WARNINGS=1 expo prebuild --clean  # This will regenerate the native iOS files",
