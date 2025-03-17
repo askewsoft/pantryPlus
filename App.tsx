@@ -5,7 +5,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Amplify } from "aws-amplify";
 import { Authenticator, ThemeProvider } from '@aws-amplify/ui-react-native';
 import React from 'react';
-import { LogBox } from 'react-native';
+import { LogBox, Platform } from 'react-native';
 
 import { DomainStoreContextProvider, domainStore } from '@/stores/DomainStore';
 import { UIStoreContextProvider, uiStore } from '@/stores/UIStore';
@@ -19,9 +19,43 @@ import { authTheme } from '@/consts/authTheme';
 
 Amplify.configure(amplifyConfig);
 
+// Basic logging setup
+const log = (message: string, ...args: any[]) => {
+  if (__DEV__ || process.env.EXPO_PUBLIC_DEBUG === 'true') {
+    console.log(`[PantryPlus] ${message}`, ...args);
+  }
+};
+
+// Initialize Hermes
+const isHermes = () => !!(global as any).HermesInternal;
+log('🚀 Running on Hermes?', isHermes());
+
+if (isHermes()) {
+  // Add any Hermes-specific initialization here
+  require('react-native/Libraries/Core/InitializeCore');
+  
+  // Enable Hermes debugging features in development
+  if (__DEV__) {
+    const HermesDebugHandler = require('react-native/Libraries/Core/Devtools/HermesDebugHandler');
+    HermesDebugHandler.enableDebugging();
+  }
+}
+
 // Enable more detailed error logging
 LogBox.ignoreAllLogs(); // Ignore log notifications
 (console as any).reportErrorsAsExceptions = false; // Prevent error logs from triggering the red screen
+
+// Log any unhandled promises
+process.on('unhandledRejection', (reason, promise) => {
+  log('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+// Override console.error to get more details
+const originalConsoleError = console.error;
+console.error = (...args) => {
+  log('Error:', ...args);
+  originalConsoleError.apply(console, args);
+};
 
 interface ErrorBoundaryState {
   hasError: boolean;
