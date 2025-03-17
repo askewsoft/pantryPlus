@@ -1,6 +1,8 @@
 node_modules/**/*
+certs/
 ios/
 android/
+credentials.json
 .expo/*
 npm-debug.*
 *.jks

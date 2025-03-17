@@ -22,7 +22,9 @@
       }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "ios": {
+      }
     }
   },
   "submit": {
