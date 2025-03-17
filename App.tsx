@@ -33,22 +33,11 @@ log('🚀 Running on Hermes?', isHermes());
 if (isHermes()) {
   // Add any Hermes-specific initialization here
   require('react-native/Libraries/Core/InitializeCore');
-  
-  // Enable Hermes debugging features in development
-  if (__DEV__) {
-    const HermesDebugHandler = require('react-native/Libraries/Core/Devtools/HermesDebugHandler');
-    HermesDebugHandler.enableDebugging();
-  }
 }
 
 // Enable more detailed error logging
 LogBox.ignoreAllLogs(); // Ignore log notifications
 (console as any).reportErrorsAsExceptions = false; // Prevent error logs from triggering the red screen
-
-// Log any unhandled promises
-process.on('unhandledRejection', (reason, promise) => {
-  log('Unhandled Rejection at:', promise, 'reason:', reason);
-});
 
 // Override console.error to get more details
 const originalConsoleError = console.error;
