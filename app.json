@@ -1,15 +1,19 @@
 {
   "expo": {
     "name": "pantryPlus",
+    "description": "Easily organize and collaborate on shopping lists with your family.",
     "slug": "pantryplus",
+    "owner": "askewsoft",
     "version": "1.0.0",
+    "platforms": ["ios"],
+    "jsEngine": "hermes",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#de60ff"
     },
     "plugins": [
       [
@@ -24,14 +28,14 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.askewsoft.pantryplus",
       "buildNumber": "1.0.0",
+      "associatedDomains": ["applinks:pantryplus.askewsoft.com", "applinks:api.askewsoft.com", "applinks:askewsoft.com"],
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to use your location to automatically sort the items in your shopping lists."
       }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/adaptive-icon.png"
       },
       "versionCode": 1,
       "permissions": [
@@ -49,7 +53,6 @@
       "eas": {
         "projectId": "cfe3c29f-3eac-47e7-a461-6d3b73d4f176"
       }
-    },
-    "owner": "askewsoft"
+    }
   }
 }
