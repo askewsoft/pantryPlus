@@ -11,11 +11,13 @@
         "developmentClient": true
       },
       "extends": "production",
-      "channel": "preview"
+      "channel": "preview",
+      "node": "22.6.0"
     },
     "production": {
       "autoIncrement": true,
-      "ios": {}
+      "ios": {},
+      "node": "22.6.0"
     },
     "development-simulator": {
       "developmentClient": true,
@@ -23,7 +25,8 @@
       "ios": {
         "simulator": true
       },
-      "environment": "development"
+      "environment": "development",
+      "node": "22.6.0"
     }
   },
   "submit": {
