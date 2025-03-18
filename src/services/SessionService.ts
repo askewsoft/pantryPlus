@@ -7,6 +7,8 @@ export const getApiConfiguration = async (): Promise<Configuration | undefined> 
         const session = await fetchAuthSession();
         const token = session.tokens?.accessToken?.toString();
         
+        if (appConfig.debug) console.log('DEBUG LOGGING = ', token);
+
         return new Configuration({
             basePath: appConfig.apiUrl,
             accessToken: token
