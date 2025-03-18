@@ -1,4 +1,4 @@
-// TODO: consider using https://www.npmjs.com/package/react-native-config
+import appConfig from './app';
 
 const {
     EXPO_PUBLIC_USER_POOL_ID,
@@ -18,4 +18,5 @@ const cognitoConfig: CognitoConfig = {
     userPoolRegion: EXPO_PUBLIC_REGION!
 }
 
+if (appConfig.debug) console.log('Cognito Config = ', cognitoConfig);
 export default cognitoConfig as CognitoConfig;

@@ -12,4 +12,6 @@ const appConfig: AppConfig = {
     debug: EXPO_PUBLIC_DEBUG === 'true'
 }
 
+if (appConfig.debug) console.log('App Config = ', appConfig);
+
 export default appConfig as AppConfig;

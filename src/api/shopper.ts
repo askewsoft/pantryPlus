@@ -8,16 +8,37 @@ import {
 
 import { getApiConfiguration } from '@/services/SessionService';
 import { fetchUserAttributes } from 'aws-amplify/auth';
+import appConfig from '@/config/app';
+import { AxiosError } from 'axios';
 
 const registerUser = async () => {
+    if (appConfig?.debug) {
+        console.log('Starting registerUser process');
+    }
     const configuration = await getApiConfiguration();
+    if (!configuration) {
+        console.error('Failed to get API configuration');
+        return;
+    }
+    
+    if (appConfig?.debug) {
+        console.log('API Configuration received:', {
+            basePath: configuration.basePath,
+            hasAccessToken: !!configuration.accessToken
+        });
+    }
+    
     const shopperApi = new ShoppersApi(configuration);
     let authenticatedUser;
     let userAttributes;
     try {
+        if (appConfig?.debug) console.log('Fetching user attributes...');
         userAttributes = await fetchUserAttributes();
     } catch(error) {
         console.error('Unable to fetch user attributes:', error);
+        if (error instanceof Error) {
+            console.error('User attributes error details:', error.message);
+        }
         return;
     }
 
@@ -27,11 +48,33 @@ const registerUser = async () => {
       nickname: userAttributes?.nickname || ''
     };
 
+    if (appConfig?.debug) {
+        console.log('Attempting to create shopper with:', {
+            email: authenticatedUser.email,
+            id: authenticatedUser.id,
+            hasNickname: !!authenticatedUser.nickname
+        });
+    }
+
     try {
-        await shopperApi.createShopper(authenticatedUser);
+        const response = await shopperApi.createShopper(authenticatedUser);
+        if (appConfig?.debug) {
+            console.log('Shopper created successfully');
+        }
         return authenticatedUser;
     } catch(error) {
         console.error('Unable to create shopper:', error);
+        if (error instanceof AxiosError) {
+            console.error('Network Error Details:', {
+                message: error.message,
+                code: error.code,
+                config: {
+                    url: error.config?.url,
+                    method: error.config?.method,
+                    baseURL: error.config?.baseURL,
+                }
+            });
+        }
         return;
     }
 };
