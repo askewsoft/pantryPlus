@@ -8,9 +8,9 @@ export const getApiConfiguration = async (): Promise<Configuration | undefined> 
         const token = session.tokens?.accessToken?.toString();
         
         if (appConfig.debug) {
-            console.log('API URL = ', appConfig.apiUrl);
-            console.log('Auth Token Present = ', !!token);
-            console.log('Auth Token = ', token);
+            console.warn('API URL = ', appConfig.apiUrl);
+            console.warn('Auth Token Present = ', !!token);
+            console.warn('Auth Token = ', token);
         }
 
         const config = new Configuration({
@@ -19,7 +19,7 @@ export const getApiConfiguration = async (): Promise<Configuration | undefined> 
         });
 
         if (appConfig.debug) {
-            console.log('API Configuration created with basePath:', config.basePath);
+            console.warn('API Configuration created with basePath:', config.basePath);
         }
 
         return config;

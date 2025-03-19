@@ -13,7 +13,7 @@ import { AxiosError } from 'axios';
 
 const registerUser = async () => {
     if (appConfig?.debug) {
-        console.log('Starting registerUser process');
+        console.warn('Starting registerUser process');
     }
     const configuration = await getApiConfiguration();
     if (!configuration) {
@@ -22,7 +22,7 @@ const registerUser = async () => {
     }
     
     if (appConfig?.debug) {
-        console.log('API Configuration received:', {
+        console.warn('API Configuration received:', {
             basePath: configuration.basePath,
             hasAccessToken: !!configuration.accessToken
         });
@@ -32,7 +32,7 @@ const registerUser = async () => {
     let authenticatedUser;
     let userAttributes;
     try {
-        if (appConfig?.debug) console.log('Fetching user attributes...');
+        if (appConfig?.debug) console.warn('Fetching user attributes...');
         userAttributes = await fetchUserAttributes();
     } catch(error) {
         console.error('Unable to fetch user attributes:', error);
@@ -49,7 +49,7 @@ const registerUser = async () => {
     };
 
     if (appConfig?.debug) {
-        console.log('Attempting to create shopper with:', {
+        console.warn('Attempting to create shopper with:', {
             email: authenticatedUser.email,
             id: authenticatedUser.id,
             hasNickname: !!authenticatedUser.nickname
@@ -59,7 +59,7 @@ const registerUser = async () => {
     try {
         const response = await shopperApi.createShopper(authenticatedUser);
         if (appConfig?.debug) {
-            console.log('Shopper created successfully');
+            console.warn('Shopper created successfully');
         }
         return authenticatedUser;
     } catch(error) {
@@ -74,6 +74,12 @@ const registerUser = async () => {
                     baseURL: error.config?.baseURL,
                 }
             });
+            // Add more detailed error logging
+            if (error.response) {
+                console.error('Error Response Data:', error.response.data);
+                console.error('Error Response Status:', error.response.status);
+                console.error('Error Response Headers:', error.response.headers);
+            }
         }
         return;
     }
