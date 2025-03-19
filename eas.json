@@ -9,7 +9,8 @@
       "distribution": "internal",
       "node": "22.6.0",
       "ios": {
-        "simulator": true
+        "simulator": true,
+        "buildConfiguration": "Debug"
       }
     },
     "production": {

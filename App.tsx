@@ -6,6 +6,8 @@ import { Amplify } from "aws-amplify";
 import { Authenticator, ThemeProvider } from '@aws-amplify/ui-react-native';
 import React from 'react';
 import { LogBox, Platform } from 'react-native';
+import appConfig from '@/config/app';
+import cognitoConfig from '@/config/cognito';
 
 import { DomainStoreContextProvider, domainStore } from '@/stores/DomainStore';
 import { UIStoreContextProvider, uiStore } from '@/stores/UIStore';
@@ -16,8 +18,18 @@ import amplifyConfig from '@/config/amplify';
 import IntroScreen from '@/screens/IntroScreen';
 import AppWrapper from '@/screens/AppWrapper';
 import { authTheme } from '@/consts/authTheme';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 Amplify.configure(amplifyConfig);
+
+// Add startup logging
+console.log('App starting with config:', {
+  apiUrl: appConfig.apiUrl,
+  debug: appConfig.debug,
+  userPoolRegion: cognitoConfig.userPoolRegion,
+  hasUserPoolId: !!cognitoConfig.userPoolId,
+  hasUserPoolClientId: !!cognitoConfig.userPoolClientId
+});
 
 // Basic logging setup
 const log = (message: string, ...args: any[]) => {
@@ -45,39 +57,6 @@ console.error = (...args) => {
   log('Error:', ...args);
   originalConsoleError.apply(console, args);
 };
-
-interface ErrorBoundaryState {
-  hasError: boolean;
-  error: Error | null;
-}
-
-interface ErrorBoundaryProps {
-  children: React.ReactNode;
-}
-
-// Add error boundary
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    console.log('App Error:', error);
-    console.log('Error Info:', errorInfo);
-  }
-
-  render(): React.ReactNode {
-    if (this.state.hasError) {
-      return null; // Return null instead of crashing
-    }
-    return this.props.children;
-  }
-}
 
 interface IAuthenticatorProps {
   initialState: 'signIn' | 'signUp' | 'forgotPassword';
