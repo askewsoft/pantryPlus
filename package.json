@@ -24,7 +24,6 @@
     "date-fns": "^4.1.0",
     "expo": "^51.0.38",
     "expo-application": "^5.9.1",
-    "expo-constants": "^17.0.8",
     "expo-crypto": "~13.0.2",
     "expo-location": "~17.0.1",
     "expo-splash-screen": "^0.27.7",
