@@ -1,22 +1,12 @@
 import appConfig from './app';
 
-const {
-    EXPO_PUBLIC_USER_POOL_ID,
-    EXPO_PUBLIC_APP_CLIENT_ID,
-    EXPO_PUBLIC_REGION
-} = process.env;
+const cognitoConfig = {
+    userPoolId: process.env.EXPO_PUBLIC_USER_POOL_ID,
+    userPoolClientId: process.env.EXPO_PUBLIC_APP_CLIENT_ID,
+    userPoolRegion: process.env.EXPO_PUBLIC_REGION
+} as const;
 
-type CognitoConfig = {
-    userPoolId: string;
-    userPoolClientId: string;
-    userPoolRegion: string;
-}
-
-const cognitoConfig: CognitoConfig = {
-    userPoolId: EXPO_PUBLIC_USER_POOL_ID!,
-    userPoolClientId: EXPO_PUBLIC_APP_CLIENT_ID!,
-    userPoolRegion: EXPO_PUBLIC_REGION!
-}
+type CognitoConfig = typeof cognitoConfig;
 
 if (appConfig.debug) console.log('Cognito Config = ', cognitoConfig);
-export default cognitoConfig as CognitoConfig;
+export default cognitoConfig;

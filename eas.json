@@ -8,22 +8,19 @@
       "environment": "preview",
       "distribution": "internal",
       "node": "22.6.0",
+      "developmentClient": false,
       "ios": {
         "simulator": true,
-        "buildConfiguration": "Debug"
+        "buildConfiguration": "Release"
       },
-      "updates": {
-        "channel": "preview"
-      }
+      "channel": "preview"
     },
     "production": {
       "environment": "production",
       "node": "22.6.0",
       "autoIncrement": true,
       "ios": {},
-      "updates": {
-        "channel": "production"
-      }
+      "channel": "production"
     },
     "development-simulator": {
       "environment": "development",
@@ -33,9 +30,7 @@
       "ios": {
         "simulator": true
       },
-      "updates": {
-        "channel": "development"
-      }
+      "channel": "development-simulator"
     }
   },
   "submit": {

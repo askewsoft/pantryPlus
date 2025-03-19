@@ -1,17 +1,10 @@
-const { EXPO_PUBLIC_API_URL, EXPO_PUBLIC_DEBUG } = process.env;
+const appConfig = {
+    apiUrl: `${process.env.EXPO_PUBLIC_API_URL}/v1`,
+    debug: process.env.EXPO_PUBLIC_DEBUG === 'true'
+} as const;
 
-console.log('DEBUG LOGGING = ', EXPO_PUBLIC_DEBUG);
-
-type AppConfig = {
-    apiUrl: string | undefined;
-    debug: boolean | undefined;
-}
-
-const appConfig: AppConfig = {
-    apiUrl: `${EXPO_PUBLIC_API_URL}/v1`,
-    debug: EXPO_PUBLIC_DEBUG === 'true'
-}
+type AppConfig = typeof appConfig;
 
 if (appConfig.debug) console.log('App Config = ', appConfig);
 
-export default appConfig as AppConfig;
+export default appConfig;
