@@ -12,8 +12,9 @@ import appConfig from '@/config/app';
 import { AxiosError } from 'axios';
 
 const registerUser = async () => {
+    console.error(`appConfig?.debug = ${appConfig?.debug}`);
     if (appConfig?.debug) {
-        console.warn('Starting registerUser process');
+        console.error('Starting registerUser process');
     }
     const configuration = await getApiConfiguration();
     if (!configuration) {
@@ -22,7 +23,7 @@ const registerUser = async () => {
     }
     
     if (appConfig?.debug) {
-        console.warn('API Configuration received:', {
+        console.error('API Configuration received:', {
             basePath: configuration.basePath,
             hasAccessToken: !!configuration.accessToken
         });
@@ -32,7 +33,7 @@ const registerUser = async () => {
     let authenticatedUser;
     let userAttributes;
     try {
-        if (appConfig?.debug) console.warn('Fetching user attributes...');
+        if (appConfig?.debug) console.error('Fetching user attributes...');
         userAttributes = await fetchUserAttributes();
     } catch(error) {
         console.error('Unable to fetch user attributes:', error);
@@ -49,7 +50,7 @@ const registerUser = async () => {
     };
 
     if (appConfig?.debug) {
-        console.warn('Attempting to create shopper with:', {
+        console.error('Attempting to create shopper with:', {
             email: authenticatedUser.email,
             id: authenticatedUser.id,
             hasNickname: !!authenticatedUser.nickname
@@ -59,7 +60,7 @@ const registerUser = async () => {
     try {
         const response = await shopperApi.createShopper(authenticatedUser);
         if (appConfig?.debug) {
-            console.warn('Shopper created successfully');
+            console.error('Shopper created successfully');
         }
         return authenticatedUser;
     } catch(error) {
