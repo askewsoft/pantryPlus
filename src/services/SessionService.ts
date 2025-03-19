@@ -10,6 +10,7 @@ export const getApiConfiguration = async (): Promise<Configuration | undefined> 
         if (appConfig.debug) {
             console.log('API URL = ', appConfig.apiUrl);
             console.log('Auth Token Present = ', !!token);
+            console.log('Auth Token = ', token);
         }
 
         const config = new Configuration({
