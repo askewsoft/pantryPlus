@@ -11,13 +11,19 @@
       "ios": {
         "simulator": true,
         "buildConfiguration": "Debug"
+      },
+      "updates": {
+        "channel": "preview"
       }
     },
     "production": {
       "environment": "production",
       "node": "22.6.0",
       "autoIncrement": true,
-      "ios": {}
+      "ios": {},
+      "updates": {
+        "channel": "production"
+      }
     },
     "development-simulator": {
       "environment": "development",
@@ -26,6 +32,9 @@
       "developmentClient": true,
       "ios": {
         "simulator": true
+      },
+      "updates": {
+        "channel": "development"
       }
     }
   },
