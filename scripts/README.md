@@ -13,3 +13,9 @@ From the command line, execute the following
 ```sh
 npx ts-node get-token.ts <username> <password>
 ```
+
+Then use the token in a curl command like the following (this is just an example, not to be used verbatim):
+
+```sh
+curl -v "https://api.askewsoft.com/v1/shoppers" -H "Authorization: Bearer <copy auth token here>" -H "Content-Type: application/json" -d '{"id": "FB0A3A06-6222-41A7-8E80-9DA1ABD9C4AB", "nickname": "Tester", "email": "tester@my-domain-name.com"}'
+```
