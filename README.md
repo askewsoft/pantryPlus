@@ -84,6 +84,7 @@ The app can be built for a variety of contexts. Builds can be **local** or **clo
     - ensure that the `> Build Options > User Scripting Sandbox` setting is set to `No`
     - you may close XCode at this point
     - `npm run ios` again
+
 #### Cloud builds
 - these are compiled using the EAS (i.e., Expo Application Services) build service
 - the following contexts are supported:
@@ -91,4 +92,4 @@ The app can be built for a variety of contexts. Builds can be **local** or **clo
     - `dev-ios` - development on an iOS device
     - `preview` - preview build for testing
     - `production` - production build for release
-- to build the app for a specific context, run `eas build --context <context>`.
+- to build the app for a specific context use `--profile`; e.g., `eas build --platform ios --profile preview --clear-cache`.
