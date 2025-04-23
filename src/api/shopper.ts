@@ -12,8 +12,8 @@ import appConfig from '@/config/app';
 import { AxiosError } from 'axios';
 
 const registerUser = async () => {
-    console.error(`appConfig?.debug = ${appConfig?.debug}`);
     if (appConfig?.debug) {
+        console.error(`appConfig?.debug = ${appConfig?.debug}`);
         console.error('Starting registerUser process');
     }
     const configuration = await getApiConfiguration();
