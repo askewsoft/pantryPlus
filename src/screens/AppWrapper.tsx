@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import { observer } from 'mobx-react';
-import { EventArg, NavigationContainer, TabNavigationState } from '@react-navigation/native';
+import { EventArg, NavigationContainer, TabNavigationState, NavigationState, EventListenerCallback, NavigationContainerEventMap } from '@react-navigation/native';
 import { createBottomTabNavigator, BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -37,8 +37,11 @@ const AppWrapper = () => {
     return AppTabs.includes(uiStore.lastViewedSection as typeof AppTabs[number]) ? uiStore.lastViewedSection as typeof AppTabs[number] : 'Lists';
   };
 
-  const onScreenChange = (e: EventArg<"state", false, { state: TabNavigationState<AppTabsParamList> }>) => {
-    const lastTab = e.data.state.history[e.data.state.history.length - 1];
+  const onScreenChange: EventListenerCallback<any, 'state'> = (e) => {
+    const state = e.data?.state;
+    if (!state?.history?.length) return;
+    
+    const lastTab = state.history[state.history.length - 1];
     const routeName = lastTab.key.split('-')[0] as typeof AppTabs[number];
     if (routeName && AppTabs.includes(routeName)) {
       uiStore.setLastViewedSection(routeName);

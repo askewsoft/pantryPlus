@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { View } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { createStackNavigator } from '@react-navigation/stack';
 import { EventArg, StackNavigationState } from '@react-navigation/native';
@@ -63,7 +64,7 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
 
   const ListHeaderRight = () => {
     return (
-      <>
+      <View style={{ flexDirection: 'row' }}>
         <AddButton
           foreground={colors.white}
           background={colors.brandColor}
@@ -76,7 +77,7 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
           materialIconName="create-new-folder"
           onPress={onPressAddCategory}
         />
-      </>
+      </View>
     );
   }
   
