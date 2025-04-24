@@ -7,9 +7,9 @@
     "prebuild:clean": "NODE_NO_WARNINGS=1 npx expo prebuild --clean  # This will regenerate the native iOS files",
     "ios": "NODE_NO_WARNINGS=1 npx expo run:ios",
     "android": "NODE_NO_WARNINGS=1 npx expo run:android",
-    "build:local:ios": "eas build --local --platform ios --profile preview --clear-cache",
-    "build:sim:ios": "eas build --platform ios --profile preview --clear-cache",
-    "build:prod:ios": "npm run prebuild:clean && eas build --platform ios --profile production --clear-cache",
+    "preview:ios": "eas build --platform ios --profile preview --clear-cache --local",
+    "dev:ios": "eas build --platform ios --profile development --clear-cache",
+    "prod:ios": "npm run prebuild:clean && eas build --platform ios --profile prod --clear-cache",
     "killport": "sudo kill -9 $(sudo lsof -t -i :8081) # Do this if the Metro Bundler fails to start"
   },
   "dependencies": {

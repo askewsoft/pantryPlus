@@ -4,36 +4,31 @@
     "appVersionSource": "remote"
   },
   "build": {
-    "preview": {
-      "environment": "preview",
-      "distribution": "internal",
-      "node": "22.6.0",
-      "developmentClient": false,
-      "ios": {
-        "simulator": true,
-        "buildConfiguration": "Release"
-      },
-      "channel": "preview"
-    },
-    "production": {
-      "environment": "production",
-      "node": "22.6.0",
+    "base": {
       "autoIncrement": true,
-      "ios": {},
-      "channel": "production"
+      "credentialsSource": "remote",
+      "node": "22.6.0"
     },
-    "development-simulator": {
-      "environment": "development",
+    "development": {
+      "channel": "unused when buildConfiguration = Debug",
       "distribution": "internal",
-      "node": "22.6.0",
-      "developmentClient": true,
-      "ios": {
-        "simulator": true
-      },
-      "channel": "development-simulator"
+      "environment": "development",
+      "extends": "base",
+      "ios": { "simulator": true, "buildConfiguration": "Debug" }
+    },
+    "preview": {
+      "channel": "beta",
+      "distribution": "internal",
+      "environment": "preview",
+      "extends": "base",
+      "ios": { "simulator": false, "buildConfiguration": "Release" }
+    },
+    "prod": {
+      "channel": "published",
+      "distribution": "store",
+      "environment": "production",
+      "extends": "base",
+      "ios": { "simulator": false, "buildConfiguration": "Release" }
     }
-  },
-  "submit": {
-    "production": {}
   }
 }
