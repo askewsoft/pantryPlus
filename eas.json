@@ -1,6 +1,6 @@
 {
   "cli": {
-    "version": ">= 12.6.1",
+    "version": ">= 16.3.3",
     "appVersionSource": "remote"
   },
   "build": {
@@ -30,5 +30,8 @@
       "extends": "base",
       "ios": { "simulator": false, "buildConfiguration": "Release" }
     }
+  },
+  "submit": {
+    "production": {}
   }
 }
