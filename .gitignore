@@ -5,6 +5,7 @@ android/
 credentials.json
 .expo/*
 npm-debug.*
+*.ipa
 *.jks
 *.p8
 *.p12
