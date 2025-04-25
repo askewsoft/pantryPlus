@@ -10,7 +10,7 @@
       "node": "22.6.0"
     },
     "development": {
-      "channel": "unused when buildConfiguration = Debug",
+      "channel": "unused_here",
       "distribution": "internal",
       "environment": "development",
       "extends": "base",
@@ -32,6 +32,10 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "steve.quince@example.com"
+      }
+    }
   }
 }
