@@ -68,7 +68,7 @@ const App = () => {
   useEffect(() => {
     setTimeout(() => {
       setShowSplashScreen(false);
-    }, 3000);
+    }, 1500);
   }, []);
 
   if (showSplashScreen) {

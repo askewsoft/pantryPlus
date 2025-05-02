@@ -76,6 +76,8 @@ class LocationService {
             this.subscription.remove();
             this.subscription = null;
         }
+        domainStore.setNearestKnownLocation(null);
+        domainStore.setSelectedKnownLocationId(null);
     }
 }
 

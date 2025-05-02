@@ -130,6 +130,7 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
 
   const setCurrentLocation = () => {
     uiStore.setPickLocationPromptVisible(false);
+    domainStore.setLocationEnabled(true);
     navigation.navigate('Locations', { screen: 'MyLocations', params: { returnToList: true } });
   }
 
