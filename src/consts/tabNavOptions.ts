@@ -14,7 +14,7 @@ const tabOptions = ({iconName}: {iconName: string}): BottomTabNavigationOptions 
       tabBarInactiveTintColor: colors.inactiveButtonColor,
       tabBarInactiveBackgroundColor: colors.brandColor,
       tabBarStyle: { backgroundColor: colors.brandColor, height: 90, paddingBottom: 10, paddingTop: 10, paddingHorizontal: 10 },
-      tabBarItemStyle: { marginHorizontal: 5, marginBottom: 5, paddingBottom: 5, borderRadius: 10, backgroundColor: colors.lightBrandColor },
+      tabBarItemStyle: { marginHorizontal: 5, marginBottom: 5, paddingBottom: 5, borderRadius: 10 },
       tabBarBadge: iconName === 'groups' && numInvites > 0 ? numInvites : undefined,
       tabBarBadgeStyle: { color: colors.white, backgroundColor: colors.alertColor },
     }

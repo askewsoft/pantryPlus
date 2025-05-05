@@ -1,10 +1,12 @@
 import { StyleSheet } from 'react-native';
+import colors from '@/consts/colors';
+import fonts from '@/consts/fonts';
 
 export const styles = StyleSheet.create({
   container: {
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: '#841584',
+    backgroundColor: colors.brandColor,
     height: '100%',
     width: '100%',
     alignSelf: 'center',
@@ -14,19 +16,19 @@ export const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   welcomeText: {
-    color: 'white',
-    fontSize: 30,
+    color: colors.white,
+    fontSize: fonts.modalTitleSize,
     padding: '0%'
   },
   pantryLogo: {
-    color: 'white',
-    fontSize: 60,
+    color: colors.white,
+    fontSize: fonts.modalTitleSize * 2,
     padding: '0%'
   },
   plusLogo: {
     fontSize: 80,
     padding: '0%',
-    color: 'white'
+    color: colors.white
   },
   logoContainer: {
     display: 'flex',

@@ -52,6 +52,7 @@ const ItemsList = observer(({
 const styles = StyleSheet.create({
   draggableFlatListStyle: {
     backgroundColor: colors.detailsBackground,
+    paddingTop: 5,
   }
 });
 
