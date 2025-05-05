@@ -21,14 +21,14 @@
       "distribution": "internal",
       "environment": "preview",
       "extends": "base",
-      "ios": { "simulator": false, "buildConfiguration": "Release" }
+      "ios": { "simulator": false, "buildConfiguration": "Release", "image": "macos-sequoia-15.3-xcode-16.2" }
     },
     "prod": {
       "channel": "published",
       "distribution": "store",
       "environment": "production",
       "extends": "base",
-      "ios": { "simulator": false, "buildConfiguration": "Release" }
+      "ios": { "simulator": false, "buildConfiguration": "Release", "image": "macos-sequoia-15.3-xcode-16.2" }
     }
   },
   "submit": {
