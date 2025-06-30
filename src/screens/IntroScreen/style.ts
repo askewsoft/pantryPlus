@@ -1,10 +1,12 @@
 import { StyleSheet } from 'react-native';
+import colors from '@/consts/colors';
+import fonts from '@/consts/fonts';
 
 export const styles = StyleSheet.create({
   container: {
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: 'white',
+    backgroundColor: colors.white,
     height: '100%',
     width: '100%',
     alignSelf: 'center',
@@ -18,8 +20,8 @@ export const styles = StyleSheet.create({
     flex: 1
   },
   pantryLogo: {
-    color: '#841584',
-    fontSize: 60,
+    color: colors.brandColor,
+    fontSize: fonts.modalTitleSize * 2,
     fontWeight: 'bold',
     padding: 20
   },
@@ -33,14 +35,14 @@ export const styles = StyleSheet.create({
     flex: 4,
   },
   introText: {
-    color: '#841584',
-    fontSize: 20,
+    color: colors.brandColor,
+    fontSize: fonts.modalTitleSize,
   },
   carouselItem: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#841584',
+    backgroundColor: colors.brandColor,
     margin: 0,
   },
   carouselControlsContainer: {

@@ -1,7 +1,6 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { observer } from 'mobx-react-lite';
 
-import fonts from '@/consts/fonts';
 import { iconSize } from '@/consts/iconButtons';
 import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 import { FnReturnVoid } from '@/types/FunctionArgumentTypes';

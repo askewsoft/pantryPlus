@@ -110,7 +110,7 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
               )}
               {/* TODO: encapsulate drag-indicator in a custom button */}
               <View style={styles.buttonContainer}>
-                <AddButton onPress={onPressAddProduct} foreground={colors.white} background={colors.lightBrandColor} materialIconName="add-task" />
+                <AddButton onPress={onPressAddProduct} foreground={colors.white} background={colors.lightBrandColor} materialIconName="add-circle" />
                 <MaterialIcons.Button
                   name="drag-indicator"
                   size={iconSize.rowIconSize}

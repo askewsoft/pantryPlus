@@ -1,4 +1,6 @@
 import { Text, View, StyleSheet } from 'react-native';
+import colors from '@/consts/colors';
+import fonts from '@/consts/fonts';
 
 export default function FeatureHighlightTemplate({ title, description, image }: { title: string, description: string, image: string | null }) {
   return (
@@ -14,17 +16,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#841584',
+    backgroundColor: colors.brandColor,
+    borderRadius: 10,
   },
   carouselTitle: {
-    fontSize: 36,
-    color: 'white',
+    fontSize: fonts.modalTitleSize,
+    color: colors.white,
     padding: 15
   },
   carouselDescription: {
-    fontSize: 24,
+    fontSize: fonts.missingRowsTextSize,
     fontStyle: 'italic',
-    color: 'white',
+    color: colors.white,
     padding: 15
   }
 });

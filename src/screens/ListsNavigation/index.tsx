@@ -68,7 +68,7 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
         <AddButton
           foreground={colors.white}
           background={colors.brandColor}
-          materialIconName="add-task"
+          materialIconName="add-circle"
           onPress={onPressAddProduct}
         />
         <AddButton
