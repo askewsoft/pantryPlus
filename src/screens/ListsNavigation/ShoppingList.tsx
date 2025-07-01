@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { StyleSheet, RefreshControl, Alert, View } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
@@ -25,6 +25,7 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
   const listId = uiStore.selectedShoppingList;
   const xAuthUser = domainStore.user?.email;
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const scrollViewRef = useRef<any>(null);
   
   // Get current list as a computed value and ensure it exists
   const currentList = domainStore.lists.find((list) => list.id === listId);
@@ -60,7 +61,13 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
   };
 
   const renderCategoryElement = ({ item: category, drag }: { item: CategoryType, drag: FnReturnVoid }) => (
-    <CategoryFolder key={category.id} categoryId={category.id} title={category.name} drag={drag}>
+    <CategoryFolder 
+      key={category.id} 
+      categoryId={category.id} 
+      title={category.name} 
+      drag={drag}
+      scrollViewRef={scrollViewRef}
+    >
       <CategoryItems listId={listId!} categoryId={category.id} />
     </CategoryFolder>
   );
@@ -139,16 +146,17 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
       <View style={styles.container}>
         <CurrentLocation onPress={setCurrentLocation} />
         <NestableScrollContainer 
+          ref={scrollViewRef}
           style={styles.scrollContainer} 
           refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={loadData} />}
         >
           {/* Only render content if we have a valid list */}
           {currentList && (
-            <>
+            <View style={styles.contentContainer}>
               { uiStore.addItemToListID === listId && <ItemInput listId={listId!} /> }
               <ListItems listId={listId!} />
               <NestableDraggableFlatList
-                contentContainerStyle={styles.draggableFlatListStyle}
+                style={styles.draggableFlatListStyle}
                 data={toJS(currentList.categories).sort(sortByOrdinal)}
                 renderItem={renderCategoryElement}
                 keyExtractor={category => category.id}
@@ -157,7 +165,7 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
               />
               <AddCategoryModal />
               <PickLocationPrompt onPress={setCurrentLocation} />
-            </>
+            </View>
           )}
         </NestableScrollContainer>
       </View>
@@ -171,7 +179,9 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexDirection: 'column',
-    marginTop: 5,
+  },
+  contentContainer: {
+    marginBottom: 18, // unsure why w/o this the tabNavBar covers the bottom of the list
   },
   draggableFlatListStyle: {
     backgroundColor: colors.detailsBackground,
