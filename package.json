@@ -10,6 +10,7 @@
     "dev:ios": "eas build --platform ios --profile development --clear-cache --local",
     "preview:ios": "eas build --platform ios --profile preview --clear-cache",
     "prod:ios": "eas build --platform ios --profile prod --clear-cache",
+    "publish:ios": "eas submit --platform ios",
     "killport": "sudo kill -9 $(sudo lsof -t -i :8081) # Do this if the Metro Bundler fails to start"
   },
   "dependencies": {
