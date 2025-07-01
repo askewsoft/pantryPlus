@@ -7,10 +7,8 @@ Manage your shopping lists, and then some.
     - serves as the trunk for the repo; this is the source of truth
     - contains the latest code, including potentially breaking changes
     - create feature branches from here
-* `dev`
-    - PR into this branch from `main` only
 * `prod`
-    - PR into this branch from `dev` only
+    - PR into this branch from `main` only
     - publicly available "production" builds
     - these should be tagged with a version via Github releases feature
 * feature branch(es)

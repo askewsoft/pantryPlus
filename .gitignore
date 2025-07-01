@@ -33,6 +33,7 @@ node_modules/
 .expo/
 dist/
 web-build/
+build-*.tar.gz
 
 # Native
 *.orig.*
