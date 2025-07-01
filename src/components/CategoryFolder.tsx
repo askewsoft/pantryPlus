@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { ScaleDecorator } from 'react-native-draggable-flatlist';
@@ -19,15 +19,16 @@ import AddButton from './Buttons/AddButton';
 import RemoveButton from './Buttons/RemoveButton';
 import ItemInput from './ItemInput';
 
-const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string, title: string, drag: FnReturnVoid, children: React.ReactNode}) => {
+const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {categoryId: string, title: string, drag: FnReturnVoid, children: React.ReactNode, scrollViewRef?: React.RefObject<any>}) => {
   const open = uiStore.openCategories.get(categoryId)?.open ?? false;
   const currList = domainStore.lists.find(l => l.categories.find(c => c.id === categoryId));
   const currCategory = currList?.categories.find(c => c.id === categoryId);
   const xAuthUser = domainStore.user?.email!;
-
+  const categoryRef = useRef<View>(null);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
+  const [wasAddingItem, setWasAddingItem] = useState(false);
 
   const onSubmit = async () => {
     if (editedTitle.trim().toLowerCase() !== currCategory?.name.trim().toLowerCase()) {
@@ -40,7 +41,21 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
   const onPressAddProduct = () => {
     uiStore.setOpenCategory(categoryId, true);
     uiStore.setAddItemToListID('');
+    const willShowInput = uiStore.addItemToCategoryID !== categoryId;
     uiStore.addItemToCategoryID !== categoryId ? uiStore.setAddItemToCategoryID(categoryId) : uiStore.setAddItemToCategoryID('');
+    
+    // Scroll to this category when input becomes visible
+    if (willShowInput && scrollViewRef?.current && categoryRef.current) {
+      setTimeout(() => {
+        categoryRef.current?.measureLayout(
+          scrollViewRef.current,
+          (x: number, y: number) => {
+            scrollViewRef.current?.scrollTo({ y: y + 100, animated: true });
+          },
+          () => {} // error callback
+        );
+      }, 300); // Small delay to ensure the input is rendered
+    }
   }
 
   const onRemoveCategory = (categoryId: string) => {
@@ -54,6 +69,32 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
     setEditedTitle(currCategory!.name!);
     setIsEditing(true);
   }
+
+  // Watch for when an item is added to this category
+  useEffect(() => {
+    // If we were adding an item and now we're not, an item was just submitted
+    if (wasAddingItem && uiStore.addItemToCategoryID !== categoryId) {
+      // Scroll to show the newly added item after keyboard dismisses
+      setTimeout(() => {
+        if (scrollViewRef?.current && categoryRef.current) {
+          categoryRef.current.measureLayout(
+            scrollViewRef.current,
+            (x: number, y: number) => {
+              // Scroll to show the bottom of this category + some padding
+              scrollViewRef.current?.scrollTo({ 
+                y: y + 200, // Adjust this value based on your category height
+                animated: true 
+              });
+            },
+            () => {} // error callback
+          );
+        }
+      }, 500); // Wait for keyboard to dismiss
+    }
+    
+    // Track if we're currently adding an item to this category
+    setWasAddingItem(uiStore.addItemToCategoryID === categoryId);
+  }, [uiStore.addItemToCategoryID, categoryId, scrollViewRef, wasAddingItem]);
 
   const toggleFolderOpenClose = () => {
     /* We only ever want one input box for adding an item.
@@ -77,7 +118,7 @@ const CategoryFolder = ({categoryId, title, drag, children}: {categoryId: string
           <RemoveButton onPress={onRemoveCategory(categoryId)} />
         )}
       >
-        <View style={styles.container}>
+        <View ref={categoryRef} style={styles.container}>
           <Pressable
             onPress={toggleFolderOpenClose}
             onLongPress={prepareToEditName}

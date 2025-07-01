@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Platform, KeyboardAvoidingView, SafeAreaView } from 'react-native';
 import { observer } from 'mobx-react';
 import { EventArg, NavigationContainer, TabNavigationState, NavigationState, EventListenerCallback, NavigationContainerEventMap } from '@react-navigation/native';
 import { createBottomTabNavigator, BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
@@ -60,34 +60,32 @@ const AppWrapper = () => {
   }, [domainStore.locationEnabled]);
 
   return (
-    // View is needed to push the status bar to the bottom of the screen
-    // This should not be needed.
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
-      <NavigationContainer>
-        <Navigator initialRouteName={getInitialAppTabsRouteName()} screenOptions={screenOptions} screenListeners={{ state: onScreenChange }}>
-          <Screen name="Lists" component={ListsNavigation} options={{...tabOptions({iconName: 'list-alt'}), tabBarIcon: tabBarIconCreator('list-alt')}} />
-          <Screen name="Groups" component={GroupsNavigation} options={{...tabOptions({iconName: 'groups'}), tabBarIcon: tabBarIconCreator('groups')}} />
-          <Screen name="Locations" component={LocationsNavigation} options={{...tabOptions({iconName: 'store'}), tabBarIcon: tabBarIconCreator('store')}} />
-          <Screen name="Settings" component={SettingsNavigation} options={{...tabOptions({iconName: 'settings'}), tabBarIcon: tabBarIconCreator('settings')}} />
-        </Navigator>
-      </NavigationContainer>
-    </View>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+        style={styles.keyboardContainer}
+      >
+        <NavigationContainer>
+          <Navigator initialRouteName={getInitialAppTabsRouteName()} screenOptions={screenOptions} screenListeners={{ state: onScreenChange }}>
+            <Screen name="Lists" component={ListsNavigation} options={{...tabOptions({iconName: 'list-alt'}), tabBarIcon: tabBarIconCreator('list-alt')}} />
+            <Screen name="Groups" component={GroupsNavigation} options={{...tabOptions({iconName: 'groups'}), tabBarIcon: tabBarIconCreator('groups')}} />
+            <Screen name="Locations" component={LocationsNavigation} options={{...tabOptions({iconName: 'store'}), tabBarIcon: tabBarIconCreator('store')}} />
+            <Screen name="Settings" component={SettingsNavigation} options={{...tabOptions({iconName: 'settings'}), tabBarIcon: tabBarIconCreator('settings')}} />
+          </Navigator>
+        </NavigationContainer>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
-/* TODO:
-* statusBarHeight is specific to iPhone 15 and will likely look bad on other devices
-* not sure why this is needed and why SafeAreaView doesn't work
-* consider using react-native-status-bar-height
-* my guess is that this is somehow related to the way NavigationContainer handles the status bar
-*/
-const statusBarHeight = 58;
 const styles = StyleSheet.create({
   container: {
-    minHeight: Dimensions.get('window').height,
-    paddingTop: statusBarHeight,
+    flex: 1,
     backgroundColor: colors.brandColor,
+  },
+  keyboardContainer: {
+    flex: 1,
   },
 });
 
