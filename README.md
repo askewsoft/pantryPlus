@@ -37,16 +37,6 @@ Manage your shopping lists, and then some.
 * [XCode](https://developer.apple.com/xcode/)
     - for building the app for iOS devices
 
-## Run
-We recommend that you use [nvm](https://nvm.sh) to manage different versions of node.js.
-You can find the version of node used for this project in the `.nvmrc` file.
-Follow these steps to get the project running:
-
-1. `nvm use` - Switch to the correct node.js version
-1. `npm install` to get all dependencies
-1. `npm start` to run the react-native expo server
-1. Follow the on-screen instructions to open the app on your iOS or Android device's Expo Go app.
-
 ## Developing
 ### XCode Configuration
 1. Install XCode from the Mac App Store
@@ -61,33 +51,41 @@ Follow these steps to get the project running:
     - Open `Components` tab and if necessary, click the `+` button to install a simulator for the iOS version you wish to target
     - Close the settings
 
-### Running the app
+### Running the App Locally
+We recommend that you use [nvm](https://nvm.sh) to manage different versions of node.js.
+You can find the version of node used for this project in the `.nvmrc` file.
+
 The app can be built for a variety of contexts. Builds can be **local** or **cloud-based**.
 
-#### Local builds
-- these can take a while to complete
-- have the iOS emulator already running (XCode -> Open Developer Tool -> Simulator)
-- `npm run ios` to build and run the app for your iOS device emulator
-    - **NOTE** if you install new expo packages, you need to build the app using this command, `npm start` will not work
-- If this fails, you may need to:
-    - `cd ios`
-    - `pod install`
-    - `cd ..`
-    - `npm run ios` again
-- If you continue to experience issues, you may need to:
-    - open XCode
-    - open the pantryPlus project from `./ios/pantryPlus.xcworkspace`
-    - select the "Target" from below the project name
-    - click on the "Build Settings" tab along the top
-    - ensure that the `> Build Options > User Scripting Sandbox` setting is set to `No`
-    - you may close XCode at this point
-    - `npm run ios` again
+These can take a while to complete. You must have the iOS emulator already running (XCode -> Open Developer Tool -> Simulator)
 
-#### Cloud builds
-- these are compiled using the EAS (i.e., Expo Application Services) build service
-- the following contexts are supported:
+1. `nvm use` - Switch to the correct node.js version
+1. `npm install` to get all dependencies
+1. `npm run ios` to build and run the app for your iOS device emulator
+    - **NOTE** if you install new expo packages, you need to build the app using this command, `npm start` will not work
+
+#### If build fails
+
+- You may need to:
+    1. `cd ios`
+    1. `pod install`
+    1. `cd ..`
+    1. `npm run ios` again
+
+- If you continue to experience issues, you may need to:
+    1. open XCode
+    1. open the pantryPlus project from `./ios/pantryPlus.xcworkspace`
+    1. select the "Target" from below the project name
+    1. click on the "Build Settings" tab along the top
+    1. ensure that the `> Build Options > User Scripting Sandbox` setting is set to `No`
+    1. you may close XCode at this point
+    1. `npm run ios` again
+
+### Cloud Builds
+- These are compiled using the EAS (i.e., Expo Application Services) build service
+- The following contexts are supported:
     - `dev-simulator` - development on an iOS simulator
     - `dev-ios` - development on an iOS device
     - `preview` - preview build for testing
     - `production` - production build for release
-- to build the app for a specific context use `--profile`; e.g., `eas build --platform ios --profile preview --clear-cache`.
+- To build the app for a specific context use `--profile`; e.g., `eas build --platform ios --profile preview --clear-cache`.
