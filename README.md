@@ -82,10 +82,13 @@ These can take a while to complete. You must have the iOS emulator already runni
     1. `npm run ios` again
 
 ### Cloud Builds
-- These are compiled using the EAS (i.e., Expo Application Services) build service
-- The following contexts are supported:
+These are compiled using the EAS (i.e., Expo Application Services) build service
+- To build the app for publishing to the Apple App Store or Test Flight, run `npm run prod:ios`
+
+#### Other contexts
+- To build the app for a specific context use `--profile`; e.g., `eas build --platform ios --profile preview --clear-cache`.
+- The following other contexts are also supported:
     - `dev-simulator` - development on an iOS simulator
     - `dev-ios` - development on an iOS device
     - `preview` - preview build for testing
     - `production` - production build for release
-- To build the app for a specific context use `--profile`; e.g., `eas build --platform ios --profile preview --clear-cache`.
