@@ -8,26 +8,20 @@ import { api } from '@/api';
 class LocationService {
     private subscription: expoLocation.LocationSubscription | null = null;
 
-    private async requestPermissions(): Promise<boolean> {
-        const { status } = await expoLocation.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
+    async requestPermissions(): Promise<boolean> {
+        // Check if user has explicitly disabled location in the app
+        if (domainStore.locationExplicitlyDisabled) {
             return false;
         }
-        return true;
-    }
-
-    async setNearestKnownLocation(): Promise<void> {
-        const email = domainStore.user?.email;
-        if (!email) return;
-        try {
-            const location = await expoLocation.getCurrentPositionAsync();
-            if (!location) return;
-            const nearestLocationProps = await api.location.getNearestStore(email, location) as LocationType;
-            if (!nearestLocationProps) return;
-            domainStore.setNearestKnownLocation(nearestLocationProps);
-        } catch (error) {
-            console.error('unable to setNearestKnownLocation:', error);
+        
+        const { status } = await expoLocation.requestForegroundPermissionsAsync();
+        const locationEnabled = status === 'granted';
+        if (locationEnabled) {
+            domainStore.setLocationEnabled(true);
+        } else {
+            domainStore.setLocationEnabled(false);
         }
+        return locationEnabled;
     }
 
     async startTracking() {

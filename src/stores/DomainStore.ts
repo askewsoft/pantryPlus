@@ -38,6 +38,7 @@ const DomainStoreModel = t
         groups: t.array(GroupModel),
         locations: t.array(LocationModel),
         locationEnabled: t.optional(t.boolean, false),
+        locationExplicitlyDisabled: t.optional(t.boolean, false),
         nearestKnownLocation: t.maybeNull(LocationModel),
         selectedKnownLocationId: t.maybeNull(t.string),
     })
@@ -62,6 +63,13 @@ const DomainStoreModel = t
         },
         setLocationEnabled: (locationEnabled: boolean) => {
             self.locationEnabled = locationEnabled;
+            // Track if user explicitly disabled location
+            if (!locationEnabled) {
+                self.locationExplicitlyDisabled = true;
+            } else {
+                // User is re-enabling location, clear the explicitly disabled flag
+                self.locationExplicitlyDisabled = false;
+            }
         },
         addList: flow(function* (name: string) {
             const ordinal = self.lists.length;
@@ -148,10 +156,10 @@ const DomainStoreModel = t
         },
         addLocation: flow(function* ({name}: {name: string}) {
             const xAuthUser = self.user?.email;
-            if (!self.locationEnabled || !xAuthUser) return;
-            const newLocationId = randomUUID();
+            if (!xAuthUser || !self.locationEnabled) throw new Error('Location service is disabled');
 
             const currentLatLongAlt = yield expoLocation.getCurrentPositionAsync();
+            const newLocationId = randomUUID();
             const location = {
                 id: newLocationId,
                 name: name,

@@ -2,6 +2,7 @@ import { View, Text, Switch } from 'react-native';
 import { observer } from 'mobx-react-lite';
 
 import { domainStore } from '@/stores/DomainStore';
+import { locationService } from '@/services/LocationService';
 
 import { styles as sharedStyles } from './styles';
 import colors from '@/consts/colors';
@@ -10,6 +11,14 @@ import { Tooltip } from '@/consts/Tooltip';
 
 const onLocationEnabledChange = async (value: boolean) => {
   domainStore.setLocationEnabled(value);
+  
+  if (value) {
+    // Start location tracking when enabled
+    locationService.startTracking();
+  } else {
+    // Stop location tracking when disabled
+    locationService.stopTracking();
+  }
 };
 
 const Permissions = () => {
