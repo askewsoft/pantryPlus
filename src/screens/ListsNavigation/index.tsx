@@ -97,7 +97,11 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
   }
 
   const shoppingListOptions = {
-    headerRight: () => <ListHeaderRight />
+    headerRight: () => <ListHeaderRight />,
+    headerTitleStyle: {
+      fontWeight: 'bold' as const,
+      textAlign: 'right' as const,
+    }
   }
 
   return (

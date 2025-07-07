@@ -6,7 +6,6 @@ const stackNavScreenOptions: StackNavigationOptions = {
       height: 40,
       backgroundColor: colors.brandColor,
     },
-    headerTitleAlign: 'left',
     headerTintColor: colors.white,
     headerTitleStyle: { fontWeight: 'bold' },
     headerShown: true
