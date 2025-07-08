@@ -9,6 +9,7 @@ import stackNavScreenOptions from '@/consts/stackNavOptions';
 import MySettings from './MySettings';
 import Profile from './Profile';
 import Permissions from './Permissions';
+import About from './About';
 import { uiStore } from '@/stores/UIStore';
 
 const { Navigator, Screen } = createStackNavigator<SettingsStackParamList>();
@@ -23,7 +24,7 @@ const SettingsNavigation = ({navigation}: {navigation: any}) => {
     }
   }, []);
 
-  const onScreenChange = (e: EventArg<"state", false, { state: StackNavigationState<SettingsStackParamList> }>) => {
+  const onScreenChange = (e: any) => {
     const routesLength = e.data.state.routes.length;
     const currentRoute = e.data.state.routes[routesLength - 1].name;
 
@@ -42,6 +43,7 @@ const SettingsNavigation = ({navigation}: {navigation: any}) => {
       <Screen name="MySettings" component={MySettings} options={{ title: 'My Settings' }} />
       <Screen name="Profile" component={Profile} options={{ title: 'Profile' }} />
       <Screen name="Permissions" component={Permissions} options={{ title: 'Permissions' }} />
+      <Screen name="About" component={About} options={{ title: 'About' }} />
     </Navigator>
   );
 }

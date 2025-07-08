@@ -1,4 +1,5 @@
 import * as Updates from 'expo-updates';
+import * as Application from 'expo-application';
 import { Alert, Platform } from 'react-native';
 import appConfig from '@/config/app';
 
@@ -149,15 +150,18 @@ class UpdateService {
   /**
    * Get current update information
    */
-  getUpdateInfo() {
+  getAboutInfo() {
     return {
-      isEmbeddedLaunch: Updates.isEmbeddedLaunch,
+      embedded: Updates.isEmbeddedLaunch,
       isDev: __DEV__,
       updateId: Updates.updateId,
       channel: Updates.channel,
       runtimeVersion: Updates.runtimeVersion,
       createdAt: Updates.createdAt,
-      shouldAllowUpdates: this.shouldAllowUpdates(),
+      allowUpdates: this.shouldAllowUpdates(),
+      appVersion: Application.nativeApplicationVersion,
+      buildVersion: Application.nativeBuildVersion,
+      name: Application.applicationName,
     };
   }
 }

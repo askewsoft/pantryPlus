@@ -1,4 +1,4 @@
-import { View, Pressable, Text, StyleSheet, Alert } from 'react-native';
+import { View, Pressable, Text, StyleSheet } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { StackPropsMySettings } from '@/types/SettingsNavTypes';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -26,8 +26,7 @@ const MySettings = ({ navigation }: StackPropsMySettings) => {
   }
 
   const showUpdateInfo = () => {
-    const info = updateService.getUpdateInfo();
-    Alert.alert('Update Info', JSON.stringify(info, null, 2));
+    navigation.navigate('About');
   }
 
   return (
@@ -64,7 +63,7 @@ const MySettings = ({ navigation }: StackPropsMySettings) => {
             size={iconSize.rowIconSize}
             color={colors.lightBrandColor}
           />
-          <Text style={styles.buttonText}>Show Update Info</Text>
+          <Text style={styles.buttonText}>About</Text>
         </Pressable>
         <Pressable style={styles.buttonContainer} onPress={logout}>
           <MaterialIcons
