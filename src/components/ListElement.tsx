@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Text, View, StyleSheet, Pressable, TextInput, Alert } from 'react-native';
+import { Text, View, StyleSheet, Pressable, TextInput } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { ScaleDecorator } from 'react-native-draggable-flatlist';
+import SwipeableItem from "react-native-swipeable-item";
 
 import { domainStore } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
@@ -11,6 +13,7 @@ import colors from '@/consts/colors';
 import { iconSize } from '@/consts/iconButtons';
 import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
+import RemoveButton from './Buttons/RemoveButton';
 
 const ListElement = ({id, drag, navigation}: {id: string, drag: FnReturnVoid, navigation: any}) => {
   const list = domainStore.lists.find(list => list.id === id);
@@ -45,56 +48,73 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: FnReturnVoid, na
     uiStore.setShareModalVisible(true);
   }
 
+  const onRemoveList = () => {
+    domainStore.removeList(id);
+  }
+
   return (
-    <View style={styles.container}>
-      <Pressable style={styles.titleContainer}
-        onPress={handlePress}
-        onLongPress={prepareToEditName}
+    <ScaleDecorator activeScale={1.04}>
+      <SwipeableItem
+        key={id}
+        item={list!}
+        overSwipe={20}
+        snapPointsLeft={[80]}
+        renderUnderlayLeft={() => (
+          <RemoveButton onPress={onRemoveList} />
+        )}
+        swipeEnabled={userIsListOwner}
       >
-        <MaterialIcons name="format-list-bulleted" size={iconSize.rowIconSize} color={colors.brandColor} />
-        {isEditing ? (
-          <TextInput
-            style={[styles.title, styles.titleInput]}
-            value={editedTitle}
-            onSubmitEditing={onSubmit}
-            onChangeText={(text: string) => setEditedTitle(text)}
-            autoFocus={true}
-            inputMode="text"
-            lineBreakStrategyIOS="none"
-            clearButtonMode="while-editing"
-            enablesReturnKeyAutomatically={true}
-            keyboardAppearance="light"
-            returnKeyType="done"
-            blurOnSubmit={true}
-          />
-        ) : (
-          <Text style={styles.title}>{list?.name}</Text>
-        )}
-      </Pressable>
-      <View style={styles.buttonContainer}>
-        {userIsListOwner && (
-          <MaterialIcons.Button
-            name="ios-share"
-            size={iconSize.rowIconSize}
-            backgroundColor={colors.itemBackground}
-            color={colors.brandColor}
-            iconStyle={iconStyleStyle}
-            style={iconStyle}
-            underlayColor={colors.lightBrandColor}
-            onPress={openShareModal}
-          />
-        )}
-        <MaterialIcons.Button
-          name="drag-indicator"
-          size={iconSize.rowIconSize}
-          backgroundColor={colors.itemBackground}
-          color={colors.brandColor}
-          iconStyle={iconStyleStyle}
-          style={iconStyle}
-          onLongPress={drag}
-        />
-      </View>
-    </View>
+        <View style={styles.container}>
+          <Pressable style={styles.titleContainer}
+            onPress={handlePress}
+            onLongPress={prepareToEditName}
+          >
+            <MaterialIcons name="format-list-bulleted" size={iconSize.rowIconSize} color={colors.brandColor} />
+            {isEditing ? (
+              <TextInput
+                style={[styles.title, styles.titleInput]}
+                value={editedTitle}
+                onSubmitEditing={onSubmit}
+                onChangeText={(text: string) => setEditedTitle(text)}
+                autoFocus={true}
+                inputMode="text"
+                lineBreakStrategyIOS="none"
+                clearButtonMode="while-editing"
+                enablesReturnKeyAutomatically={true}
+                keyboardAppearance="light"
+                returnKeyType="done"
+                blurOnSubmit={true}
+              />
+            ) : (
+              <Text style={styles.title}>{list?.name}</Text>
+            )}
+          </Pressable>
+          <View style={styles.buttonContainer}>
+            {userIsListOwner && (
+              <MaterialIcons.Button
+                name="ios-share"
+                size={iconSize.rowIconSize}
+                backgroundColor={colors.itemBackground}
+                color={colors.brandColor}
+                iconStyle={iconStyleStyle}
+                style={iconStyle}
+                underlayColor={colors.lightBrandColor}
+                onPress={openShareModal}
+              />
+            )}
+            <MaterialIcons.Button
+              name="drag-indicator"
+              size={iconSize.rowIconSize}
+              backgroundColor={colors.itemBackground}
+              color={colors.brandColor}
+              iconStyle={iconStyleStyle}
+              style={iconStyle}
+              onLongPress={drag}
+            />
+          </View>
+        </View>
+      </SwipeableItem>
+    </ScaleDecorator>
   );
 }
 
