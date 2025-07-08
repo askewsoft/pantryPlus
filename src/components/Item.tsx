@@ -13,7 +13,7 @@ import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { iconSize } from '@/consts/iconButtons';
 import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
-import { FnReturnVoid, FnReturnPromiseVoid } from '@/types/FunctionArgumentTypes';
+import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 import { useItemActions } from '@/hooks/useItemActions';
 
 type ItemProps = {

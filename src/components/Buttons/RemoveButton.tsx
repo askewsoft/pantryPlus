@@ -2,7 +2,6 @@ import { observer } from 'mobx-react';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import colors from '@/consts/colors';
-import fonts from '@/consts/fonts';
 import { iconSize } from '@/consts/iconButtons';
 import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
@@ -14,12 +13,19 @@ const RemoveButton = ({ onPress }: { onPress: FnReturnVoid }) => {
         <MaterialIcons.Button
             name="delete"
             size={iconSize.rowIconSize}
-            backgroundColor={'transparent'}
+            backgroundColor="transparent"
             color={colors.brandColor}
             iconStyle={{ padding: 0, margin: 0 }}
-            style={{ alignSelf: 'flex-end', height: '95%', padding: 0, margin: 0 }}
+            style={{ 
+                alignSelf: 'flex-end', 
+                height: '95%', 
+                padding: 10, 
+                margin: 0,
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}
             underlayColor={colors.itemBackground}
-            onLongPress={onPressDelete}
+            onPress={onPressDelete}
         />
     );
 }
