@@ -60,23 +60,34 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
     }
   };
 
-  const renderCategoryElement = ({ item: category, drag }: { item: CategoryType, drag: FnReturnVoid }) => (
-    <CategoryFolder 
-      key={category.id} 
-      categoryId={category.id} 
-      title={category.name} 
-      drag={drag}
-      scrollViewRef={scrollViewRef}
-    >
-      <CategoryItems listId={listId!} categoryId={category.id} />
-    </CategoryFolder>
-  );
+  const renderCategoryElement = ({ item: category, drag }: { item: CategoryType, drag: FnReturnVoid }) => {
+    const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
+    
+    // Only allow drag if location is set
+    const conditionalDrag = () => {
+      if (xAuthLocation === '') {
+        uiStore.setPickLocationPromptVisible(true);
+        return;
+      }
+      drag();
+    };
+
+    return (
+      <CategoryFolder 
+        key={category.id} 
+        categoryId={category.id} 
+        title={category.name} 
+        drag={conditionalDrag}
+        scrollViewRef={scrollViewRef}
+      >
+        <CategoryItems listId={listId!} categoryId={category.id} />
+      </CategoryFolder>
+    );
+  };
 
   const onDragBegin = () => {
-    const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
-    if (xAuthLocation === '') {
-      uiStore.setPickLocationPromptVisible(true);
-    }
+    // This will only be called if drag is allowed (location is set)
+    // No need to check location here since we prevent drag from starting
   }
 
   const onDragEnd = ({ data }: DragEndParams<CategoryType>) => {
