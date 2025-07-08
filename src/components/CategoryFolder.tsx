@@ -158,7 +158,7 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
                   color={colors.white}
                   backgroundColor={colors.lightBrandColor}
                   onLongPress={drag}
-                  iconStyle={iconStyleStyle}
+                  iconStyle={{marginRight: 5}}
                   style={iconStyle}
                   underlayColor={colors.lightBrandColor}
                 />
