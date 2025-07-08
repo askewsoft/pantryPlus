@@ -19,6 +19,7 @@ import IntroScreen from '@/screens/IntroScreen';
 import AppWrapper from '@/screens/AppWrapper';
 import { authTheme } from '@/consts/authTheme';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import { updateService } from '@/services/UpdateService';
 
 Amplify.configure(amplifyConfig);
 
@@ -66,6 +67,9 @@ const App = () => {
   const [showSplashScreen, setShowSplashScreen] = useState(true);
 
   useEffect(() => {
+    // Check for updates on app startup
+    updateService.checkForUpdates();
+
     setTimeout(() => {
       setShowSplashScreen(false);
     }, 1500);

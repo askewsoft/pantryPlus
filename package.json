@@ -11,6 +11,8 @@
     "preview:ios": "eas build --platform ios --profile preview --clear-cache",
     "prod:ios": "eas build --platform ios --profile prod --clear-cache",
     "publish:ios": "eas submit --platform ios",
+    "update:preview": "node scripts/update.js preview",
+    "update:prod": "node scripts/update.js prod",
     "killport": "sudo kill -9 $(sudo lsof -t -i :8081) # Do this if the Metro Bundler fails to start"
   },
   "dependencies": {

@@ -1,4 +1,4 @@
-import { View, Pressable, Text, StyleSheet } from 'react-native';
+import { View, Pressable, Text, StyleSheet, Alert } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { StackPropsMySettings } from '@/types/SettingsNavTypes';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -7,6 +7,7 @@ import { useAuthenticator } from '@aws-amplify/ui-react-native';
 import { domainStore } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import { updateService } from '@/services/UpdateService';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
@@ -19,6 +20,16 @@ const MySettings = ({ navigation }: StackPropsMySettings) => {
     uiStore.initialize();
     signOut();
   }
+
+  const checkForUpdates = async () => {
+    await updateService.manualUpdateCheck();
+  }
+
+  const showUpdateInfo = () => {
+    const info = updateService.getUpdateInfo();
+    Alert.alert('Update Info', JSON.stringify(info, null, 2));
+  }
+
   return (
     <ErrorBoundary>
       <View style={styles.container}>
@@ -38,6 +49,22 @@ const MySettings = ({ navigation }: StackPropsMySettings) => {
             color={colors.lightBrandColor}
           />
           <Text style={styles.buttonText}>Permissions</Text>
+        </Pressable>
+        <Pressable style={styles.buttonContainer} onPress={checkForUpdates}>
+          <MaterialIcons
+            name="system-update"
+            size={iconSize.rowIconSize}
+            color={colors.lightBrandColor}
+          />
+          <Text style={styles.buttonText}>Check for Updates</Text>
+        </Pressable>
+        <Pressable style={styles.buttonContainer} onPress={showUpdateInfo}>
+          <MaterialIcons
+            name="info"
+            size={iconSize.rowIconSize}
+            color={colors.lightBrandColor}
+          />
+          <Text style={styles.buttonText}>Show Update Info</Text>
         </Pressable>
         <Pressable style={styles.buttonContainer} onPress={logout}>
           <MaterialIcons

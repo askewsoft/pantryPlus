@@ -81,14 +81,49 @@ These can take a while to complete. You must have the iOS emulator already runni
     1. you may close XCode at this point
     1. `npm run ios` again
 
-### Cloud Builds
+## Cloud Builds
 These are compiled using the EAS (i.e., Expo Application Services) build service
 - To build the app for publishing to the Apple App Store or Test Flight, run `npm run prod:ios`
 
-#### Other contexts
+### Other contexts
 - To build the app for a specific context use `--profile`; e.g., `eas build --platform ios --profile preview --clear-cache`.
 - The following other contexts are also supported:
     - `dev-simulator` - development on an iOS simulator
     - `dev-ios` - development on an iOS device
     - `preview` - preview build for testing
     - `production` - production build for release
+
+## EAS Updates
+Pantry+ uses EAS Updates to deploy minor changes without requiring a full app store submission. This allows for quick bug fixes and feature updates.
+
+### Update Channels
+- **preview**: For testing updates before production
+- **published**: For production updates to users
+
+### Publishing Updates
+
+**Preview Testing:**
+```bash
+npm run update:preview "Fix shopping list sorting issue"
+```
+
+**Production Release:**
+```bash
+npm run update:prod "Add new category management features"
+```
+
+**Note:** Always provide a clear, descriptive message for your updates. This message will be visible to users and helps with tracking what changes were deployed.
+
+### Update Behavior
+- Updates are automatically checked when the app starts
+- Users can manually check for updates in Settings → Check for Updates
+- Updates are applied immediately when available
+- The app will restart to apply updates
+
+### Important Notes
+- Updates only work for JavaScript/TypeScript changes
+- Native code changes (new packages, iOS-specific changes) still require a full build
+- Updates are only available in production builds, not development builds
+- Users must have the app installed from the App Store to receive updates
+- The app uses `fingerprint` runtime version policy, which automatically detects native code changes
+- When native dependencies change, EAS will automatically require a new build instead of allowing updates
