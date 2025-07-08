@@ -22,6 +22,11 @@ const LocationElement = ({id, navigation, returnToList}: {id: string, navigation
     location = domainStore.locations.find(location => location.id === id);
   }
 
+  // Don't render if no valid location is found
+  if (!location) {
+    return null;
+  }
+
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(location?.name ?? '');
   const [isCurrentLocation, setIsCurrentLocation] = useState(false);
@@ -50,8 +55,11 @@ const LocationElement = ({id, navigation, returnToList}: {id: string, navigation
   }
 
   const onSelectLocation = () => {
-    domainStore.setSelectedKnownLocationId(id);
-    if (returnToList) {
+    // If this location is already selected, deselect it (set to null)
+    // Otherwise, select this location
+    const newSelectedId = domainStore.selectedKnownLocationId === id ? null : id;
+    domainStore.setSelectedKnownLocationId(newSelectedId);
+    if (returnToList && newSelectedId) {
       navigation.navigate('Lists', { screen: 'ShoppingList' });
     }
   }

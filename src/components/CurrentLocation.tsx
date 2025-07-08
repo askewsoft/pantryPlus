@@ -22,7 +22,7 @@ const CurrentLocation = ({onPress}: {onPress: FnReturnVoid}) => {
         } else {
             selectedKnownLocation = domainStore.locations.find(location => location.id === selectedKnownLocationId);
         }
-        setCurrLocationName(selectedKnownLocation?.name ?? 'unknown');
+        setCurrLocationName(selectedKnownLocation?.name ?? 'No location selected');
     }, [domainStore.selectedKnownLocationId]);
 
     const styles = StyleSheet.create({

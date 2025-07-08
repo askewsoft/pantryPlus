@@ -43,7 +43,9 @@ const MyLocations = ({navigation, route}: {navigation: any, route: any}) => {
   return (
     <ErrorBoundary>
       <View style={styles.container}>
-        <LocationElement id={domainStore.nearestKnownLocation?.id ?? ''} navigation={navigation} returnToList={returnToList}/>
+        {domainStore.nearestKnownLocation && (
+          <LocationElement id={domainStore.nearestKnownLocation.id} navigation={navigation} returnToList={returnToList}/>
+        )}
         <Text style={styles.title}>Locations of past purchases</Text>
         <DraggableFlatList
           data={toJS(domainStore.locations)}
