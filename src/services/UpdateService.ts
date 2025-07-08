@@ -158,10 +158,10 @@ class UpdateService {
       channel: Updates.channel,
       runtimeVersion: Updates.runtimeVersion,
       createdAt: Updates.createdAt,
-      allowUpdates: this.shouldAllowUpdates(),
+      updatesAllowed: this.shouldAllowUpdates(),
       appVersion: Application.nativeApplicationVersion,
       buildVersion: Application.nativeBuildVersion,
-      name: Application.applicationName,
+      appName: Application.applicationName,
     };
   }
 }

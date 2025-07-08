@@ -28,14 +28,16 @@ const About = ({ navigation }: StackPropsAbout) => {
 
   return (
     <ScrollView contentContainerStyle={sharedStyles.container}>
-      {Object.entries(aboutInfo).map(([key, value]) => (
-        <View key={key} style={sharedStyles.propertyContainer}>
-          <Text style={styles.aboutLabel}>{formatKey(key)}</Text>
-          <Text style={styles.aboutValue} numberOfLines={3} ellipsizeMode='tail'>
-            {formatValue(value)}
-          </Text>
-        </View>
-      ))}
+      {Object.entries(aboutInfo)
+        .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
+        .map(([key, value]) => (
+          <View key={key} style={sharedStyles.propertyContainer}>
+            <Text style={styles.aboutLabel}>{formatKey(key)}</Text>
+            <Text style={styles.aboutValue} numberOfLines={3} ellipsizeMode='tail'>
+              {formatValue(value)}
+            </Text>
+          </View>
+        ))}
     </ScrollView>
   );
 }
