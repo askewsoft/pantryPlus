@@ -17,12 +17,7 @@ const PickLocationPrompt = ({onPress}: {onPress: FnReturnVoid}) => {
         <Text style={styles.modalTitle}>Requires Location</Text>
 
         <Text style={styles.content}>
-          Purchasing and reordering requires a location.
-        </Text>
-        <Text style={styles.content}>
-          Press 'OK' to create or select a known location.
-        </Text>
-        <Text style={styles.content}>
+          Please create or select a known location.
           Then return to the shopping list to try again.
         </Text>
         <Button
@@ -43,7 +38,7 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     backgroundColor: colors.alertColor,
     padding: 20,
-    maxHeight: 300,
+    maxHeight: 250,
     maxWidth: 250,
     marginVertical: 'auto',
     marginHorizontal: 'auto',
