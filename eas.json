@@ -7,28 +7,40 @@
     "base": {
       "autoIncrement": true,
       "credentialsSource": "remote",
-      "node": "22.6.0"
+      "node": "22.6.0",
+      "channel": "base"
     },
     "development": {
       "channel": "unused_here",
       "distribution": "internal",
       "environment": "development",
       "extends": "base",
-      "ios": { "simulator": true, "buildConfiguration": "Debug" }
+      "ios": {
+        "simulator": true,
+        "buildConfiguration": "Debug"
+      }
     },
     "preview": {
       "channel": "preview",
       "distribution": "internal",
       "environment": "preview",
       "extends": "base",
-      "ios": { "simulator": false, "buildConfiguration": "Release", "image": "macos-sequoia-15.3-xcode-16.2" }
+      "ios": {
+        "simulator": false,
+        "buildConfiguration": "Release",
+        "image": "macos-sequoia-15.3-xcode-16.2"
+      }
     },
     "prod": {
       "channel": "published",
       "distribution": "store",
       "environment": "production",
       "extends": "base",
-      "ios": { "simulator": false, "buildConfiguration": "Release", "image": "macos-sequoia-15.3-xcode-16.2" }
+      "ios": {
+        "simulator": false,
+        "buildConfiguration": "Release",
+        "image": "macos-sequoia-15.3-xcode-16.2"
+      }
     }
   },
   "submit": {

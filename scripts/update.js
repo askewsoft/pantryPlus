@@ -33,7 +33,7 @@ function publishUpdate(channel, message) {
   info(`Message: ${message}`);
   
   try {
-    const command = `eas update --branch ${channelName} --message "${message}"`;
+    const command = `eas update --branch ${channelName} --message "${message}" --platform ios`;
     execSync(command, { stdio: 'inherit' });
     success(`✅ Update published successfully to ${channelName} channel!`);
     info(`Users will receive this update automatically when they open the app.`);
