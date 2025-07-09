@@ -26,22 +26,22 @@ const ShareListModal = ({ navigation }: { navigation: any }) => {
   }, [uiStore.selectedShoppingList, domainStore.lists]);
 
   useEffect(() => {
-    const groupsOwnedByUser = domainStore.groupsOwnedByUser.map(group => ({ 
+    const groupsAssociatedWithUser = domainStore.groups.map(group => ({ 
       label: group.name, 
       value: group.id 
     }));
-    setItems(groupsOwnedByUser);
+    setItems(groupsAssociatedWithUser);
 
     if (uiStore.selectedShoppingList) {
       const selectedList = domainStore.lists.find(list => list.id === uiStore.selectedShoppingList);
-      const groupToWhomListIsShared = groupsOwnedByUser.find(group => group.value === selectedList?.groupId);
+      const groupToWhomListIsShared = groupsAssociatedWithUser.find(group => group.value === selectedList?.groupId);
       if (groupToWhomListIsShared?.value) {
         setValue(groupToWhomListIsShared.value);
       } else {
         setValue(null);
       }
     }
-  }, [domainStore.groupsOwnedByUser, uiStore.selectedShoppingList]);
+  }, [domainStore.groups, uiStore.selectedShoppingList]);
 
   const onCancel = () => {
     uiStore.setSelectedShoppingList(null);
