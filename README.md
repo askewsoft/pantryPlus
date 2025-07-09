@@ -94,7 +94,7 @@ These are compiled using the EAS (i.e., Expo Application Services) build service
     - `production` - production build for release
 
 ## EAS Updates
-Pantry+ uses EAS Updates to deploy minor changes without requiring a full app store submission. This allows for quick bug fixes and feature updates.
+pantryPlus uses EAS Updates to deploy minor changes without requiring a full app store submission. This allows for quick bug fixes and feature updates.
 
 ### Update Channels
 - **preview**: For testing updates before production

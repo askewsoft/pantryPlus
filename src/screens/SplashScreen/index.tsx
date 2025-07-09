@@ -10,7 +10,7 @@ export default function SplashScreen() {
         <Text style={styles.welcomeText}>Welcome to</Text>
       </View>
       <View style={styles.logoContainer}>
-        <Text style={styles.pantryLogo}>Pantry+</Text>
+        <Text style={styles.pantryLogo}>pantryPlus</Text>
       </View>
       <View style={styles.welcomeContainer}>
         <Text style={styles.welcomeText}>{Application.nativeApplicationVersion}</Text>

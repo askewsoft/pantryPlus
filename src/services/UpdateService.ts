@@ -68,7 +68,7 @@ class UpdateService {
         // Show user notification about the update
         Alert.alert(
           'Update Available',
-          'A new version of Pantry+ is available. The app will restart to apply the update.',
+          'A new version of pantryPlus is available. The app will restart to apply the update.',
           [
             {
               text: 'Update Now',
@@ -137,7 +137,7 @@ class UpdateService {
         );
         return true;
       } else {
-        Alert.alert('No Updates', 'You are running the latest version of Pantry+.');
+        Alert.alert('No Updates', 'You are running the latest version of pantryPlus.');
         return false;
       }
     } catch (error) {

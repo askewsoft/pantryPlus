@@ -18,7 +18,7 @@ const IntroScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-        <Text style={styles.pantryLogo}>Pantry+</Text>
+        <Text style={styles.pantryLogo}>pantryPlus</Text>
       </View>
       <View style={styles.introContainer}>
         <View style={styles.introTextContainer}>
