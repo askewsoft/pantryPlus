@@ -81,9 +81,13 @@ These can take a while to complete. You must have the iOS emulator already runni
     1. you may close XCode at this point
     1. `npm run ios` again
 
-## Cloud Builds
+## Build & Publish
 These are compiled using the EAS (i.e., Expo Application Services) build service
-- To build the app for publishing to the Apple App Store or Test Flight, run `npm run prod:ios`
+- To build the app for publishing to the Apple App Store or Test Flight, run:
+- update the `version` property in the `app.json` file (e.g., `1.2.0`)
+- `npm run prod:ios`
+- `npm run publish:ios`
+- Create a release in Github with a semantic version (e.g., `v1.2.0`, note the prepended `v`)
 
 ### Other contexts
 - To build the app for a specific context use `--profile`; e.g., `eas build --platform ios --profile preview --clear-cache`.
