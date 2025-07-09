@@ -49,14 +49,6 @@ const MySettings = ({ navigation }: StackPropsMySettings) => {
           />
           <Text style={styles.buttonText}>Permissions</Text>
         </Pressable>
-        <Pressable style={styles.buttonContainer} onPress={checkForUpdates}>
-          <MaterialIcons
-            name="system-update"
-            size={iconSize.rowIconSize}
-            color={colors.lightBrandColor}
-          />
-          <Text style={styles.buttonText}>Check for Updates</Text>
-        </Pressable>
         <Pressable style={styles.buttonContainer} onPress={showUpdateInfo}>
           <MaterialIcons
             name="info"
@@ -64,6 +56,14 @@ const MySettings = ({ navigation }: StackPropsMySettings) => {
             color={colors.lightBrandColor}
           />
           <Text style={styles.buttonText}>About</Text>
+        </Pressable>
+        <Pressable style={styles.buttonContainer} onPress={checkForUpdates}>
+          <MaterialIcons
+            name="system-update"
+            size={iconSize.rowIconSize}
+            color={colors.lightBrandColor}
+          />
+          <Text style={styles.buttonText}>Check for Updates</Text>
         </Pressable>
         <Pressable style={styles.buttonContainer} onPress={logout}>
           <MaterialIcons

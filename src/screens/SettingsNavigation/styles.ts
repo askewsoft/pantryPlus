@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: 15,
+    marginTop: 5,
     marginBottom: 5,
     marginHorizontal: 5,
   },
