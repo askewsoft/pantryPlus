@@ -65,7 +65,7 @@ const Item = ({
         key={item.id}
         item={item}
         overSwipe={10}
-        snapPointsLeft={[70]}
+        snapPointsLeft={[85]}
         renderUnderlayLeft={() => (
           <View style={styles.buttonContainer}>
             {onUncategorizeItem && <DisassociateButton onPress={onUncategorizeItem} />}
