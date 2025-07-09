@@ -1,6 +1,6 @@
 import * as Updates from 'expo-updates';
 import * as Application from 'expo-application';
-import { Alert, Platform } from 'react-native';
+import { Alert } from 'react-native';
 import appConfig from '@/config/app';
 
 class UpdateService {

@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 const { execSync } = require('child_process');
-const path = require('path');
 
 // Colors for console output
 const colors = {
@@ -14,10 +13,6 @@ const colors = {
   magenta: '\x1b[35m',
   cyan: '\x1b[36m'
 };
-
-function log(message, color = 'reset') {
-  console.log(`${colors[color]}${message}${colors.reset}`);
-}
 
 function error(message) {
   console.error(`${colors.red}${message}${colors.reset}`);

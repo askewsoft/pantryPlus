@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import { createStackNavigator } from '@react-navigation/stack';
-import { EventArg, StackNavigationState } from '@react-navigation/native';
 
 import { SettingsStack, SettingsStackParamList } from '@/types/SettingsNavTypes';
 import stackNavScreenOptions from '@/consts/stackNavOptions';
