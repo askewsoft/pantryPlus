@@ -10,10 +10,10 @@ class UpdateService {
    * Check if we should allow updates in the current environment
    */
   private shouldAllowUpdates(): boolean {
-    // Don't allow updates in development builds
-    if (Updates.isEmbeddedLaunch) {
+    // Don't allow updates if expo-updates is not enabled
+    if (!Updates.isEnabled) {
       if (appConfig.debug) {
-        console.log('Updates disabled: Running in development build');
+        console.log('Updates disabled: expo-updates is not enabled');
       }
       return false;
     }
@@ -154,12 +154,16 @@ class UpdateService {
     return {
       embedded: Updates.isEmbeddedLaunch,
       isDev: __DEV__,
+      updatesEnabled: Updates.isEnabled,
       updateId: Updates.updateId,
       channel: Updates.channel,
       runtimeVersion: Updates.runtimeVersion,
       createdAt: Updates.createdAt,
       updatesAllowed: this.shouldAllowUpdates(),
+      // App version comes from CFBundleShortVersionString in iOS Info.plist
+      // This is set from the "version" field in app.json during build
       appVersion: Application.nativeApplicationVersion,
+      // Build version comes from CFBundleVersion in iOS Info.plist
       buildVersion: Application.nativeBuildVersion,
       appName: Application.applicationName,
     };
