@@ -34,6 +34,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
     showIntroScreen: false,
     signInOrUp: t.optional(t.enumeration('signInOrUp', ['signIn', 'signUp']), 'signIn'),
     recentLocationsNeedRefresh: false,
+    groupCreationOrigin: t.maybeNull(t.string), // Track where user came from when creating a group
 })
 .actions(self => ({
     initialize: () => {
@@ -59,6 +60,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
         self.shareModalVisible = false;
         self.showIntroScreen = false;
         self.signInOrUp = 'signIn';
+        self.groupCreationOrigin = null;
     },
     setSignInOrUp(signInOrUp: 'signIn' | 'signUp') {
         self.signInOrUp = cast(signInOrUp);
@@ -125,6 +127,12 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setRecentLocationsNeedRefresh(recentLocationsNeedRefresh: boolean) {
         self.recentLocationsNeedRefresh = recentLocationsNeedRefresh;
+    },
+    setGroupCreationOrigin(origin: string | null) {
+        self.groupCreationOrigin = origin;
+    },
+    clearGroupCreationOrigin() {
+        self.groupCreationOrigin = null;
     }
 }));
 

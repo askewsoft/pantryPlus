@@ -68,6 +68,8 @@ const ShareListModal = ({ navigation }: { navigation: any }) => {
   }
 
   const onCreateNewGroup = () => {
+    // Track that user is creating a group from the Lists screen
+    uiStore.setGroupCreationOrigin('Lists');
     // do not reset the selected shopping list, so that the new group modal can redirect to the shopping list screen
     uiStore.setShareModalVisible(false);
     uiStore.setAddGroupModalVisible(true);

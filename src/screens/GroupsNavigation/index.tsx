@@ -15,6 +15,8 @@ import colors from '@/consts/colors';
 import { uiStore } from '@/stores/UIStore';
 
 const onPressAddGroup = () => {
+  // Track that user is creating a group from the Groups screen directly
+  uiStore.setGroupCreationOrigin('Groups');
   uiStore.setAddGroupModalVisible(true);
 };
 

@@ -19,14 +19,34 @@ const AddGroupModal = ({ navigation }: { navigation: any }) => {
     }
   };
 
+  const handleGroupCreation = async (newGroupId: string) => {
+    uiStore.setAddGroupModalVisible(false);
+    
+    // Handle navigation based on origin
+    if (uiStore.groupCreationOrigin === 'Lists') {
+      // Navigate back to Lists if user came from there
+      navigation.navigate('Lists', { screen: 'ShoppingList' });
+    } else {
+      // Stay on Groups screen if user navigated directly there
+      // The new group will be visible in the list
+    }
+    
+    // Clear the origin tracking
+    uiStore.clearGroupCreationOrigin();
+    
+    // Handle sharing if needed
+    optionallyShareShoppingList(newGroupId);
+  };
+
   const onSubmit = async (evt: any) => {
     const newGroupId = await domainStore.addGroup(evt.nativeEvent.text);
-    uiStore.setAddGroupModalVisible(false);
-    optionallyShareShoppingList(newGroupId);
+    handleGroupCreation(newGroupId);
   };
 
   const onCancel = () => {
     uiStore.setAddGroupModalVisible(false);
+    uiStore.clearGroupCreationOrigin();
+    
     if (uiStore.selectedShoppingList) {
       uiStore.setShareModalVisible(true);
       navigation.goBack();
