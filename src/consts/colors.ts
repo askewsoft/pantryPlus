@@ -6,5 +6,5 @@ export default {
   itemBackground: '#e7e7e7', // '#E77F39',
   inactiveButtonColor: '#999999',
   disabledButtonColor: '#999999',
-  alertColor: '#5886ae',
+  alertColor: '#00a5cd',
 }

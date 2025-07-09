@@ -14,6 +14,7 @@ import { iconSize } from '@/consts/iconButtons';
 import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
 import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 import RemoveButton from './Buttons/RemoveButton';
+import Badge from './Badge';
 
 const ListElement = ({id, drag, navigation}: {id: string, drag: FnReturnVoid, navigation: any}) => {
   const list = domainStore.lists.find(list => list.id === id);
@@ -21,6 +22,13 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: FnReturnVoid, na
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(list!.name);
+
+  // Calculate unpurchased items count for this list
+  // Since purchased items are removed from the list, all items are unpurchased
+  const unpurchasedItemsCount = list ? 
+    list.categories.reduce((total, category) => {
+      return total + category.items.length;
+    }, 0) + list.items.length : 0;
 
   const onSubmit = async () => {
     const { groupId } = list!;
@@ -70,24 +78,27 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: FnReturnVoid, na
             onLongPress={prepareToEditName}
           >
             <MaterialIcons name="format-list-bulleted" size={iconSize.rowIconSize} color={colors.brandColor} />
-            {isEditing ? (
-              <TextInput
-                style={[styles.title, styles.titleInput]}
-                value={editedTitle}
-                onSubmitEditing={onSubmit}
-                onChangeText={(text: string) => setEditedTitle(text)}
-                autoFocus={true}
-                inputMode="text"
-                lineBreakStrategyIOS="none"
-                clearButtonMode="while-editing"
-                enablesReturnKeyAutomatically={true}
-                keyboardAppearance="light"
-                returnKeyType="done"
-                blurOnSubmit={true}
-              />
-            ) : (
-              <Text style={styles.title}>{list?.name}</Text>
-            )}
+            <View style={styles.titleAndBadgeContainer}>
+              {isEditing ? (
+                <TextInput
+                  style={[styles.title, styles.titleInput]}
+                  value={editedTitle}
+                  onSubmitEditing={onSubmit}
+                  onChangeText={(text: string) => setEditedTitle(text)}
+                  autoFocus={true}
+                  inputMode="text"
+                  lineBreakStrategyIOS="none"
+                  clearButtonMode="while-editing"
+                  enablesReturnKeyAutomatically={true}
+                  keyboardAppearance="light"
+                  returnKeyType="done"
+                  blurOnSubmit={true}
+                />
+              ) : (
+                <Text style={styles.title}>{list?.name}</Text>
+              )}
+              <Badge count={unpurchasedItemsCount} size="small" />
+            </View>
           </Pressable>
           <View style={styles.buttonContainer}>
             {userIsListOwner && (
@@ -135,6 +146,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingLeft: 5,
+  },
+  titleAndBadgeContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   title: {
     flex: 1,

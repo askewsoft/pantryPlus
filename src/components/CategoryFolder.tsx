@@ -18,6 +18,7 @@ import { domainStore } from '@/stores/DomainStore';
 import AddButton from './Buttons/AddButton';
 import RemoveButton from './Buttons/RemoveButton';
 import ItemInput from './ItemInput';
+import Badge from './Badge';
 
 const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {categoryId: string, title: string, drag: FnReturnVoid, children: React.ReactNode, scrollViewRef?: React.RefObject<any>}) => {
   const open = uiStore.openCategories.get(categoryId)?.open ?? false;
@@ -29,6 +30,11 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
   const [wasAddingItem, setWasAddingItem] = useState(false);
+
+  // Calculate unpurchased items count for this category
+  // Since purchased items are removed from the category, all items are unpurchased
+  const unpurchasedItemsCount = currCategory ? 
+    currCategory.items.length : 0;
 
   const onSubmit = async () => {
     if (editedTitle.trim().toLowerCase() !== currCategory?.name.trim().toLowerCase()) {
@@ -131,24 +137,27 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
                 color={colors.white}
                 iconStyle={{ padding: 0, margin: 0 }}
               />
-              {isEditing ? (
-                <TextInput
-                  style={[styles.title, styles.titleInput]}
-                  value={editedTitle}
-                  onSubmitEditing={onSubmit}
-                  onChangeText={(text) => setEditedTitle(text)}
-                  autoFocus={true}
-                  inputMode="text"
-                  lineBreakStrategyIOS="none"
-                  clearButtonMode="while-editing"
-                  enablesReturnKeyAutomatically={true}
-                  keyboardAppearance="light"
-                  returnKeyType="done"
-                  blurOnSubmit={true}
-                />
-              ) : (
-                <Text style={styles.title}>{title}</Text>
-              )}
+              <View style={styles.titleAndBadgeContainer}>
+                {isEditing ? (
+                  <TextInput
+                    style={[styles.title, styles.titleInput]}
+                    value={editedTitle}
+                    onSubmitEditing={onSubmit}
+                    onChangeText={(text) => setEditedTitle(text)}
+                    autoFocus={true}
+                    inputMode="text"
+                    lineBreakStrategyIOS="none"
+                    clearButtonMode="while-editing"
+                    enablesReturnKeyAutomatically={true}
+                    keyboardAppearance="light"
+                    returnKeyType="done"
+                    blurOnSubmit={true}
+                  />
+                ) : (
+                  <Text style={styles.title}>{title}</Text>
+                )}
+                <Badge count={unpurchasedItemsCount} size="small" />
+              </View>
               {/* TODO: encapsulate drag-indicator in a custom button */}
               <View style={styles.buttonContainer}>
                 <AddButton onPress={onPressAddProduct} foreground={colors.white} background={colors.lightBrandColor} materialIconName="add-circle" />
@@ -188,6 +197,12 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     // borderBottomWidth: 1,
     borderColor: colors.brandColor,
+  },
+  titleAndBadgeContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   title: {
     flex: 1,
