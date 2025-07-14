@@ -19,7 +19,7 @@ const requiredVars = [
 let envFound = false;
 for (const envPath of envPaths) {
     const result = dotenv.config({ path: envPath });
-    
+
     // Check if all required variables are present
     if (result.parsed) {
         const missingVars = requiredVars.filter(varName => !process.env[varName]);
@@ -46,7 +46,7 @@ const username = process.argv[2];
 const password = process.argv[3];
 
 if (!username || !password) {
-    console.error('Usage: ts-node get-token.ts <username> <password>');
+    console.error('Usage: npx ts-node get-token.ts <username> <password>');
     process.exit(1);
 }
 
@@ -83,4 +83,4 @@ async function getToken() {
     }
 }
 
-getToken(); 
+getToken();

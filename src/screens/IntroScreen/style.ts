@@ -21,7 +21,7 @@ export const styles = StyleSheet.create({
   },
   pantryLogo: {
     color: colors.brandColor,
-    fontSize: fonts.modalTitleSize * 2,
+    fontSize: fonts.introTitleSize,
     fontWeight: 'bold',
     padding: 20
   },

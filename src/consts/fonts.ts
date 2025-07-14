@@ -5,4 +5,5 @@ export default {
     rowTextSize: 18,
     missingRowsTextSize: 24,
     modalTitleSize: 28,
+    introTitleSize: 48,
 }
