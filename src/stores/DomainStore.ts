@@ -95,6 +95,34 @@ const DomainStoreModel = t
         }),
         loadLists: flow(function* () {
             const listsData = yield api.shopper.getUserLists({ user: self.user! });
+            // Re-sequence all lists to be contiguous, starting from 0
+            const listsWithOrdinals = listsData.filter((list: List) => list.ordinal !== null);
+            const listsWithNullOrdinals = listsData.filter((list: List) => list.ordinal === null);
+            const listsToUpdate: Array<{list: List, newOrdinal: number}> = [];
+
+            listsWithOrdinals.sort((a: List, b: List) => (a.ordinal! - b.ordinal!));
+
+            // Re-sequence existing lists as necessary to account for deleted lists
+            listsWithOrdinals.forEach((list: List, index: number) => {
+                const newOrdinal = index;
+                if (list.ordinal !== newOrdinal) {
+                    listsToUpdate.push({ list, newOrdinal });
+                }
+                list.ordinal = newOrdinal;
+            });
+
+            /* Assign ordinals to lists that have null ordinals
+               This can be the case when a list is shared with this user by another shopper
+               and not yet assigned an ordinal
+            */
+            const startIndex = listsWithOrdinals.length;
+            listsWithNullOrdinals.forEach((list: List, index: number) => {
+                const newOrdinal = startIndex + index;
+                listsToUpdate.push({ list, newOrdinal });
+                list.ordinal = newOrdinal;
+            });
+
+            // Create ListModel instances with proper ordinals
             const lists = listsData.map(
                 (list: List) => {
                     const { id, name, ownerId, groupId, ordinal } = list;
@@ -103,6 +131,26 @@ const DomainStoreModel = t
             );
             self.lists.replace(lists);
             uiStore.setListsLoaded(true);
+
+            // Update lists in the API whose ordinals changed
+            if (listsToUpdate.length > 0) {
+                const xAuthUser = self.user?.email!;
+                for (const { list, newOrdinal } of listsToUpdate) {
+                    try {
+                        yield api.list.updateList({
+                            list: {
+                                id: list.id,
+                                name: list.name,
+                                groupId: list.groupId ?? undefined,
+                                ordinal: newOrdinal
+                            },
+                            xAuthUser
+                        });
+                    } catch (error) {
+                        console.error(`Error updating list ordinal for ${list.id}:`, error);
+                    }
+                }
+            }
         }),
         addGroup: flow(function* (name: string) {
             const xAuthUser = self.user?.email!;
