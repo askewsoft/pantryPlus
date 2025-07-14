@@ -84,7 +84,7 @@ These can take a while to complete. You must have the iOS emulator already runni
 ## Build & Publish
 These are compiled using the EAS (i.e., Expo Application Services) build service
 - To build the app for publishing to the Apple App Store or Test Flight, run:
-- update the `version` property in the `app.json` and `package.json` files (e.g., `1.2.0`)
+- update the `version` property in the `app.json`, `package.json`, and `package-lock.json` files (e.g., `1.2.0`)
 - `npm run prod:ios`
 - `npm run publish:ios`
 - Create a release in Github with a semantic version (e.g., `v1.2.0`, note the prepended `v`)
