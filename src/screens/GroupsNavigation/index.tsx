@@ -13,6 +13,7 @@ import AddButton from '@/components/Buttons/AddButton';
 
 import colors from '@/consts/colors';
 import { uiStore } from '@/stores/UIStore';
+import { domainStore } from '@/stores/DomainStore';
 
 const onPressAddGroup = () => {
   // Track that user is creating a group from the Groups screen directly
@@ -44,7 +45,16 @@ const GroupsNavigation = ({navigation}: {navigation: any}) => {
     }
   }, []);
 
-  const onScreenChange = (e: EventArg<"state", false, { state: StackNavigationState<GroupsStackParamList> }>) => {
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      // Refresh invites when Groups tab comes into focus
+      domainStore.user?.getInvites();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  const onScreenChange = (e: any) => {
     const routesLength = e.data.state.routes.length;
     const currentRoute = e.data.state.routes[routesLength - 1].name;
 

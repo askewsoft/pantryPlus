@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, FlatList } from 'react-native';
+import { StyleSheet, View, Text, FlatList, RefreshControl } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
 
@@ -8,8 +8,10 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { StackPropsMyInvites } from '@/types/GroupNavTypes';
+import { uiStore } from '@/stores/UIStore';
 
 const MyInvites = ({navigation}: StackPropsMyInvites) => {
+
   const renderInvite = ({ item }: { item: any }) => {
     return (
       <Invite navigation={navigation} key={item.id} inviteId={item.id} />
@@ -17,6 +19,10 @@ const MyInvites = ({navigation}: StackPropsMyInvites) => {
   }
 
   const invites = domainStore.user?.invites || [];
+
+  const onRefresh = async () => {
+    await domainStore.user?.getInvites();
+  }
 
   return (
     <ErrorBoundary>
@@ -30,6 +36,14 @@ const MyInvites = ({navigation}: StackPropsMyInvites) => {
           renderItem={renderInvite}
           keyExtractor={invite => invite.id}
           style={styles.invites}
+          refreshControl={
+            <RefreshControl 
+              refreshing={false} 
+              onRefresh={onRefresh}
+              colors={[colors.brandColor]}
+              tintColor={colors.brandColor}
+            />
+          }
         />
       </View>
     </ErrorBoundary>

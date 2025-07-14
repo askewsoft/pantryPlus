@@ -1,6 +1,7 @@
 import { Text, StyleSheet, Pressable, RefreshControl } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
+import { useEffect } from 'react';
 import { NestableScrollContainer, NestableDraggableFlatList } from "react-native-draggable-flatlist";
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -18,6 +19,15 @@ import { iconSize } from '@/consts/iconButtons';
 import { StackPropsMyGroups } from '@/types/GroupNavTypes';
 
 const MyGroups = ({navigation}: StackPropsMyGroups) => {
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      // Refresh invites when screen comes into focus
+      domainStore.user?.getInvites();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   const numInvites = domainStore.user?.numInvites || 0;
 
   const onPressInvites = () => {
@@ -46,6 +56,7 @@ const MyGroups = ({navigation}: StackPropsMyGroups) => {
   const onRefresh = async () => {
     uiStore.setGroupsLoaded(false);
     await domainStore.loadGroups();
+    await domainStore.user?.getInvites();
     uiStore.setGroupsLoaded(true);
   }
 
