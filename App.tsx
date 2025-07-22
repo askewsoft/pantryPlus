@@ -6,6 +6,7 @@ import { Amplify } from "aws-amplify";
 import { Authenticator, ThemeProvider } from '@aws-amplify/ui-react-native';
 import React from 'react';
 import { LogBox, Platform } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
 import appConfig from '@/config/app';
 import cognitoConfig from '@/config/cognito';
 
@@ -13,7 +14,6 @@ import { DomainStoreContextProvider, domainStore } from '@/stores/DomainStore';
 import { UIStoreContextProvider, uiStore } from '@/stores/UIStore';
 
 import UserContext from '@/screens/UserContext';
-import SplashScreen from '@/screens/SplashScreen';
 import amplifyConfig from '@/config/amplify';
 import IntroScreen from '@/screens/IntroScreen';
 import AppWrapper from '@/screens/AppWrapper';
@@ -64,20 +64,30 @@ interface IAuthenticatorProps {
 }
 
 const App = () => {
-  const [showSplashScreen, setShowSplashScreen] = useState(true);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    // Check for updates on app startup
-    updateService.checkForUpdates();
+    async function prepareApp() {
+      try {
+        // Keep the splash screen visible while we check for app updates
+        await SplashScreen.preventAutoHideAsync();
+        await updateService.checkForUpdates();
+      } catch (error) {
+        console.error('Error during app initialization:', error);
+      } finally {
+        console.log('Finished checking for app updates');
+        await SplashScreen.hideAsync();
+        setIsReady(true);
+      }
+    }
 
-    setTimeout(() => {
-      setShowSplashScreen(false);
-    }, 1500);
+    prepareApp();
   }, []);
 
-  if (showSplashScreen) {
-    return <SplashScreen />;
+  if (!isReady) {
+    return null; // This will keep the splash screen visible
   }
+
   return (
     <ErrorBoundary>
       <GestureHandlerRootView>
@@ -100,6 +110,6 @@ const App = () => {
       </GestureHandlerRootView>
     </ErrorBoundary>
   );
-}
+};
 
 export default observer(App);
