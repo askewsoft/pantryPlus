@@ -16,32 +16,33 @@ const CategoryContextMenu = observer(({
   onRename,
   onDelete,
 }: CategoryContextMenuProps) => {
+  // Single source of truth for actions and their handlers
+  const actionConfigs = [
+    {
+      title: 'Rename Category',
+      systemIcon: 'pencil',
+      handler: onRename,
+    },
+    {
+      title: 'Delete Category',
+      systemIcon: 'trash',
+      destructive: true,
+      handler: onDelete,
+    },
+  ];
+
   const handleActionPress = (e: NativeSyntheticEvent<ContextMenuOnPressNativeEvent>) => {
     const { index } = e.nativeEvent;
-    switch (index) {
-      case 0: // Rename Category
-        onRename();
-        break;
-      case 1: // Delete Category
-        onDelete();
-        break;
+    const actionConfig = actionConfigs[index];
+    if (actionConfig?.handler) {
+      actionConfig.handler();
     }
   };
 
   return (
     <View style={styles.container}>
       <ContextMenu
-        actions={[
-          {
-            title: 'Rename Category',
-            systemIcon: 'pencil',
-          },
-          {
-            title: 'Delete Category',
-            systemIcon: 'trash',
-            destructive: true,
-          },
-        ]}
+        actions={actionConfigs.map(({ title, systemIcon, destructive }) => ({ title, systemIcon, destructive }))}
         onPress={handleActionPress}
         dropdownMenuMode={true}
         previewBackgroundColor={colors.lightBrandColor}

@@ -16,32 +16,32 @@ const ItemContextMenu = observer(({
   onRemove,
   onAssignToCategory,
 }: ItemContextMenuProps) => {
+  const actionConfigs = [
+    {
+      title: 'Assign Category',
+      systemIcon: 'folder',
+      handler: onAssignToCategory,
+    },
+    {
+      title: 'Remove Item',
+      systemIcon: 'trash',
+      destructive: true,
+      handler: onRemove,
+    },
+  ];
+
   const handleActionPress = (e: NativeSyntheticEvent<ContextMenuOnPressNativeEvent>) => {
     const { index } = e.nativeEvent;
-    switch (index) {
-      case 0: // Remove Item
-        onRemove();
-        break;
-      case 1: // Assign Category
-        onAssignToCategory();
-        break;
+    const actionConfig = actionConfigs[index];
+    if (actionConfig?.handler) {
+      actionConfig.handler();
     }
   };
 
   return (
     <View style={styles.container}>
       <ContextMenu
-        actions={[
-          {
-            title: 'Remove Item',
-            systemIcon: 'trash',
-            destructive: true,
-          },
-          {
-            title: 'Assign Category',
-            systemIcon: 'folder',
-          },
-        ]}
+        actions={actionConfigs.map(({ title, systemIcon, destructive }) => ({ title, systemIcon, destructive }))}
         onPress={handleActionPress}
         dropdownMenuMode={true}
         previewBackgroundColor={colors.itemBackground}

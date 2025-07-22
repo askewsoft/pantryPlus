@@ -25,63 +25,57 @@ const ShoppingListContextMenu = observer(({
   onReorderCategories,
   onToggleCategoryLabels,
 }: ShoppingListContextMenuProps) => {
+  // Single source of truth for actions and their handlers
+  const actionConfigs = [
+    {
+      title: 'Add Item',
+      systemIcon: 'plus.circle',
+      handler: onAddItem,
+    },
+    {
+      title: 'Add Category',
+      systemIcon: 'folder.badge.plus',
+      handler: onAddCategory,
+    },
+    {
+      title: 'Reorder Categories',
+      systemIcon: 'arrow.up.arrow.down',
+      handler: onReorderCategories,
+    },
+    {
+      title: uiStore.showEmptyFolders ? 'Hide Empty Categories' : 'Show Empty Categories',
+      systemIcon: uiStore.showEmptyFolders ? 'eye.slash' : 'eye.fill',
+      handler: onToggleEmptyFolders,
+      showWhen: uiStore.showCategoryLabels,
+    },
+    {
+      title: uiStore.allFoldersOpen ? 'Close All Categories' : 'Open All Categories',
+      systemIcon: uiStore.allFoldersOpen ? 'folder' : 'folder.fill',
+      handler: onToggleAllFolders,
+      showWhen: uiStore.showCategoryLabels,
+    },
+    {
+      title: uiStore.showCategoryLabels ? 'Hide Category Labels' : 'Show Category Labels',
+      systemIcon: uiStore.showCategoryLabels ? 'tag.slash' : 'tag.fill',
+      handler: onToggleCategoryLabels,
+    },
+  ];
+
   const handleActionPress = (e: NativeSyntheticEvent<ContextMenuOnPressNativeEvent>) => {
     const { index } = e.nativeEvent;
-    switch (index) {
-      case 0: // Add Category
-        onAddCategory();
-        break;
-      case 1: // Add Item
-        onAddItem();
-        break;
-      case 2: // Separator
-        break;
-      case 3: // Toggle Empty Folders
-        onToggleEmptyFolders();
-        break;
-      case 4: // Toggle All Folders
-        onToggleAllFolders();
-        break;
-      case 5: // Separator
-        break;
-      case 6: // Reorder Categories
-        onReorderCategories();
-        break;
-      case 7: // Toggle Category Labels
-        onToggleCategoryLabels();
-        break;
+    const actionConfig = actionConfigs[index];
+    if (actionConfig?.handler) {
+      actionConfig.handler();
     }
   };
+
+  // Filter out actions that shouldn't be shown
+  const visibleActions = actionConfigs.filter(config => config.showWhen !== false);
 
   return (
     <View style={styles.container}>
       <ContextMenu
-        actions={[
-          {
-            title: 'Add Item',
-            systemIcon: 'plus.circle',
-          },
-          {
-            title: 'Add Category',
-            systemIcon: 'folder.badge.plus',
-          },
-          {
-            title: 'Reorder Categories',
-            systemIcon: 'arrow.up.arrow.down',
-          },
-          {
-            title: uiStore.showEmptyFolders ? 'Hide Empty Categories' : 'Show Empty Categories',
-            systemIcon: uiStore.showEmptyFolders ? 'eye.slash' : 'eye.fill',
-          },
-          {
-            title: uiStore.allFoldersOpen ? 'Close All Categories' : 'Open All Categories',
-            systemIcon: uiStore.allFoldersOpen ? 'folder' : 'folder.fill',
-          },
-          {
-            title: uiStore.showCategoryLabels ? 'Hide Category Labels' : 'Show Category Labels',
-            systemIcon: uiStore.showCategoryLabels ? 'tag.slash' : 'tag.fill',
-          },
-        ]}
+        actions={visibleActions.map(({ title, systemIcon }) => ({ title, systemIcon }))}
         onPress={handleActionPress}
         dropdownMenuMode={true}
         previewBackgroundColor={colors.brandColor}
