@@ -8,6 +8,7 @@ import MyLists from './MyLists';
 import ShoppingList from './ShoppingList';
 
 import AddButton from '@/components/Buttons/AddButton';
+import ShoppingListContextMenu from '@/components/ContextMenus/ShoppingListContextMenu';
 import { uiStore } from '@/stores/UIStore';
 
 import { ListsStack, ListsStackParamList } from '@/types/ListNavTypes';
@@ -64,20 +65,26 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
 
   const ListHeaderRight = () => {
     return (
-      <View style={{ flexDirection: 'row' }}>
-        <AddButton
-          foreground={colors.white}
-          background={colors.brandColor}
-          materialIconName="add-circle"
-          onPress={onPressAddProduct}
-        />
-        <AddButton
-          foreground={colors.white}
-          background={colors.brandColor}
-          materialIconName="create-new-folder"
-          onPress={onPressAddCategory}
-        />
-      </View>
+      <ShoppingListContextMenu
+        onAddCategory={onPressAddCategory}
+        onAddItem={onPressAddProduct}
+        onToggleEmptyFolders={() => {
+          // TODO: Implement toggle empty folders functionality
+          console.log('Toggle empty folders');
+        }}
+        onToggleAllFolders={() => {
+          // TODO: Implement toggle all folders functionality
+          console.log('Toggle all folders');
+        }}
+        onReorderCategories={() => {
+          // TODO: Implement reorder categories functionality
+          console.log('Reorder categories');
+        }}
+        onToggleCategoryLabels={() => {
+          // TODO: Implement toggle category labels functionality
+          console.log('Toggle category labels');
+        }}
+      />
     );
   }
   

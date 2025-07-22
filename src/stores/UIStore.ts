@@ -35,6 +35,10 @@ export const UIStoreModel = t.model('UIStoreModel', {
     signInOrUp: t.optional(t.enumeration('signInOrUp', ['signIn', 'signUp']), 'signIn'),
     recentLocationsNeedRefresh: false,
     groupCreationOrigin: t.maybeNull(t.string), // Track where user came from when creating a group
+    // Shopping list context menu state
+    showEmptyFolders: t.optional(t.boolean, true),
+    showCategoryLabels: t.optional(t.boolean, true),
+    allFoldersOpen: t.optional(t.boolean, false),
 })
 .actions(self => ({
     initialize: () => {
@@ -133,6 +137,16 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     clearGroupCreationOrigin() {
         self.groupCreationOrigin = null;
+    },
+    // Shopping list context menu actions
+    setShowEmptyFolders(showEmptyFolders: boolean) {
+        self.showEmptyFolders = showEmptyFolders;
+    },
+    setShowCategoryLabels(showCategoryLabels: boolean) {
+        self.showCategoryLabels = showCategoryLabels;
+    },
+    setAllFoldersOpen(allFoldersOpen: boolean) {
+        self.allFoldersOpen = allFoldersOpen;
     }
 }));
 
