@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { ScaleDecorator } from 'react-native-draggable-flatlist';
-import SwipeableItem from "react-native-swipeable-item";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -15,7 +14,6 @@ import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 import { uiStore } from '@/stores/UIStore';
 import { domainStore } from '@/stores/DomainStore';
 
-import RemoveButton from './Buttons/RemoveButton';
 import ItemInput from './ItemInput';
 import Badge from './Badge';
 import CategoryContextMenu from './ContextMenus/CategoryContextMenu';
@@ -73,16 +71,11 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
     prepareToEditName();
   }
 
-  const onReorderCategories = () => {
-    // TODO: Implement reorder categories functionality
-    console.log('Reorder categories from category context menu');
-  }
+  // Reorder functionality moved to ShoppingList context menu
 
-  const onRemoveCategory = (categoryId: string) => {
-    return () => {
-      const xAuthUser = domainStore.user?.email!;
-      currList?.removeCategory({ categoryId, xAuthUser });
-    }
+  const onDeleteCategory = () => {
+    const xAuthUser = domainStore.user?.email!;
+    currList?.removeCategory({ categoryId, xAuthUser });
   }
 
   const prepareToEditName = () => {
@@ -129,16 +122,7 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
 
   return (
     <ScaleDecorator activeScale={1.04}>
-      <SwipeableItem
-        key={categoryId}
-        item={currCategory!}
-        overSwipe={20}
-        snapPointsLeft={[70]}
-        renderUnderlayLeft={() => (
-          <RemoveButton onPress={onRemoveCategory(categoryId)} />
-        )}
-      >
-        <View ref={categoryRef} style={styles.container}>
+      <View ref={categoryRef} style={styles.container}>
           <Pressable
             onPress={toggleFolderOpenClose}
             onLongPress={prepareToEditName}
@@ -175,7 +159,7 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
               <View style={styles.buttonContainer}>
                 <CategoryContextMenu
                   onRename={onRenameCategory}
-                  onReorder={onReorderCategories}
+                  onDelete={onDeleteCategory}
                 />
                 {/* Temporarily hidden drag button - will be swapped with context menu during reorder mode */}
                 {/* <MaterialIcons.Button
@@ -194,7 +178,6 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
           {uiStore.addItemToCategoryID === categoryId && <ItemInput listId={currList!.id} categoryId={categoryId} />}
           {children}
         </View>
-      </SwipeableItem>
     </ScaleDecorator>
   );
 };

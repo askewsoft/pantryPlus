@@ -9,12 +9,12 @@ import { iconSize } from '@/consts/iconButtons';
 
 type CategoryContextMenuProps = {
   onRename: () => void;
-  onReorder: () => void;
+  onDelete: () => void;
 };
 
 const CategoryContextMenu = observer(({
   onRename,
-  onReorder,
+  onDelete,
 }: CategoryContextMenuProps) => {
   const handleActionPress = (e: NativeSyntheticEvent<ContextMenuOnPressNativeEvent>) => {
     const { index } = e.nativeEvent;
@@ -22,8 +22,8 @@ const CategoryContextMenu = observer(({
       case 0: // Rename Category
         onRename();
         break;
-      case 1: // Reorder Categories
-        onReorder();
+      case 1: // Delete Category
+        onDelete();
         break;
     }
   };
@@ -37,8 +37,9 @@ const CategoryContextMenu = observer(({
             systemIcon: 'pencil',
           },
           {
-            title: 'Remove Category',
+            title: 'Delete Category',
             systemIcon: 'trash',
+            destructive: true,
           },
         ]}
         onPress={handleActionPress}
