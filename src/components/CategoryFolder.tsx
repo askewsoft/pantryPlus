@@ -9,16 +9,16 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { iconSize } from '@/consts/iconButtons';
-import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
+import { iconStyle } from '@/consts/iconButtons';
 import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
 import { uiStore } from '@/stores/UIStore';
 import { domainStore } from '@/stores/DomainStore';
 
-import AddButton from './Buttons/AddButton';
 import RemoveButton from './Buttons/RemoveButton';
 import ItemInput from './ItemInput';
 import Badge from './Badge';
+import CategoryContextMenu from './ContextMenus/CategoryContextMenu';
 
 const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {categoryId: string, title: string, drag: FnReturnVoid, children: React.ReactNode, scrollViewRef?: React.RefObject<any>}) => {
   const open = uiStore.openCategories.get(categoryId)?.open ?? false;
@@ -44,6 +44,11 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
     setIsEditing(false);
   }
 
+  /*
+    Add item functionality moved to ShoppingList context menu
+    This function is kept for potential future use if needed
+    TODO: After new item is added, may need to scroll to show the new item
+  */
   const onPressAddProduct = () => {
     uiStore.setOpenCategory(categoryId, true);
     uiStore.setAddItemToListID('');
@@ -62,6 +67,15 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
         );
       }, 300); // Small delay to ensure the input is rendered
     }
+  }
+
+  const onRenameCategory = () => {
+    prepareToEditName();
+  }
+
+  const onReorderCategories = () => {
+    // TODO: Implement reorder categories functionality
+    console.log('Reorder categories from category context menu');
   }
 
   const onRemoveCategory = (categoryId: string) => {
@@ -158,10 +172,13 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
                 )}
                 <Badge count={unpurchasedItemsCount} size="small" />
               </View>
-              {/* TODO: encapsulate drag-indicator in a custom button */}
               <View style={styles.buttonContainer}>
-                <AddButton onPress={onPressAddProduct} foreground={colors.white} background={colors.lightBrandColor} materialIconName="add-circle" />
-                <MaterialIcons.Button
+                <CategoryContextMenu
+                  onRename={onRenameCategory}
+                  onReorder={onReorderCategories}
+                />
+                {/* Temporarily hidden drag button - will be swapped with context menu during reorder mode */}
+                {/* <MaterialIcons.Button
                   name="drag-indicator"
                   size={iconSize.rowIconSize}
                   color={colors.white}
@@ -170,7 +187,7 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
                   iconStyle={{marginRight: 5}}
                   style={iconStyle}
                   underlayColor={colors.lightBrandColor}
-                />
+                /> */}
               </View>
             </View>
           </Pressable>
