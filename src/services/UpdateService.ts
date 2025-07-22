@@ -152,20 +152,14 @@ class UpdateService {
    */
   getAboutInfo() {
     return {
-      embedded: Updates.isEmbeddedLaunch,
-      isDev: __DEV__,
       updatesEnabled: Updates.isEnabled,
-      updateId: Updates.updateId,
-      channel: Updates.channel,
-      runtimeVersion: Updates.runtimeVersion,
-      createdAt: Updates.createdAt,
+      createdAt: (Updates.createdAt ?? new Date()).toLocaleString(),
       updatesAllowed: this.shouldAllowUpdates(),
       // App version comes from CFBundleShortVersionString in iOS Info.plist
       // This is set from the "version" field in app.json during build
       appVersion: Application.nativeApplicationVersion,
       // Build version comes from CFBundleVersion in iOS Info.plist
-      buildVersion: Application.nativeBuildVersion,
-      appName: Application.applicationName,
+      buildVersion: Application.nativeBuildVersion
     };
   }
 }

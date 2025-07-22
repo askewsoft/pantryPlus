@@ -44,7 +44,7 @@ const About = ({ navigation }: StackPropsAbout) => {
 
 const styles = StyleSheet.create({
   aboutLabel: {
-    flex: 2,
+    flex: 1,
     fontSize: fonts.messageTextSize,
     fontWeight: 'bold',
     color: colors.lightBrandColor,
@@ -56,7 +56,6 @@ const styles = StyleSheet.create({
     color: colors.lightBrandColor,
     backgroundColor: colors.detailsBackground,
     verticalAlign: 'middle',
-    marginHorizontal: 30,
     padding: 5,
     borderWidth: 1,
     borderColor: colors.inactiveButtonColor,
