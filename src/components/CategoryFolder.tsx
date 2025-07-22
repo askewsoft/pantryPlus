@@ -68,7 +68,8 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
   }
 
   const onRenameCategory = () => {
-    prepareToEditName();
+    setEditedTitle(currCategory!.name!);
+    setIsEditing(true);
   }
 
   // Reorder functionality moved to ShoppingList context menu
@@ -78,10 +79,7 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
     currList?.removeCategory({ categoryId, xAuthUser });
   }
 
-  const prepareToEditName = () => {
-    setEditedTitle(currCategory!.name!);
-    setIsEditing(true);
-  }
+  // prepareToEditName function removed - now called directly in onRenameCategory
 
   // Watch for when an item is added to this category
   useEffect(() => {
@@ -125,7 +123,6 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
       <View ref={categoryRef} style={styles.container}>
           <Pressable
             onPress={toggleFolderOpenClose}
-            onLongPress={prepareToEditName}
           >
             <View style={styles.titleContainer}>
               <AntDesign
