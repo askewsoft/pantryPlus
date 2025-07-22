@@ -1,14 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { StyleSheet, Animated, Easing } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import { DragEndParams } from 'react-native-draggable-flatlist';
 
 import { domainStore } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
 import ItemsList from './ItemsList';
-import { ItemType } from '@/stores/models/List';
 import colors from '@/consts/colors';
-import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
 const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: string }) => {
   const open = uiStore.openCategories.get(categoryId)?.open ?? false;
@@ -16,15 +13,6 @@ const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: str
   const currList = domainStore.lists.find((list) => list.id === listId);
   const xAuthUser = domainStore.user?.email!;
   const currCategory = currList?.categories.find((category) => category.id === categoryId);
-
-  const onDragEnd = ({ data, from, to }: DragEndParams<ItemType>) => {
-    const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
-    if (xAuthLocation === '') {
-      return;
-    } else {
-      currCategory?.updateItemOrder({ data, from, to });
-    }
-  }
 
   useEffect(() => {
     currCategory?.loadCategoryItems({ xAuthUser });
@@ -58,7 +46,6 @@ const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: str
         items={currCategory?.items ?? []}
         listId={listId}
         categoryId={categoryId}
-        onDragEnd={onDragEnd}
         indent={30}
       />
     </Animated.View>

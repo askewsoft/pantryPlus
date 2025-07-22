@@ -1,26 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { ScaleDecorator } from 'react-native-draggable-flatlist';
-import SwipeableItem from "react-native-swipeable-item";
 import { ItemType } from '@/stores/models/Category';
 import CheckBoxButton from './Buttons/CheckBoxButton';
-import RemoveButton from './Buttons/RemoveButton';
-import DisassociateButton from './Buttons/DisassociateButton';
+import ItemContextMenu from './ContextMenus/ItemContextMenu';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
-import { iconSize } from '@/consts/iconButtons';
-import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
-import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 import { useItemActions } from '@/hooks/useItemActions';
 
 type ItemProps = {
   item: ItemType;
   listId: string;
   categoryId?: string;
-  drag: FnReturnVoid;
   indent: number;
 }
 
@@ -28,31 +20,55 @@ const Item = ({
   item, 
   listId,
   categoryId,
-  drag, 
   indent,
 }: ItemProps) => {
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const isCheckedRef = useRef(item.isChecked);
 
-  const { handleCheck, onRemoveItem, onUncategorizeItem } = useItemActions({
+  const { setIsChecked, onRemoveItem, onUncategorizeItem, handlePurchase } = useItemActions({
     itemId: item.id,
     listId,
     categoryId,
   });
 
+  const onAssignToCategory = () => {
+    // TODO: Implement assign to category functionality
+    // This will require a new modal that does not yet exist
+    console.log('Assign item to different category');
+  }
+
   const onPress = () => {
     const newIsChecked = !item.isChecked;
-    handleCheck(newIsChecked);
     
-    const timeoutId = setTimeout(() => {
-      if (newIsChecked) {
-        onRemoveItem();
+    // Update the ref to track current state
+    isCheckedRef.current = newIsChecked;
+    
+    // Immediately update the checkbox state for visual feedback
+    setIsChecked(newIsChecked);
+    
+    if (newIsChecked) {
+      // If checking, set a timeout to process the purchase
+      const timeoutId = setTimeout(() => {
+        // Only process if the item is still checked after the timeout
+        if (isCheckedRef.current) {
+          handlePurchase();
+        }
+        setTimeoutId(null);
+      }, 3000);
+      setTimeoutId(timeoutId);
+    } else {
+      // If unchecking, clear any existing timeout
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        setTimeoutId(null);
       }
-      setTimeoutId(null);
-    }, 1200);
-    setTimeoutId(timeoutId);
+    }
   }
 
   useEffect(() => {
+    // Update ref when item.isChecked changes
+    isCheckedRef.current = item.isChecked;
+    
     if (timeoutId && !item.isChecked) {
       clearTimeout(timeoutId);
       setTimeoutId(null);
@@ -60,37 +76,16 @@ const Item = ({
   }, [timeoutId, item.isChecked]);
 
   return (
-    <ScaleDecorator activeScale={1.04}>
-      <SwipeableItem
-        key={item.id}
-        item={item}
-        overSwipe={10}
-        snapPointsLeft={[85]}
-        renderUnderlayLeft={() => (
-          <View style={styles.buttonContainer}>
-            {onUncategorizeItem && <DisassociateButton onPress={onUncategorizeItem} />}
-            <RemoveButton onPress={onRemoveItem} />
-          </View>
-        )}
-      >
-        <View style={[styles.itemLine, { paddingLeft: indent }]}>
-          <View style={styles.itemContainer}>
-            <CheckBoxButton isChecked={item.isChecked} onPress={onPress}/>
-            <Text style={styles.item}>{item.name}</Text>
-          </View>
-          <MaterialIcons.Button
-            name="drag-indicator"
-            size={iconSize.rowIconSize}
-            backgroundColor={colors.itemBackground}
-            color={colors.brandColor}
-            iconStyle={iconStyleStyle}
-            style={iconStyle}
-            underlayColor={colors.itemBackground}
-            onLongPress={drag}
-          />
-        </View>
-      </SwipeableItem>
-    </ScaleDecorator>
+    <View style={[styles.itemLine, { paddingLeft: indent }]}>
+      <View style={styles.itemContainer}>
+        <CheckBoxButton isChecked={item.isChecked} onPress={onPress}/>
+        <Text style={styles.item}>{item.name}</Text>
+      </View>
+      <ItemContextMenu
+        onRemove={onRemoveItem}
+        onAssignToCategory={onAssignToCategory}
+      />
+    </View>
   );
 };
 

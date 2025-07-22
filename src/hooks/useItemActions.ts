@@ -44,6 +44,7 @@ export const useItemActions = ({
 
   const handlePurchase = useCallback(async () => {
     const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
+    
     if (xAuthLocation === '') {
       setIsChecked(false);
       uiStore.setPickLocationPromptVisible(true);
@@ -51,21 +52,18 @@ export const useItemActions = ({
     } else {
       uiStore.setRecentLocationsNeedRefresh(true);
     }
+    
     if (currList) {
       await currList.purchaseItem({ itemId, xAuthUser, xAuthLocation });
       await onRemoveItem();
     }
   }, [itemId, setIsChecked, onRemoveItem, currList, xAuthUser]);
 
-  const handleCheck = useCallback((isChecked: boolean) => {
-    setIsChecked(isChecked);
-    if (isChecked) {
-      handlePurchase();
-    }
-  }, [setIsChecked, handlePurchase]);
+  // handleCheck function removed - now using setIsChecked and handlePurchase directly
 
   return {
-    handleCheck,
+    setIsChecked,
+    handlePurchase,
     onRemoveItem,
     onUncategorizeItem: categoryId ? onUncategorizeItem : undefined,
   };
