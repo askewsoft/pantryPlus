@@ -39,15 +39,10 @@ const Item = ({
 
   const onPress = () => {
     const newIsChecked = !item.isChecked;
-    
-    // Update the ref to track current state
     isCheckedRef.current = newIsChecked;
-    
-    // Immediately update the checkbox state for visual feedback
     setIsChecked(newIsChecked);
-    
+ 
     if (newIsChecked) {
-      // If checking, set a timeout to process the purchase
       const timeoutId = setTimeout(() => {
         // Only process if the item is still checked after the timeout
         if (isCheckedRef.current) {
