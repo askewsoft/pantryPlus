@@ -9,9 +9,10 @@ import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 import CategoryFolder from '@/components/CategoryFolder';
 import CategoryItems from '@/components/CategoryItems';
 import ListItems from '@/components/ListItems';
-import ItemInput from '@/components/ItemInput';
 import AddCategoryModal from './modals/AddCategoryModal';
+import AddItemModal from './modals/AddItemModal';
 import PickLocationPrompt from './modals/PickLocationPrompt';
+import ReorderCategoriesModal from './modals/ReorderCategoriesModal';
 import CurrentLocation from '@/components/CurrentLocation';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
@@ -77,8 +78,6 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
         key={category.id} 
         categoryId={category.id} 
         title={category.name} 
-        drag={conditionalDrag}
-        scrollViewRef={scrollViewRef}
       >
         <CategoryItems listId={listId!} categoryId={category.id} />
       </CategoryFolder>
@@ -164,18 +163,21 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
           {/* Only render content if we have a valid list */}
           {currentList && (
             <View style={styles.contentContainer}>
-              { uiStore.addItemToListID === listId && <ItemInput listId={listId!} /> }
               <ListItems listId={listId!} />
               <NestableDraggableFlatList
                 style={styles.draggableFlatListStyle}
-                data={toJS(currentList.categories).sort(sortByOrdinal)}
+                data={toJS(currentList.categories)
+                  .filter(category => uiStore.showEmptyFolders || category.items.length > 0)
+                  .sort(sortByOrdinal)}
                 renderItem={renderCategoryElement}
                 keyExtractor={category => category.id}
                 onDragBegin={onDragBegin}
                 onDragEnd={onDragEnd}
               />
               <AddCategoryModal />
+              <AddItemModal />
               <PickLocationPrompt onPress={setCurrentLocation} />
+              <ReorderCategoriesModal />
             </View>
           )}
         </NestableScrollContainer>

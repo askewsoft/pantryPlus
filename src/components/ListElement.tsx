@@ -25,10 +25,7 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: FnReturnVoid, na
 
   // Calculate unpurchased items count for this list
   // Since purchased items are removed from the list, all items are unpurchased
-  const unpurchasedItemsCount = list ? 
-    list.categories.reduce((total, category) => {
-      return total + category.items.length;
-    }, 0) + list.items.length : 0;
+  const unpurchasedItemsCount = list?.unpurchasedItemsCount ?? 0;
 
   const onSubmit = async () => {
     const { groupId } = list!;

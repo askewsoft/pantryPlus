@@ -1,26 +1,20 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { ScaleDecorator } from 'react-native-draggable-flatlist';
-import SwipeableItem from "react-native-swipeable-item";
 import AntDesign from '@expo/vector-icons/AntDesign';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { iconSize } from '@/consts/iconButtons';
-import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
-import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
 import { uiStore } from '@/stores/UIStore';
 import { domainStore } from '@/stores/DomainStore';
 
-import AddButton from './Buttons/AddButton';
-import RemoveButton from './Buttons/RemoveButton';
-import ItemInput from './ItemInput';
 import Badge from './Badge';
+import CategoryContextMenu from './ContextMenus/CategoryContextMenu';
 
-const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {categoryId: string, title: string, drag: FnReturnVoid, children: React.ReactNode, scrollViewRef?: React.RefObject<any>}) => {
+const CategoryFolder = ({categoryId, title, children}: {categoryId: string, title: string, children: React.ReactNode}) => {
   const open = uiStore.openCategories.get(categoryId)?.open ?? false;
   const currList = domainStore.lists.find(l => l.categories.find(c => c.id === categoryId));
   const currCategory = currList?.categories.find(c => c.id === categoryId);
@@ -29,7 +23,6 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
-  const [wasAddingItem, setWasAddingItem] = useState(false);
 
   // Calculate unpurchased items count for this category
   // Since purchased items are removed from the category, all items are unpurchased
@@ -44,140 +37,67 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
     setIsEditing(false);
   }
 
-  const onPressAddProduct = () => {
-    uiStore.setOpenCategory(categoryId, true);
-    uiStore.setAddItemToListID('');
-    const willShowInput = uiStore.addItemToCategoryID !== categoryId;
-    uiStore.addItemToCategoryID !== categoryId ? uiStore.setAddItemToCategoryID(categoryId) : uiStore.setAddItemToCategoryID('');
-    
-    // Scroll to this category when input becomes visible
-    if (willShowInput && scrollViewRef?.current && categoryRef.current) {
-      setTimeout(() => {
-        categoryRef.current?.measureLayout(
-          scrollViewRef.current,
-          (x: number, y: number) => {
-            scrollViewRef.current?.scrollTo({ y: y + 100, animated: true });
-          },
-          () => {} // error callback
-        );
-      }, 300); // Small delay to ensure the input is rendered
-    }
-  }
-
-  const onRemoveCategory = (categoryId: string) => {
-    return () => {
-      const xAuthUser = domainStore.user?.email!;
-      currList?.removeCategory({ categoryId, xAuthUser });
-    }
-  }
-
-  const prepareToEditName = () => {
+  const onRenameCategory = () => {
     setEditedTitle(currCategory!.name!);
     setIsEditing(true);
   }
 
-  // Watch for when an item is added to this category
-  useEffect(() => {
-    // If we were adding an item and now we're not, an item was just submitted
-    if (wasAddingItem && uiStore.addItemToCategoryID !== categoryId) {
-      // Scroll to show the newly added item after keyboard dismisses
-      setTimeout(() => {
-        if (scrollViewRef?.current && categoryRef.current) {
-          categoryRef.current.measureLayout(
-            scrollViewRef.current,
-            (x: number, y: number) => {
-              // Scroll to show the bottom of this category + some padding
-              scrollViewRef.current?.scrollTo({ 
-                y: y + 200, // Adjust this value based on your category height
-                animated: true 
-              });
-            },
-            () => {} // error callback
-          );
-        }
-      }, 500); // Wait for keyboard to dismiss
-    }
-    
-    // Track if we're currently adding an item to this category
-    setWasAddingItem(uiStore.addItemToCategoryID === categoryId);
-  }, [uiStore.addItemToCategoryID, categoryId, scrollViewRef, wasAddingItem]);
+  const onDeleteCategory = () => {
+    const xAuthUser = domainStore.user?.email!;
+    currList?.removeCategory({ categoryId, xAuthUser });
+  }
 
   const toggleFolderOpenClose = () => {
-    /* We only ever want one input box for adding an item.
-       If we're closing the folder and we're adding an item to this category,
-       then clear the addItemToCategoryID
-    */
-    if (open && uiStore.addItemToCategoryID === categoryId) {
-      uiStore.setAddItemToCategoryID('');
-    }
     uiStore.setOpenCategory(categoryId, !open);
   }
 
   return (
     <ScaleDecorator activeScale={1.04}>
-      <SwipeableItem
-        key={categoryId}
-        item={currCategory!}
-        overSwipe={20}
-        snapPointsLeft={[70]}
-        renderUnderlayLeft={() => (
-          <RemoveButton onPress={onRemoveCategory(categoryId)} />
-        )}
-      >
-        <View ref={categoryRef} style={styles.container}>
-          <Pressable
-            onPress={toggleFolderOpenClose}
-            onLongPress={prepareToEditName}
-          >
-            <View style={styles.titleContainer}>
-              <AntDesign
-                name={open ? "folderopen" : "folder1"}
-                size={iconSize.rowIconSize}
-                backgroundColor={colors.lightBrandColor}
-                color={colors.white}
-                iconStyle={{ padding: 0, margin: 0 }}
-              />
-              <View style={styles.titleAndBadgeContainer}>
-                {isEditing ? (
-                  <TextInput
-                    style={[styles.title, styles.titleInput]}
-                    value={editedTitle}
-                    onSubmitEditing={onSubmit}
-                    onChangeText={(text) => setEditedTitle(text)}
-                    autoFocus={true}
-                    inputMode="text"
-                    lineBreakStrategyIOS="none"
-                    clearButtonMode="while-editing"
-                    enablesReturnKeyAutomatically={true}
-                    keyboardAppearance="light"
-                    returnKeyType="done"
-                    blurOnSubmit={true}
-                  />
-                ) : (
-                  <Text style={styles.title}>{title}</Text>
-                )}
-                <Badge count={unpurchasedItemsCount} size="small" />
-              </View>
-              {/* TODO: encapsulate drag-indicator in a custom button */}
-              <View style={styles.buttonContainer}>
-                <AddButton onPress={onPressAddProduct} foreground={colors.white} background={colors.lightBrandColor} materialIconName="add-circle" />
-                <MaterialIcons.Button
-                  name="drag-indicator"
+      <View ref={categoryRef} style={styles.container}>
+          {uiStore.showCategoryLabels && (
+            <Pressable
+              onPress={toggleFolderOpenClose}
+            >
+              <View style={styles.titleContainer}>
+                <AntDesign
+                  name={open ? "folderopen" : "folder1"}
                   size={iconSize.rowIconSize}
-                  color={colors.white}
                   backgroundColor={colors.lightBrandColor}
-                  onLongPress={drag}
-                  iconStyle={{marginRight: 5}}
-                  style={iconStyle}
-                  underlayColor={colors.lightBrandColor}
+                  color={colors.white}
+                  iconStyle={{ padding: 0, margin: 0 }}
                 />
+                <View style={styles.titleAndBadgeContainer}>
+                  {isEditing ? (
+                    <TextInput
+                      style={[styles.title, styles.titleInput]}
+                      value={editedTitle}
+                      onSubmitEditing={onSubmit}
+                      onChangeText={(text) => setEditedTitle(text)}
+                      autoFocus={true}
+                      inputMode="text"
+                      lineBreakStrategyIOS="none"
+                      clearButtonMode="while-editing"
+                      enablesReturnKeyAutomatically={true}
+                      keyboardAppearance="light"
+                      returnKeyType="done"
+                      blurOnSubmit={true}
+                    />
+                  ) : (
+                    <Text style={styles.title}>{title}</Text>
+                  )}
+                  <Badge count={unpurchasedItemsCount} size="small" />
+                </View>
+                <View style={styles.buttonContainer}>
+                  <CategoryContextMenu
+                    onRename={onRenameCategory}
+                    onDelete={onDeleteCategory}
+                  />
+                </View>
               </View>
-            </View>
-          </Pressable>
-          {uiStore.addItemToCategoryID === categoryId && <ItemInput listId={currList!.id} categoryId={categoryId} />}
+            </Pressable>
+          )}
           {children}
         </View>
-      </SwipeableItem>
     </ScaleDecorator>
   );
 };
@@ -193,10 +113,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.lightBrandColor,
     paddingLeft: 20,
-    paddingVertical: 7,
-    borderTopWidth: 1,
-    // borderBottomWidth: 1,
-    borderColor: colors.brandColor,
+    paddingVertical: 7
   },
   titleAndBadgeContainer: {
     flex: 1,
@@ -219,7 +136,8 @@ const styles = StyleSheet.create({
   buttonContainer: {
     alignSelf: 'flex-end',
     flexDirection: 'row',
-  }
+  },
+
 });
 
 export default observer(CategoryFolder);

@@ -14,8 +14,11 @@ const OpenCategory = t.model('OpenCategory', {
 export const UIStoreModel = t.model('UIStoreModel', {
     addCategoryModalVisible: false,
     addGroupModalVisible: false,
+    addItemModalVisible: false,
     addItemToCategoryID: t.maybeNull(t.string),
     addItemToListID: t.maybeNull(t.string),
+    editingItemName: t.maybeNull(t.string),
+    editingItemCategoryId: t.maybeNull(t.string),
     addListModalVisible: false,
     addLocationModalVisible: false,
     groupsLoaded: false,
@@ -35,14 +38,22 @@ export const UIStoreModel = t.model('UIStoreModel', {
     signInOrUp: t.optional(t.enumeration('signInOrUp', ['signIn', 'signUp']), 'signIn'),
     recentLocationsNeedRefresh: false,
     groupCreationOrigin: t.maybeNull(t.string), // Track where user came from when creating a group
+    // Shopping list context menu state
+    showEmptyFolders: t.optional(t.boolean, true),
+    showCategoryLabels: t.optional(t.boolean, true),
+    allFoldersOpen: t.optional(t.boolean, false),
+    reorderCategoriesModalVisible: t.optional(t.boolean, false),
 })
 .actions(self => ({
     initialize: () => {
         // self.lastUsedVersion = '1.0.0'; // intentionally not resetting this
         self.addCategoryModalVisible = false;
         self.addGroupModalVisible = false;
+        self.addItemModalVisible = false;
         self.addItemToCategoryID = null;
         self.addItemToListID = null;
+        self.editingItemName = null;
+        self.editingItemCategoryId = null;
         self.addListModalVisible = false;
         self.addLocationModalVisible = false;
         self.groupsLoaded = false;
@@ -104,6 +115,9 @@ export const UIStoreModel = t.model('UIStoreModel', {
     setAddGroupModalVisible(addGroupModalVisible: boolean) {
         self.addGroupModalVisible = addGroupModalVisible;
     },
+    setAddItemModalVisible(addItemModalVisible: boolean) {
+        self.addItemModalVisible = addItemModalVisible;
+    },
     setAddLocationModalVisible(addLocationModalVisible: boolean) {
         self.addLocationModalVisible = addLocationModalVisible;
     },
@@ -115,6 +129,12 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setAddItemToListID(listID: string) {
         self.addItemToListID = listID;
+    },
+    setEditingItemName(name: string | null) {
+        self.editingItemName = cast(name);
+    },
+    setEditingItemCategoryId(categoryId: string | null) {
+        self.editingItemCategoryId = cast(categoryId);
     },
     setShareModalVisible(shareModalVisible: boolean) {
         self.shareModalVisible = shareModalVisible;
@@ -133,6 +153,19 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     clearGroupCreationOrigin() {
         self.groupCreationOrigin = null;
+    },
+    // Shopping list context menu actions
+    setShowEmptyFolders(showEmptyFolders: boolean) {
+        self.showEmptyFolders = showEmptyFolders;
+    },
+    setShowCategoryLabels(showCategoryLabels: boolean) {
+        self.showCategoryLabels = showCategoryLabels;
+    },
+    setAllFoldersOpen(allFoldersOpen: boolean) {
+        self.allFoldersOpen = allFoldersOpen;
+    },
+    setReorderCategoriesModalVisible(reorderCategoriesModalVisible: boolean) {
+        self.reorderCategoriesModalVisible = reorderCategoriesModalVisible;
     }
 }));
 
@@ -149,12 +182,15 @@ persist('pantryPlusUI', uiStore, {
         'addItemToCategoryID',
         'addItemToListID',
         'addLocationModalVisible',
+        'editingItemName',
+        'editingItemCategoryId',
         'groupsLoaded',
         'listsLoaded',
         'locationsLoaded',
         'recentLocationsNeedRefresh',
         'shareModalVisible',
         'selectedTooltip',
+        'reorderCategoriesModalVisible',
     ]
 });
 

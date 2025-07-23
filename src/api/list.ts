@@ -111,12 +111,25 @@ const purchaseItem = async ({ listId, itemId, xAuthUser, xAuthLocation }: { list
     }
 }
 
+const getListItemsCount = async ({ listId, xAuthUser }: { listId: string, xAuthUser: string }): Promise<number> => {
+    const configuration = await getApiConfiguration();
+    const listsApi = new ListsApi(configuration);
+    try {
+        const countData = await listsApi.getListItemsCount(xAuthUser, listId);
+        return countData.data.count;
+    } catch (error) {
+        console.error(`Failed to getListItemsCount in DB: ${error}`);
+        return 0;
+    }
+}
+
 export default {
     createList,
     getListCategories,
     addListCategory,
     deleteListCategory,
     getListItems,
+    getListItemsCount,
     associateListItem,
     removeListItem,
     updateList,

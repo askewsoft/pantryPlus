@@ -19,6 +19,7 @@ export const ListModel = t.model('ListModel', {
     groupId: t.maybeNull(t.string),
     categories: t.array(CategoryModel),
     items: t.array(ItemModel),
+    unpurchasedItemsCount: t.optional(t.number, 0),
 })
 .actions(self => ({
     updateList: flow(function*({ name, groupId, xAuthUser }: { name: string, groupId: string | null, xAuthUser: string }): Generator<any, any, any> {
@@ -87,9 +88,9 @@ export const ListModel = t.model('ListModel', {
             const itemsData = yield api.list.getListItems({ listId: self.id, xAuthUser });
 
             const items = itemsData.map(
-                (item: Item, index: number) => {
+                (item: Item) => {
                     const { id, name, upc } = item;
-                    return ItemModel.create({ id, name, upc, ordinal: index });
+                    return ItemModel.create({ id, name, upc });
                 }
             );
             // Only proceed if the node is still in the tree
@@ -104,10 +105,13 @@ export const ListModel = t.model('ListModel', {
     addItem: flow(function*({ item, xAuthUser }: { item: Pick<ItemType, 'name' | 'upc'>, xAuthUser: string }): Generator<any, any, any> {
         try {
             const newItemId = randomUUID();
-            const newItem = ItemModel.create({ id: newItemId, name: item.name, upc: item.upc, ordinal: self.items.length });
+            const newItem = ItemModel.create({ id: newItemId, name: item.name, upc: item.upc });
             yield newItem.saveItem(xAuthUser);
             yield api.list.associateListItem({ listId: self.id, itemId: newItemId, xAuthUser });
             self.items.push(newItem);
+            // Update the count after adding an item
+            const count = yield api.list.getListItemsCount({ listId: self.id, xAuthUser });
+            self.unpurchasedItemsCount = count;
         } catch (error) {
             console.error(`Error adding item to list: ${error}`);
         }
@@ -119,6 +123,9 @@ export const ListModel = t.model('ListModel', {
             if (index !== undefined && index >= 0) {
                 self.items!.splice(index, 1);
             }
+            // Update the count after removing an item
+            const count = yield api.list.getListItemsCount({ listId: self.id, xAuthUser });
+            self.unpurchasedItemsCount = count;
         } catch (error) {
             console.error(`Error removing item from list: ${error}`);
         }
@@ -126,6 +133,9 @@ export const ListModel = t.model('ListModel', {
     purchaseItem: flow(function*({ itemId, xAuthUser, xAuthLocation }: { itemId: string, xAuthUser: string, xAuthLocation: string }): Generator<any, any, any> {
         try {
             yield api.list.purchaseItem({ listId: self.id, itemId, xAuthUser, xAuthLocation });
+            // Update the count after purchasing an item
+            const count = yield api.list.getListItemsCount({ listId: self.id, xAuthUser });
+            self.unpurchasedItemsCount = count;
         } catch (error) {
             console.error(`Error purchasing item: ${error}`);
         }
@@ -138,14 +148,6 @@ export const ListModel = t.model('ListModel', {
             console.error(`Error associating item to list: ${error}`);
         }
     }),
-    updateItemOrder: ({ data, from, to }: { data: ItemType[], from: number, to: number }) => {
-        data.forEach((item, index) => {
-            if (item.ordinal !== index) {
-                const updatedItem = self.items.find(i => i.id === item.id);
-                updatedItem!.setOrdinal(index);
-            }
-        });
-    },
     setOrdinal: flow(function* (ordinal: number, xAuthUser: string): Generator<any, any, any> {
         try {
             yield api.list.updateList({ list: { id: self.id, name: self.name, groupId: self.groupId ?? undefined, ordinal }, xAuthUser });
@@ -154,5 +156,19 @@ export const ListModel = t.model('ListModel', {
             console.error(`Error updating list: ${error}`);
         }
         self.ordinal = ordinal;
+    }),
+    loadUnpurchasedItemsCount: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
+        // Check if the node is still in the tree
+        if (!self.id) return;
+
+        try {
+            const count = yield api.list.getListItemsCount({ listId: self.id, xAuthUser });
+            // Only proceed if the node is still in the tree
+            if (self.id) {
+                self.unpurchasedItemsCount = count;
+            }
+        } catch (error) {
+            console.error(`Error loading unpurchased items count: ${error}`);
+        }
     })
 }));

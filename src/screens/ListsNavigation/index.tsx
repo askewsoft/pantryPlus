@@ -1,28 +1,21 @@
 import { useEffect, useRef } from 'react';
-import { View } from 'react-native';
+import { Alert } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { createStackNavigator } from '@react-navigation/stack';
-import { EventArg, StackNavigationState } from '@react-navigation/native';
 
 import MyLists from './MyLists';
 import ShoppingList from './ShoppingList';
 
 import AddButton from '@/components/Buttons/AddButton';
+import ShoppingListContextMenu from '@/components/ContextMenus/ShoppingListContextMenu';
 import { uiStore } from '@/stores/UIStore';
+import { domainStore } from '@/stores/DomainStore';
 
 import { ListsStack, ListsStackParamList } from '@/types/ListNavTypes';
 import stackNavScreenOptions from '@/consts/stackNavOptions';
 import colors from '@/consts/colors';
 
 const { Navigator, Screen } = createStackNavigator<ListsStackParamList>();
-
-/* TODO: Find a way to hide the ItemInput element when the user presses the back button
-   * take a look at https://reactnavigation.org/docs/stack-navigator/#transitionstart
-const onBackPress = () => {
-  uiStore.setAddItemToCategoryID('');
-  uiStore.setAddItemToListID('');
-}
-*/
 
 const ListsNavigation = ({navigation}: {navigation: any}) => {
   // Add a ref to track the previous route so we can detect when the user navigates to a non-default screen explicitly
@@ -34,7 +27,7 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
     }
   }, []);
 
-  const onScreenChange = (e: EventArg<"state", false, { state: StackNavigationState<ListsStackParamList> }>) => {
+  const onScreenChange = (e: any) => {
     const routesLength = e.data.state.routes.length;
     const currentRoute = e.data.state.routes[routesLength - 1].name;
 
@@ -57,29 +50,48 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
   };
 
   const onPressAddProduct = () => {
-    const listId = uiStore.selectedShoppingList || '';
-    uiStore.setAddItemToCategoryID('');
-    uiStore.addItemToListID !== listId ? uiStore.setAddItemToListID(listId) : uiStore.setAddItemToListID('');
+    uiStore.setAddItemModalVisible(true);
   }
 
   const ListHeaderRight = () => {
     return (
-      <View style={{ flexDirection: 'row' }}>
-        <AddButton
-          foreground={colors.white}
-          background={colors.brandColor}
-          materialIconName="add-circle"
-          onPress={onPressAddProduct}
-        />
-        <AddButton
-          foreground={colors.white}
-          background={colors.brandColor}
-          materialIconName="create-new-folder"
-          onPress={onPressAddCategory}
-        />
-      </View>
+      <ShoppingListContextMenu
+        onAddCategory={onPressAddCategory}
+        onAddItem={onPressAddProduct}
+        onToggleEmptyFolders={() => {
+          uiStore.setShowEmptyFolders(!uiStore.showEmptyFolders);
+        }}
+        onToggleAllFolders={() => {
+          const currentList = domainStore.lists.find(list => list.id === uiStore.selectedShoppingList);
+          if (!currentList) return;
+
+          const newState = !uiStore.allFoldersOpen;
+          uiStore.setAllFoldersOpen(newState);
+
+          // Set visible categories to the new state
+          // If empty folders are hidden, only affect categories with items
+          currentList.categories.forEach(category => {
+            if (uiStore.showEmptyFolders || category.items.length > 0) {
+              uiStore.setOpenCategory(category.id, newState);
+            }
+          });
+        }}
+        onReorderCategories={() => {
+          const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
+          if (xAuthLocation === '') {
+            Alert.alert('Location Required', 'Please select a location to reorder categories.');
+            return;
+          }
+          uiStore.setReorderCategoriesModalVisible(true);
+        }}
+        onToggleCategoryLabels={() => {
+          uiStore.setShowCategoryLabels(!uiStore.showCategoryLabels);
+        }}
+      />
     );
   }
+
+
   
   const myListsOptions = {
     title: 'My Lists',
