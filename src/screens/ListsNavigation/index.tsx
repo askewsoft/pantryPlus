@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import { createStackNavigator } from '@react-navigation/stack';
-import { EventArg, StackNavigationState } from '@react-navigation/native';
 
 import MyLists from './MyLists';
 import ShoppingList from './ShoppingList';
@@ -81,8 +80,7 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
           console.log('Reorder categories');
         }}
         onToggleCategoryLabels={() => {
-          // TODO: Implement toggle category labels functionality
-          console.log('Toggle category labels');
+          uiStore.setShowCategoryLabels(!uiStore.showCategoryLabels);
         }}
       />
     );

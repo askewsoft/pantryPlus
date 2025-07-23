@@ -69,9 +69,9 @@ const ShoppingListContextMenu = observer(({
 
   const handleActionPress = (e: NativeSyntheticEvent<ContextMenuOnPressNativeEvent>) => {
     const { index } = e.nativeEvent;
-    const actionConfig = actionConfigs[index];
-    if (actionConfig?.handler) {
-      actionConfig.handler();
+    const visibleActionConfig = visibleActions[index];
+    if (visibleActionConfig?.handler) {
+      visibleActionConfig.handler();
     }
   };
 

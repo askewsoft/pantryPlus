@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 
 import Item from './Item';
 import { ItemType } from '@/stores/models/List';
+import { uiStore } from '@/stores/UIStore';
 
 import colors from '@/consts/colors';
 
@@ -21,7 +22,7 @@ const ItemsList = observer(({
   indent = 10,
 }: ItemsListProps) => {
   return (
-    <View style={styles.draggableFlatListStyle}>
+    <View style={[styles.draggableFlatListStyle, { paddingTop: uiStore.showCategoryLabels ? 5 : 0 }]}>
       {toJS(items).map((item: ItemType) => (
         <Item
           key={item.id}
@@ -38,7 +39,6 @@ const ItemsList = observer(({
 const styles = StyleSheet.create({
   draggableFlatListStyle: {
     backgroundColor: colors.detailsBackground,
-    paddingTop: 5,
   }
 });
 

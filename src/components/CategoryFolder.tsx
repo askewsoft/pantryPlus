@@ -55,57 +55,59 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
   return (
     <ScaleDecorator activeScale={1.04}>
       <View ref={categoryRef} style={styles.container}>
-          <Pressable
-            onPress={toggleFolderOpenClose}
-          >
-            <View style={styles.titleContainer}>
-              <AntDesign
-                name={open ? "folderopen" : "folder1"}
-                size={iconSize.rowIconSize}
-                backgroundColor={colors.lightBrandColor}
-                color={colors.white}
-                iconStyle={{ padding: 0, margin: 0 }}
-              />
-              <View style={styles.titleAndBadgeContainer}>
-                {isEditing ? (
-                  <TextInput
-                    style={[styles.title, styles.titleInput]}
-                    value={editedTitle}
-                    onSubmitEditing={onSubmit}
-                    onChangeText={(text) => setEditedTitle(text)}
-                    autoFocus={true}
-                    inputMode="text"
-                    lineBreakStrategyIOS="none"
-                    clearButtonMode="while-editing"
-                    enablesReturnKeyAutomatically={true}
-                    keyboardAppearance="light"
-                    returnKeyType="done"
-                    blurOnSubmit={true}
-                  />
-                ) : (
-                  <Text style={styles.title}>{title}</Text>
-                )}
-                <Badge count={unpurchasedItemsCount} size="small" />
-              </View>
-              <View style={styles.buttonContainer}>
-                <CategoryContextMenu
-                  onRename={onRenameCategory}
-                  onDelete={onDeleteCategory}
-                />
-                {/* Temporarily hidden drag button - will be swapped with context menu during reorder mode */}
-                {/* <MaterialIcons.Button
-                  name="drag-indicator"
+          {uiStore.showCategoryLabels && (
+            <Pressable
+              onPress={toggleFolderOpenClose}
+            >
+              <View style={styles.titleContainer}>
+                <AntDesign
+                  name={open ? "folderopen" : "folder1"}
                   size={iconSize.rowIconSize}
-                  color={colors.white}
                   backgroundColor={colors.lightBrandColor}
+                  color={colors.white}
+                  iconStyle={{ padding: 0, margin: 0 }}
+                />
+                <View style={styles.titleAndBadgeContainer}>
+                  {isEditing ? (
+                    <TextInput
+                      style={[styles.title, styles.titleInput]}
+                      value={editedTitle}
+                      onSubmitEditing={onSubmit}
+                      onChangeText={(text) => setEditedTitle(text)}
+                      autoFocus={true}
+                      inputMode="text"
+                      lineBreakStrategyIOS="none"
+                      clearButtonMode="while-editing"
+                      enablesReturnKeyAutomatically={true}
+                      keyboardAppearance="light"
+                      returnKeyType="done"
+                      blurOnSubmit={true}
+                    />
+                  ) : (
+                    <Text style={styles.title}>{title}</Text>
+                  )}
+                  <Badge count={unpurchasedItemsCount} size="small" />
+                </View>
+                <View style={styles.buttonContainer}>
+                  <CategoryContextMenu
+                    onRename={onRenameCategory}
+                    onDelete={onDeleteCategory}
+                  />
+                  {/* Temporarily hidden drag button - will be swapped with context menu during reorder mode */}
+                  {/* <MaterialIcons.Button
+                    name="drag-indicator"
+                    size={iconSize.rowIconSize}
+                    color={colors.white}
+                    backgroundColor={colors.lightBrandColor}
                   onLongPress={drag}
-                  iconStyle={{marginRight: 5}}
-                  style={iconStyle}
-                  underlayColor={colors.lightBrandColor}
-                /> */}
+                    iconStyle={{marginRight: 5}}
+                    style={iconStyle}
+                    underlayColor={colors.lightBrandColor}
+                  /> */}
+                </View>
               </View>
-            </View>
-          </Pressable>
+            </Pressable>
+          )}
           {children}
         </View>
     </ScaleDecorator>
