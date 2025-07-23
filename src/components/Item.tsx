@@ -8,6 +8,7 @@ import ItemContextMenu from './ContextMenus/ItemContextMenu';
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { useItemActions } from '@/hooks/useItemActions';
+import { uiStore } from '@/stores/UIStore';
 
 type ItemProps = {
   item: ItemType;
@@ -25,16 +26,15 @@ const Item = ({
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
   const isCheckedRef = useRef(item.isChecked);
 
-  const { setIsChecked, onRemoveItem, onUncategorizeItem, handlePurchase } = useItemActions({
+  const { setIsChecked, onRemoveItem, handlePurchase } = useItemActions({
     itemId: item.id,
     listId,
     categoryId,
   });
 
   const onAssignToCategory = () => {
-    // TODO: Implement assign to category functionality
-    // This will require a new modal that does not yet exist
-    console.log('Assign item to different category');
+    uiStore.setAddItemToCategoryID(categoryId ?? null);
+    uiStore.setAddItemModalVisible(true);
   }
 
   const onPress = () => {
@@ -101,12 +101,6 @@ const styles = StyleSheet.create({
   item: {
     color: colors.brandColor,
     fontSize: fonts.rowTextSize,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    alignContent: 'flex-end',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
   }
 });
 

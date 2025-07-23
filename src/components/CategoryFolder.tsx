@@ -1,20 +1,17 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { ScaleDecorator } from 'react-native-draggable-flatlist';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { iconSize } from '@/consts/iconButtons';
-import { iconStyle } from '@/consts/iconButtons';
-import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
 import { uiStore } from '@/stores/UIStore';
 import { domainStore } from '@/stores/DomainStore';
+import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
-import ItemInput from './ItemInput';
 import Badge from './Badge';
 import CategoryContextMenu from './ContextMenus/CategoryContextMenu';
 
@@ -27,7 +24,6 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
-  const [wasAddingItem, setWasAddingItem] = useState(false);
 
   // Calculate unpurchased items count for this category
   // Since purchased items are removed from the category, all items are unpurchased
@@ -42,79 +38,17 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
     setIsEditing(false);
   }
 
-  /*
-    Add item functionality moved to ShoppingList context menu
-    This function is kept for potential future use if needed
-    TODO: After new item is added, may need to scroll to show the new item
-  */
-  const onPressAddProduct = () => {
-    uiStore.setOpenCategory(categoryId, true);
-    uiStore.setAddItemToListID('');
-    const willShowInput = uiStore.addItemToCategoryID !== categoryId;
-    uiStore.addItemToCategoryID !== categoryId ? uiStore.setAddItemToCategoryID(categoryId) : uiStore.setAddItemToCategoryID('');
-    
-    // Scroll to this category when input becomes visible
-    if (willShowInput && scrollViewRef?.current && categoryRef.current) {
-      setTimeout(() => {
-        categoryRef.current?.measureLayout(
-          scrollViewRef.current,
-          (x: number, y: number) => {
-            scrollViewRef.current?.scrollTo({ y: y + 100, animated: true });
-          },
-          () => {} // error callback
-        );
-      }, 300); // Small delay to ensure the input is rendered
-    }
-  }
-
   const onRenameCategory = () => {
     setEditedTitle(currCategory!.name!);
     setIsEditing(true);
   }
-
-  // Reorder functionality moved to ShoppingList context menu
 
   const onDeleteCategory = () => {
     const xAuthUser = domainStore.user?.email!;
     currList?.removeCategory({ categoryId, xAuthUser });
   }
 
-  // prepareToEditName function removed - now called directly in onRenameCategory
-
-  // Watch for when an item is added to this category
-  useEffect(() => {
-    // If we were adding an item and now we're not, an item was just submitted
-    if (wasAddingItem && uiStore.addItemToCategoryID !== categoryId) {
-      // Scroll to show the newly added item after keyboard dismisses
-      setTimeout(() => {
-        if (scrollViewRef?.current && categoryRef.current) {
-          categoryRef.current.measureLayout(
-            scrollViewRef.current,
-            (x: number, y: number) => {
-              // Scroll to show the bottom of this category + some padding
-              scrollViewRef.current?.scrollTo({ 
-                y: y + 200, // Adjust this value based on your category height
-                animated: true 
-              });
-            },
-            () => {} // error callback
-          );
-        }
-      }, 500); // Wait for keyboard to dismiss
-    }
-    
-    // Track if we're currently adding an item to this category
-    setWasAddingItem(uiStore.addItemToCategoryID === categoryId);
-  }, [uiStore.addItemToCategoryID, categoryId, scrollViewRef, wasAddingItem]);
-
   const toggleFolderOpenClose = () => {
-    /* We only ever want one input box for adding an item.
-       If we're closing the folder and we're adding an item to this category,
-       then clear the addItemToCategoryID
-    */
-    if (open && uiStore.addItemToCategoryID === categoryId) {
-      uiStore.setAddItemToCategoryID('');
-    }
     uiStore.setOpenCategory(categoryId, !open);
   }
 
@@ -172,7 +106,6 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
               </View>
             </View>
           </Pressable>
-          {uiStore.addItemToCategoryID === categoryId && <ItemInput listId={currList!.id} categoryId={categoryId} />}
           {children}
         </View>
     </ScaleDecorator>
@@ -190,10 +123,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.lightBrandColor,
     paddingLeft: 20,
-    paddingVertical: 7,
-    borderTopWidth: 1,
-    // borderBottomWidth: 1,
-    borderColor: colors.brandColor,
+    paddingVertical: 7
   },
   titleAndBadgeContainer: {
     flex: 1,

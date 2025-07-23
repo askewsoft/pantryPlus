@@ -14,6 +14,7 @@ const OpenCategory = t.model('OpenCategory', {
 export const UIStoreModel = t.model('UIStoreModel', {
     addCategoryModalVisible: false,
     addGroupModalVisible: false,
+    addItemModalVisible: false,
     addItemToCategoryID: t.maybeNull(t.string),
     addItemToListID: t.maybeNull(t.string),
     addListModalVisible: false,
@@ -45,6 +46,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
         // self.lastUsedVersion = '1.0.0'; // intentionally not resetting this
         self.addCategoryModalVisible = false;
         self.addGroupModalVisible = false;
+        self.addItemModalVisible = false;
         self.addItemToCategoryID = null;
         self.addItemToListID = null;
         self.addListModalVisible = false;
@@ -107,6 +109,9 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setAddGroupModalVisible(addGroupModalVisible: boolean) {
         self.addGroupModalVisible = addGroupModalVisible;
+    },
+    setAddItemModalVisible(addItemModalVisible: boolean) {
+        self.addItemModalVisible = addItemModalVisible;
     },
     setAddLocationModalVisible(addLocationModalVisible: boolean) {
         self.addLocationModalVisible = addLocationModalVisible;

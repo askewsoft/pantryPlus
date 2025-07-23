@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { View } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { createStackNavigator } from '@react-navigation/stack';
 import { EventArg, StackNavigationState } from '@react-navigation/native';
@@ -16,14 +15,6 @@ import stackNavScreenOptions from '@/consts/stackNavOptions';
 import colors from '@/consts/colors';
 
 const { Navigator, Screen } = createStackNavigator<ListsStackParamList>();
-
-/* TODO: Find a way to hide the ItemInput element when the user presses the back button
-   * take a look at https://reactnavigation.org/docs/stack-navigator/#transitionstart
-const onBackPress = () => {
-  uiStore.setAddItemToCategoryID('');
-  uiStore.setAddItemToListID('');
-}
-*/
 
 const ListsNavigation = ({navigation}: {navigation: any}) => {
   // Add a ref to track the previous route so we can detect when the user navigates to a non-default screen explicitly
@@ -58,9 +49,7 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
   };
 
   const onPressAddProduct = () => {
-    const listId = uiStore.selectedShoppingList || '';
-    uiStore.setAddItemToCategoryID('');
-    uiStore.addItemToListID !== listId ? uiStore.setAddItemToListID(listId) : uiStore.setAddItemToListID('');
+    uiStore.setAddItemModalVisible(true);
   }
 
   const ListHeaderRight = () => {

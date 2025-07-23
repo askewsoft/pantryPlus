@@ -9,8 +9,8 @@ import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 import CategoryFolder from '@/components/CategoryFolder';
 import CategoryItems from '@/components/CategoryItems';
 import ListItems from '@/components/ListItems';
-import ItemInput from '@/components/ItemInput';
 import AddCategoryModal from './modals/AddCategoryModal';
+import AddItemModal from './modals/AddItemModal';
 import PickLocationPrompt from './modals/PickLocationPrompt';
 import CurrentLocation from '@/components/CurrentLocation';
 import ErrorBoundary from '@/components/ErrorBoundary';
@@ -164,7 +164,6 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
           {/* Only render content if we have a valid list */}
           {currentList && (
             <View style={styles.contentContainer}>
-              { uiStore.addItemToListID === listId && <ItemInput listId={listId!} /> }
               <ListItems listId={listId!} />
               <NestableDraggableFlatList
                 style={styles.draggableFlatListStyle}
@@ -175,6 +174,7 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
                 onDragEnd={onDragEnd}
               />
               <AddCategoryModal />
+              <AddItemModal />
               <PickLocationPrompt onPress={setCurrentLocation} />
             </View>
           )}
