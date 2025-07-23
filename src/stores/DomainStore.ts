@@ -130,6 +130,17 @@ const DomainStoreModel = t
                 }
             );
             self.lists.replace(lists);
+
+            // Load unpurchased items count for each list
+            const xAuthUser = self.user?.email!;
+            for (const list of self.lists) {
+                try {
+                    yield list.loadUnpurchasedItemsCount({ xAuthUser });
+                } catch (error) {
+                    console.error(`Error loading count for list ${list.id}:`, error);
+                }
+            }
+
             uiStore.setListsLoaded(true);
 
             // Update lists in the API whose ordinals changed

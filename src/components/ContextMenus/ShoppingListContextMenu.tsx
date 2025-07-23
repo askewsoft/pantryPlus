@@ -5,6 +5,8 @@ import ContextMenu, { ContextMenuOnPressNativeEvent } from 'react-native-context
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import { uiStore } from '@/stores/UIStore';
+import { domainStore } from '@/stores/DomainStore';
+import Badge from '@/components/Badge';
 import colors from '@/consts/colors';
 import { iconSize } from '@/consts/iconButtons';
 
@@ -25,6 +27,10 @@ const ShoppingListContextMenu = observer(({
   onReorderCategories,
   onToggleCategoryLabels,
 }: ShoppingListContextMenuProps) => {
+  // Get the current list to display the count
+  const currentList = domainStore.lists.find(list => list.id === uiStore.selectedShoppingList);
+  const unpurchasedItemsCount = currentList?.unpurchasedItemsCount ?? 0;
+
   // Single source of truth for actions and their handlers
   const actionConfigs = [
     {
@@ -74,6 +80,7 @@ const ShoppingListContextMenu = observer(({
 
   return (
     <View style={styles.container}>
+      <Badge count={unpurchasedItemsCount} size="small" />
       <ContextMenu
         actions={visibleActions.map(({ title, systemIcon }) => ({ title, systemIcon }))}
         onPress={handleActionPress}
@@ -97,6 +104,8 @@ const ShoppingListContextMenu = observer(({
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginRight: 8,
   },
   hamburgerButton: {
