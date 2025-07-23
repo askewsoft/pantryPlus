@@ -12,6 +12,7 @@ import ListItems from '@/components/ListItems';
 import AddCategoryModal from './modals/AddCategoryModal';
 import AddItemModal from './modals/AddItemModal';
 import PickLocationPrompt from './modals/PickLocationPrompt';
+import ReorderCategoriesModal from './modals/ReorderCategoriesModal';
 import CurrentLocation from '@/components/CurrentLocation';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
@@ -77,8 +78,6 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
         key={category.id} 
         categoryId={category.id} 
         title={category.name} 
-        drag={conditionalDrag}
-        scrollViewRef={scrollViewRef}
       >
         <CategoryItems listId={listId!} categoryId={category.id} />
       </CategoryFolder>
@@ -178,6 +177,7 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
               <AddCategoryModal />
               <AddItemModal />
               <PickLocationPrompt onPress={setCurrentLocation} />
+              <ReorderCategoriesModal />
             </View>
           )}
         </NestableScrollContainer>

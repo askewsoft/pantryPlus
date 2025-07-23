@@ -42,6 +42,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
     showEmptyFolders: t.optional(t.boolean, true),
     showCategoryLabels: t.optional(t.boolean, true),
     allFoldersOpen: t.optional(t.boolean, false),
+    reorderCategoriesModalVisible: t.optional(t.boolean, false),
 })
 .actions(self => ({
     initialize: () => {
@@ -162,6 +163,9 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setAllFoldersOpen(allFoldersOpen: boolean) {
         self.allFoldersOpen = allFoldersOpen;
+    },
+    setReorderCategoriesModalVisible(reorderCategoriesModalVisible: boolean) {
+        self.reorderCategoriesModalVisible = reorderCategoriesModalVisible;
     }
 }));
 
@@ -186,6 +190,7 @@ persist('pantryPlusUI', uiStore, {
         'recentLocationsNeedRefresh',
         'shareModalVisible',
         'selectedTooltip',
+        'reorderCategoriesModalVisible',
     ]
 });
 

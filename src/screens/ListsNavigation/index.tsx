@@ -76,8 +76,7 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
           });
         }}
         onReorderCategories={() => {
-          // TODO: Implement reorder categories functionality
-          console.log('Reorder categories');
+          uiStore.setReorderCategoriesModalVisible(true);
         }}
         onToggleCategoryLabels={() => {
           uiStore.setShowCategoryLabels(!uiStore.showCategoryLabels);
@@ -85,6 +84,8 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
       />
     );
   }
+
+
   
   const myListsOptions = {
     title: 'My Lists',
