@@ -49,8 +49,9 @@ const ReorderCategoriesModal = () => {
     if (!currentList || !xAuthUser) return;
 
     const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
+    // Location check is now handled upfront, but keep as safety check
     if (xAuthLocation === '') {
-      Alert.alert('Location Required', 'Please select a location to reorder categories.');
+      console.error('Location not set during drag end - this should not happen');
       return;
     }
 

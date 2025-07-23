@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { Alert } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -76,6 +77,11 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
           });
         }}
         onReorderCategories={() => {
+          const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
+          if (xAuthLocation === '') {
+            Alert.alert('Location Required', 'Please select a location to reorder categories.');
+            return;
+          }
           uiStore.setReorderCategoriesModalVisible(true);
         }}
         onToggleCategoryLabels={() => {
