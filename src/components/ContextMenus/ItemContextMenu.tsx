@@ -51,7 +51,7 @@ const ItemContextMenu = observer(({
           activeOpacity={0.7}
         >
           <MaterialIcons
-            name="more-vert"
+            name="more-horiz"
             size={iconSize.rowIconSize}
             color={colors.brandColor}
           />

@@ -20,7 +20,7 @@ const CategoryContextMenu = observer(({
   const actionConfigs = [
     {
       title: 'Rename Category',
-      systemIcon: 'pencil',
+      systemIcon: 'square.and.pencil',
       handler: onRename,
     },
     {
@@ -52,7 +52,7 @@ const CategoryContextMenu = observer(({
           activeOpacity={0.7}
         >
           <MaterialIcons
-            name="more-vert"
+            name="edit-note"
             size={iconSize.rowIconSize}
             color={colors.white}
           />

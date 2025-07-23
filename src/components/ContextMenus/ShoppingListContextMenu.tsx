@@ -85,7 +85,7 @@ const ShoppingListContextMenu = observer(({
           activeOpacity={0.7}
         >
           <MaterialIcons
-            name="more-vert"
+            name="menu"
             size={iconSize.rowIconSize}
             color={colors.white}
           />
