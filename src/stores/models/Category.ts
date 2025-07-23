@@ -26,7 +26,7 @@ export const CategoryModel = t.model('CategoryModel', {
     addItem: flow(function*({ item, xAuthUser }: { item: Pick<ItemType, 'name' | 'upc'>, xAuthUser: string }): Generator<any, any, any> {
         try {
             const newItemId = randomUUID(); 
-            const newItem = ItemModel.create({ id: newItemId, name: item.name, upc: item.upc, ordinal: self.items.length });
+            const newItem = ItemModel.create({ id: newItemId, name: item.name, upc: item.upc });
             yield newItem.saveItem(xAuthUser);
             yield api.category.associateCategoryItem({ categoryId: self.id, itemId: newItemId, xAuthUser });
             self.items.push(newItem);
@@ -62,9 +62,9 @@ export const CategoryModel = t.model('CategoryModel', {
         try {
             const itemsData = yield api.category.loadCategoryItems({ categoryId: self.id, xAuthUser });
             const newItems = itemsData.map(
-                (item: Item, index: number) => {
+                (item: Item) => {
                     const { id, name, upc } = item;
-                    return ItemModel.create({ id, name, upc, ordinal: index });
+                    return ItemModel.create({ id, name, upc });
                 }
             );
             runInAction(() => {
@@ -75,14 +75,7 @@ export const CategoryModel = t.model('CategoryModel', {
             console.error(`Error loading category items: ${error}`);
         }
     }),
-    updateItemOrder: ({ data, from, to }: { data: ItemType[], from: number, to: number }) => {
-        data.forEach((item, index) => {
-            if (item.ordinal !== index) {
-                const updatedItem = self.items.find(i => i.id === item.id);
-                updatedItem!.setOrdinal(index);
-            }
-        });
-    },
+
     setOrdinal: flow(function* (ordinal: number, xAuthUser: string, xAuthLocation: string): Generator<any, any, any> {
         self.ordinal = ordinal;
         try {

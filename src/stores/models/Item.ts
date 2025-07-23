@@ -5,7 +5,6 @@ export const ItemModel = t.model('ItemModel', {
     id: t.identifier,
     name: t.string,
     upc: t.maybe(t.string),
-    ordinal: t.maybe(t.number),
     isChecked: t.optional(t.boolean, false)
 }).actions(self => ({
     setName: flow(function*(name: string, xAuthUser: string): Generator<any, any, any> {
@@ -23,9 +22,6 @@ export const ItemModel = t.model('ItemModel', {
             console.error(`Error creating item with name: ${self.name} and upc: ${self.upc} with error: ${error}`);
         }
     }),
-    setOrdinal: (ordinal: number) => {
-        self.ordinal = ordinal;
-    },
     setIsChecked: (isChecked: boolean) => {
         self.isChecked = isChecked;
     }

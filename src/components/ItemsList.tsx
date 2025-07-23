@@ -4,7 +4,6 @@ import { observer } from 'mobx-react-lite';
 
 import Item from './Item';
 import { ItemType } from '@/stores/models/List';
-import { sortByOrdinal } from '@/stores/utils/sorter';
 
 import colors from '@/consts/colors';
 
@@ -23,7 +22,7 @@ const ItemsList = observer(({
 }: ItemsListProps) => {
   return (
     <View style={styles.draggableFlatListStyle}>
-      {toJS(items).sort(sortByOrdinal).map((item: ItemType) => (
+      {toJS(items).map((item: ItemType) => (
         <Item
           key={item.id}
           item={item}

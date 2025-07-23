@@ -87,9 +87,9 @@ export const ListModel = t.model('ListModel', {
             const itemsData = yield api.list.getListItems({ listId: self.id, xAuthUser });
 
             const items = itemsData.map(
-                (item: Item, index: number) => {
+                (item: Item) => {
                     const { id, name, upc } = item;
-                    return ItemModel.create({ id, name, upc, ordinal: index });
+                    return ItemModel.create({ id, name, upc });
                 }
             );
             // Only proceed if the node is still in the tree
@@ -104,7 +104,7 @@ export const ListModel = t.model('ListModel', {
     addItem: flow(function*({ item, xAuthUser }: { item: Pick<ItemType, 'name' | 'upc'>, xAuthUser: string }): Generator<any, any, any> {
         try {
             const newItemId = randomUUID();
-            const newItem = ItemModel.create({ id: newItemId, name: item.name, upc: item.upc, ordinal: self.items.length });
+            const newItem = ItemModel.create({ id: newItemId, name: item.name, upc: item.upc });
             yield newItem.saveItem(xAuthUser);
             yield api.list.associateListItem({ listId: self.id, itemId: newItemId, xAuthUser });
             self.items.push(newItem);
@@ -138,14 +138,7 @@ export const ListModel = t.model('ListModel', {
             console.error(`Error associating item to list: ${error}`);
         }
     }),
-    updateItemOrder: ({ data, from, to }: { data: ItemType[], from: number, to: number }) => {
-        data.forEach((item, index) => {
-            if (item.ordinal !== index) {
-                const updatedItem = self.items.find(i => i.id === item.id);
-                updatedItem!.setOrdinal(index);
-            }
-        });
-    },
+
     setOrdinal: flow(function* (ordinal: number, xAuthUser: string): Generator<any, any, any> {
         try {
             yield api.list.updateList({ list: { id: self.id, name: self.name, groupId: self.groupId ?? undefined, ordinal }, xAuthUser });
