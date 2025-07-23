@@ -34,6 +34,8 @@ const Item = ({
 
   const onAssignToCategory = () => {
     uiStore.setAddItemToCategoryID(categoryId ?? null);
+    uiStore.setEditingItemName(item.name);
+    uiStore.setEditingItemCategoryId(categoryId ?? null);
     uiStore.setAddItemModalVisible(true);
   }
 
