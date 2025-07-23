@@ -9,6 +9,7 @@ import ShoppingList from './ShoppingList';
 import AddButton from '@/components/Buttons/AddButton';
 import ShoppingListContextMenu from '@/components/ContextMenus/ShoppingListContextMenu';
 import { uiStore } from '@/stores/UIStore';
+import { domainStore } from '@/stores/DomainStore';
 
 import { ListsStack, ListsStackParamList } from '@/types/ListNavTypes';
 import stackNavScreenOptions from '@/consts/stackNavOptions';
@@ -62,8 +63,16 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
           console.log('Toggle empty folders');
         }}
         onToggleAllFolders={() => {
-          // TODO: Implement toggle all folders functionality
-          console.log('Toggle all folders');
+          const currentList = domainStore.lists.find(list => list.id === uiStore.selectedShoppingList);
+          if (!currentList) return;
+
+          const newState = !uiStore.allFoldersOpen;
+          uiStore.setAllFoldersOpen(newState);
+
+          // Set all categories to the new state
+          currentList.categories.forEach(category => {
+            uiStore.setOpenCategory(category.id, newState);
+          });
         }}
         onReorderCategories={() => {
           // TODO: Implement reorder categories functionality
