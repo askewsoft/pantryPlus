@@ -47,23 +47,25 @@ const ShoppingListContextMenu = observer(({
       title: 'Reorder Categories',
       systemIcon: 'arrow.up.arrow.down',
       handler: onReorderCategories,
+      showWhen: (currentList?.categories?.length ?? 0) > 0,
     },
     {
       title: uiStore.showEmptyFolders ? 'Hide Empty Categories' : 'Show Empty Categories',
       systemIcon: uiStore.showEmptyFolders ? 'eye.slash' : 'eye.fill',
       handler: onToggleEmptyFolders,
-      showWhen: uiStore.showCategoryLabels,
+      showWhen: uiStore.showCategoryLabels && (currentList?.categories?.length ?? 0) > 0,
     },
     {
       title: uiStore.allFoldersOpen ? 'Close All Categories' : 'Open All Categories',
       systemIcon: uiStore.allFoldersOpen ? 'folder' : 'folder.fill',
       handler: onToggleAllFolders,
-      showWhen: uiStore.showCategoryLabels,
+      showWhen: uiStore.showCategoryLabels && (currentList?.categories?.length ?? 0) > 0,
     },
     {
       title: uiStore.showCategoryLabels ? 'Hide Category Labels' : 'Show Category Labels',
       systemIcon: uiStore.showCategoryLabels ? 'tag.slash' : 'tag.fill',
       handler: onToggleCategoryLabels,
+      showWhen: (currentList?.categories?.length ?? 0) > 0,
     },
   ];
 
