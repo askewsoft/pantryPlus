@@ -10,12 +10,11 @@ import { iconSize } from '@/consts/iconButtons';
 
 import { uiStore } from '@/stores/UIStore';
 import { domainStore } from '@/stores/DomainStore';
-import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
 import Badge from './Badge';
 import CategoryContextMenu from './ContextMenus/CategoryContextMenu';
 
-const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {categoryId: string, title: string, drag: FnReturnVoid, children: React.ReactNode, scrollViewRef?: React.RefObject<any>}) => {
+const CategoryFolder = ({categoryId, title, children}: {categoryId: string, title: string, children: React.ReactNode}) => {
   const open = uiStore.openCategories.get(categoryId)?.open ?? false;
   const currList = domainStore.lists.find(l => l.categories.find(c => c.id === categoryId));
   const currCategory = currList?.categories.find(c => c.id === categoryId);
@@ -93,17 +92,6 @@ const CategoryFolder = ({categoryId, title, drag, children, scrollViewRef}: {cat
                     onRename={onRenameCategory}
                     onDelete={onDeleteCategory}
                   />
-                  {/* Temporarily hidden drag button - will be swapped with context menu during reorder mode */}
-                  {/* <MaterialIcons.Button
-                    name="drag-indicator"
-                    size={iconSize.rowIconSize}
-                    color={colors.white}
-                    backgroundColor={colors.lightBrandColor}
-                  onLongPress={drag}
-                    iconStyle={{marginRight: 5}}
-                    style={iconStyle}
-                    underlayColor={colors.lightBrandColor}
-                  /> */}
                 </View>
               </View>
             </Pressable>
@@ -148,7 +136,8 @@ const styles = StyleSheet.create({
   buttonContainer: {
     alignSelf: 'flex-end',
     flexDirection: 'row',
-  }
+  },
+
 });
 
 export default observer(CategoryFolder);
