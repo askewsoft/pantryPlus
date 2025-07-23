@@ -27,7 +27,7 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
     }
   }, []);
 
-  const onScreenChange = (e: EventArg<"state", false, { state: StackNavigationState<ListsStackParamList> }>) => {
+  const onScreenChange = (e: any) => {
     const routesLength = e.data.state.routes.length;
     const currentRoute = e.data.state.routes[routesLength - 1].name;
 
