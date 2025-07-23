@@ -59,8 +59,7 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
         onAddCategory={onPressAddCategory}
         onAddItem={onPressAddProduct}
         onToggleEmptyFolders={() => {
-          // TODO: Implement toggle empty folders functionality
-          console.log('Toggle empty folders');
+          uiStore.setShowEmptyFolders(!uiStore.showEmptyFolders);
         }}
         onToggleAllFolders={() => {
           const currentList = domainStore.lists.find(list => list.id === uiStore.selectedShoppingList);
@@ -69,9 +68,12 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
           const newState = !uiStore.allFoldersOpen;
           uiStore.setAllFoldersOpen(newState);
 
-          // Set all categories to the new state
+          // Set visible categories to the new state
+          // If empty folders are hidden, only affect categories with items
           currentList.categories.forEach(category => {
-            uiStore.setOpenCategory(category.id, newState);
+            if (uiStore.showEmptyFolders || category.items.length > 0) {
+              uiStore.setOpenCategory(category.id, newState);
+            }
           });
         }}
         onReorderCategories={() => {

@@ -167,7 +167,9 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
               <ListItems listId={listId!} />
               <NestableDraggableFlatList
                 style={styles.draggableFlatListStyle}
-                data={toJS(currentList.categories).sort(sortByOrdinal)}
+                data={toJS(currentList.categories)
+                  .filter(category => uiStore.showEmptyFolders || category.items.length > 0)
+                  .sort(sortByOrdinal)}
                 renderItem={renderCategoryElement}
                 keyExtractor={category => category.id}
                 onDragBegin={onDragBegin}
