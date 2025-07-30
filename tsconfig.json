@@ -8,5 +8,12 @@
       "@/*": ["src/*"]
     },
     "esModuleInterop": true
-  }
+  },
+  "include": [
+    "src/**/*",
+    "scripts/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
