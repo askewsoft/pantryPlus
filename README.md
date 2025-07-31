@@ -36,9 +36,7 @@ Manage your shopping lists, and then some.
     - `brew install cocoapods`
 * [XCode](https://developer.apple.com/xcode/)
     - for building the app for iOS devices
-* [Percy](https://percy.io/)
-    - for visual testing and regression detection
-    - see [Percy Visual Testing Guide](docs/PERCY_VISUAL_TESTING.md) for setup and usage
+
 
 ## Developing
 ### XCode Configuration
@@ -139,28 +137,6 @@ npm run update:prod "Add new category management features"
 - The app uses `fingerprint` runtime version policy, which automatically detects native code changes
 - When native dependencies change, EAS will automatically require a new build instead of allowing updates
 
-## Visual Testing with Percy
-
-pantryPlus uses Percy for visual regression testing to ensure UI changes don't break the app's appearance.
-For detailed setup instructions, testing strategies, and best practices, see the [Percy Visual Testing Guide](scripts/docs/PERCY_VISUAL_TESTING.md).
-
-### Run Tests
-1. Start the app in one terminal shell
-    ```sh
-    npm run ios
-    ```
-1. In a separate terminal, capture screenshots by following prompts
-    ```sh
-    npm run percy
-    ```
-
-### Key Benefits
-- **Catch visual bugs early**: Detect unintended UI changes before they reach users
-- **Ensure consistency**: Verify components look correct across different screen sizes
-- **Confidence in refactoring**: Make UI changes with visual regression protection
-- **Document UI evolution**: Track how your app's appearance changes over time
-
 ## Helper Scripts
 - **Get API Token**: `npm run gettoken <username> <password>`
 - **Expo Updates**: `npm run update:preview "message"` or `npm run update:prod "message"`
-- **Visual Testing**: `npm run percy`
