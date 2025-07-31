@@ -43,22 +43,14 @@ npm run expoupdate prod "Add new category features"
 - **command** — one of the designated channels from `./eas.json` (i.e., `prod` or `preview`)
 - **message** — summary of the changes included in this build/update for display to end users
 
-## percy visual test
+## visual testing
 
-Percy is used for visual regression testing to ensure UI changes don't break the app's appearance. See [Percy Visual Testing Guide](docs/PERCY_VISUAL_TESTING.md) for complete setup and usage instructions
+React Native Owl is used for visual regression testing to ensure UI changes don't break the app's appearance. See [Owl Visual Testing Guide](docs/OWL_VISUAL_TESTING.md) for complete setup and usage instructions
 
 ```sh
-# Convenient npm script (recommended)
-npm run gen-screens
-npm run percy
+# Interactive visual testing (recommended)
+npm run owl
 
-# Or direct commands
-# discover screens to capture from codebase
-node ./scripts/generate-screens.js
-
-# detect iOS Simulator device
-node ./scripts/detect-simulator.js
-
-# capture screenshots interactively
-node ./scripts/percy-test.js
+# Or direct command
+node scripts/owl-test.js
 ```
