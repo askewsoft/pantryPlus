@@ -145,7 +145,7 @@ For detailed setup instructions, testing strategies, and best practices, see the
 ### Run Tests
 1. Start the app in one terminal shell
     ```sh
-    npm start
+    npm run ios
     ```
 1. In a separate terminal, run visual testing
     ```sh

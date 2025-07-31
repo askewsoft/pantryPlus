@@ -54,3 +54,6 @@ npm run owl
 # Or direct command
 node scripts/owl-test.js
 ```
+
+### Adding TestIDs
+To make your components testable, add `testID` attributes to data-driven elements. See [TestID Implementation Guide](docs/TESTID_GUIDE.md) for detailed recommendations.

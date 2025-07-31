@@ -63,30 +63,9 @@ module.exports = {
   // Threshold for visual difference detection (0-1)
   threshold: 0.1,
   
-  // Ignore specific elements by testID
+  // Ignore elements with this testID during visual comparison
   ignoreElements: [
-    'timestamp',
-    'date',
-    'time',
-    'loading',
-    'skeleton',
-    'spinner',
-    'user-avatar',
-    'user-name',
-    'user-email',
-    'list-name',
-    'category-name',
-    'item-name',
-    'item-quantity',
-    'item-price',
-    'location-name',
-    'group-name',
-    'member-name',
-    'dynamic-id',
-    'count',
-    'total',
-    'last-updated',
-    'sync-status',
+    'owl-ignore'
   ],
   
   // Test scenarios

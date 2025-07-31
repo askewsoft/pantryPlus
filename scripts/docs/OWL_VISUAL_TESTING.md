@@ -2,7 +2,7 @@
 
 pantryPlus uses React Native Owl for visual regression testing to ensure UI changes don't break the app's appearance.
 
-## What is React Native Owl?
+## Intro
 
 React Native Owl is a lightweight visual regression testing tool specifically designed for React Native applications. It captures screenshots of your app and compares them against baseline images to detect unintended visual changes.
 
@@ -11,36 +11,25 @@ React Native Owl is a lightweight visual regression testing tool specifically de
 ### Prerequisites
 - React Native app running in iOS Simulator
 - Node.js and npm installed
-
-### Setup
-1. **Install React Native Owl** (already done):
+- Install React Native Owl
    ```bash
    npm install --save-dev react-native-owl
    ```
-
-2. **Start your app**:
-   ```bash
-   npm start
-   ```
-
-3. **Run visual testing**:
-   ```bash
-   npm run owl
-   ```
-
 ## Usage
 
 ### Interactive Testing
-The `npm run owl` command provides an interactive experience:
-
+1. Run the owl script
+   ```bash
+   npm run owl
+   ```
 1. **Choose your testing mode**:
    - **Capture baseline screenshots**: For new screens or after UI changes
    - **Run visual regression tests**: Compare against existing baseline
    - **Both**: Capture and test in one session
 
-2. **Follow the prompts** to navigate to each screen and capture screenshots
+1. **Follow the prompts** to navigate to each screen and capture screenshots
 
-3. **Review results** in the `screenshots/` directory
+1. **Review results** in the `screenshots/` directory
 
 ### Manual Commands
 For advanced users, you can run React Native Owl commands directly:
@@ -175,24 +164,3 @@ screenshots/
 2. Review any differences
 3. Update baseline if changes are intentional
 4. Commit baseline images with your changes
-
-### CI/CD Integration
-React Native Owl can be integrated into your CI/CD pipeline:
-- Run tests on pull requests
-- Block merges if visual regressions are detected
-- Generate visual test reports
-
-## Migration from Percy
-
-If you're migrating from Percy:
-1. React Native Owl is simpler to set up
-2. No external service dependencies
-3. Local screenshot storage and comparison
-4. Better integration with React Native workflows
-
-## Next Steps
-
-1. **Add testID attributes** to your components
-2. **Run your first baseline capture**: `npm run owl`
-3. **Review and customize** the configuration in `owl.config.js`
-4. **Integrate into your workflow** for regular visual testing 
