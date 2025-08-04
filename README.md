@@ -37,7 +37,6 @@ Manage your shopping lists, and then some.
 * [XCode](https://developer.apple.com/xcode/)
     - for building the app for iOS devices
 
-
 ## Developing
 ### XCode Configuration
 1. Install XCode from the Mac App Store
@@ -137,28 +136,7 @@ npm run update:prod "Add new category management features"
 - The app uses `fingerprint` runtime version policy, which automatically detects native code changes
 - When native dependencies change, EAS will automatically require a new build instead of allowing updates
 
-## Visual Testing with React Native Owl
-
-pantryPlus uses React Native Owl for visual regression testing to ensure UI changes don't break the app's appearance.
-For detailed setup instructions, testing strategies, and best practices, see the [Owl Visual Testing Guide](scripts/docs/OWL_VISUAL_TESTING.md).
-
-### Run Tests
-1. Start the app in one terminal shell
-    ```sh
-    npm run ios
-    ```
-1. In a separate terminal, run visual testing
-    ```sh
-    npm run owl
-    ```
-
-### Key Benefits
-- **Catch visual bugs early**: Detect unintended UI changes before they reach users
-- **Ensure consistency**: Verify components look correct across different screen sizes
-- **Confidence in refactoring**: Make UI changes with visual regression protection
-- **Document UI evolution**: Track how your app's appearance changes over time
-
 ## Helper Scripts
 - **Get API Token**: `npm run gettoken <username> <password>`
 - **Expo Updates**: `npm run update:preview "message"` or `npm run update:prod "message"`
-- **Visual Testing**: `npm run owl`
+- See **[./scripts/README.md](./scripts/README.md)** for more detail
