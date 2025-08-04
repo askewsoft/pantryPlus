@@ -15,8 +15,7 @@
     "update:prod": "node scripts/update.js prod",
     "killport": "sudo kill -9 $(sudo lsof -t -i :8081) # Do this if the Metro Bundler fails to start",
     "gettoken": "npx ts-node scripts/get-token.ts",
-    "expoupdate": "node scripts/update.js",
-    "owl": "node scripts/owl-test.js"
+    "expoupdate": "node scripts/update.js"
   },
   "dependencies": {
     "@aws-amplify/react-native": "^1.1.6",
@@ -62,7 +61,6 @@
     "@types/react": "~18.2.79",
     "dotenv": "^16.4.5",
     "expo-dev-client": "^4.0.28",
-    "react-native-owl": "^1.5.0",
     "ts-node": "^10.9.2",
     "typescript": "~5.3.3"
   },
