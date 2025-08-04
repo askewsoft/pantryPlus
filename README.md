@@ -135,3 +135,8 @@ npm run update:prod "Add new category management features"
 - Users must have the app installed from the App Store to receive updates
 - The app uses `fingerprint` runtime version policy, which automatically detects native code changes
 - When native dependencies change, EAS will automatically require a new build instead of allowing updates
+
+## Helper Scripts
+- **Get API Token**: `npm run gettoken <username> <password>`
+- **Expo Updates**: `npm run update:preview "message"` or `npm run update:prod "message"`
+- See **[./scripts/README.md](./scripts/README.md)** for more detail
