@@ -43,4 +43,3 @@ tags:
     commands:
       # User is not logged in, we're already on the login screen
       - assertVisible: "Sign in"
-      - takeScreenshot: "screenshots/${SCREENSHOT_DIR}/sign-in-screen"
