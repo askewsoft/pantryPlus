@@ -33,8 +33,10 @@ tags:
       - assertVisible: "My Settings"
       - takeScreenshot: "screenshots/${SCREENSHOT_DIR}/settings-screen"
       - tapOn: "Log Out"
+      - waitForAnimationToEnd
+      - assertVisible: "Sign in"
 
-# If user is already logged out
+# If user is already logged out, we should be on the Sign in screen
 - runFlow:
     when:
       visible: "Sign in"

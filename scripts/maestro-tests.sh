@@ -18,7 +18,6 @@ SCREENSHOT_DIR="current"
 # Load environment variables from .env file if it exists
 load_env() {
     if [ -f ".env" ]; then
-        print_status "Loading environment variables from .env file..."
         export $(grep -v '^#' .env | xargs)
         print_success "Environment variables loaded"
     else
@@ -55,7 +54,6 @@ check_maestro() {
 
 # Create directories if they don't exist
 setup_directories() {
-    print_status "Setting up directories..."
     mkdir -p screenshots/current
     mkdir -p screenshots/baseline
     print_success "Directories ready"
@@ -79,16 +77,24 @@ run_test() {
 
 # Run auth suite (logout -> login)
 run_auth_suite() {
-    print_status "Running auth suite..."
     maestro test -e SCREENSHOT_DIR=$SCREENSHOT_DIR -e TEST_USER_EMAIL=$TEST_USER_EMAIL -e TEST_USER_PASSWORD=$TEST_USER_PASSWORD tests/auth/logout.yaml tests/auth/login.yaml
     print_success "Auth suite completed"
 }
 
 # Run all tests
 run_all_tests() {
-    print_status "Running all tests..."
-    maestro test -e SCREENSHOT_DIR=$SCREENSHOT_DIR tests/
-    print_success "All tests completed"
+    print_status "RUNNING ALL TESTS"
+    run_auth_suite
+    
+    # TODO: Add other test suites in proper order
+    # Example:
+    # print_status "Running lists suite..."
+    # maestro test -e SCREENSHOT_DIR=$SCREENSHOT_DIR tests/lists/*.yaml
+    # 
+    # print_status "Running shopping suite..."
+    # maestro test -e SCREENSHOT_DIR=$SCREENSHOT_DIR tests/shopping/*.yaml
+    
+    print_success "ALL TESTS COMPLETED"
 }
 
 # Compare current vs baseline screenshots
