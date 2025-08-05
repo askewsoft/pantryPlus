@@ -1,0 +1,24 @@
+appId: com.askewsoft.pantryplus
+name: Grocery List - Using Tap Command
+tags:
+  - navigation
+  - lists
+  - tap
+
+# Test using the tap command with coordinates
+---
+- launchApp
+- assertVisible: "My Lists"
+
+# Wait for animation to end
+- waitForAnimationToEnd
+
+# Take a screenshot before tapping
+- takeScreenshot: "screenshots/${SCREENSHOT_DIR}/before-tap"
+
+# Tap using the tapOn command with point coordinates
+- tapOn: "Grocery"
+- assertVisible: "Grocery"
+
+# Take a screenshot after tapping
+- takeScreenshot: "screenshots/${SCREENSHOT_DIR}/after-tap" 

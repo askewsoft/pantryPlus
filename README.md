@@ -139,4 +139,14 @@ npm run update:prod "Add new category management features"
 ## Helper Scripts
 - **Get API Token**: `npm run gettoken <username> <password>`
 - **Expo Updates**: `npm run update:preview "message"` or `npm run update:prod "message"`
+- **Automated Tests**: `npm run maestro:baseline` or `npm run maestro:current`
 - See **[./scripts/README.md](./scripts/README.md)** for more detail
+
+## Automated Testing
+
+### Prerequisites
+
+```sh
+brew tap mobile-dev-inc/tap
+brew install maestro
+```
