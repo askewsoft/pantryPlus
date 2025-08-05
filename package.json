@@ -16,8 +16,9 @@
     "killport": "sudo kill -9 $(sudo lsof -t -i :8081) # Do this if the Metro Bundler fails to start",
     "gettoken": "npx ts-node scripts/get-token.ts",
     "expoupdate": "node scripts/update.js",
-    "maestro:current": "./scripts/run-maestro-tests.sh --screenshots current all",
-    "maestro:baseline": "./scripts/run-maestro-tests.sh --screenshots baseline all"
+    "maestro": "./scripts/maestro-tests.sh --screenshots current",
+    "maestro:current": "./scripts/maestro-tests.sh --screenshots current all",
+    "maestro:baseline": "./scripts/maestro-tests.sh --screenshots baseline all"
   },
   "dependencies": {
     "@aws-amplify/react-native": "^1.1.6",

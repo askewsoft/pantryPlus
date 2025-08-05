@@ -23,8 +23,7 @@ tags:
 - waitForAnimationToEnd
 
 # Check if Sign in button is visible and enabled
-- assertVisible:
-    id: "amplify__button"
+- assertVisible: "Sign in"
 
 # Tap Sign in button
 - tapOn:
@@ -33,14 +32,5 @@ tags:
 # Wait for login to complete (longer wait for authentication)
 - waitForAnimationToEnd
 
-# Additional wait for login processing
-- waitForAnimationToEnd
-
-# Take screenshot after login attempt (for debugging)
-- takeScreenshot: "screenshots/${SCREENSHOT_DIR}/after-login-attempt"
-
 # Verify successful login by checking for Welcome screen
 - assertVisible: "Let's begin!"
-
-# Take screenshot of successful login
-- takeScreenshot: "screenshots/${SCREENSHOT_DIR}/login-success" 

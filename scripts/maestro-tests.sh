@@ -64,14 +64,14 @@ setup_directories() {
 # Run a specific test
 run_test() {
     local test_file=$1
-    
+
     print_status "Running test: $test_file"
-    
+
     if [ ! -f "$test_file" ]; then
         print_error "Test file not found: $test_file"
         exit 1
     fi
-    
+
     # Run Maestro test with screenshot directory and auth parameters
     maestro test -e SCREENSHOT_DIR=$SCREENSHOT_DIR -e TEST_USER_EMAIL=$TEST_USER_EMAIL -e TEST_USER_PASSWORD=$TEST_USER_PASSWORD $test_file
     print_success "Test completed: $test_file"
@@ -79,7 +79,7 @@ run_test() {
 
 # Run auth suite (logout -> login)
 run_auth_suite() {
-    print_status "Running auth suite (logout -> login)..."
+    print_status "Running auth suite..."
     maestro test -e SCREENSHOT_DIR=$SCREENSHOT_DIR -e TEST_USER_EMAIL=$TEST_USER_EMAIL -e TEST_USER_PASSWORD=$TEST_USER_PASSWORD tests/auth/logout.yaml tests/auth/login.yaml
     print_success "Auth suite completed"
 }
@@ -98,12 +98,12 @@ compare_screenshots() {
         print_warning "No current screenshots found. Run tests first."
         return
     fi
-    
+
     if [ -z "$(ls -A screenshots/baseline)" ]; then
         print_warning "No baseline screenshots found. Consider promoting current screenshots to baseline."
         return
     fi
-    
+
     print_status "Use Kaleidoscope to compare:"
     echo "screenshots/baseline vs screenshots/current"
 }
@@ -115,7 +115,7 @@ promote_screenshots() {
         print_warning "No current screenshots to promote"
         return
     fi
-    
+
     cp -r screenshots/current/* screenshots/baseline/
     print_success "Screenshots promoted to baseline"
 }
@@ -191,7 +191,7 @@ main() {
     check_maestro
     load_env
     setup_directories
-    
+
     case "${REMAINING_ARGS[0]:-help}" in
         "test")
             if [ -z "${REMAINING_ARGS[1]}" ]; then
@@ -231,4 +231,4 @@ REMAINING_ARGS=()
 parse_args "$@"
 
 # Run main function with remaining arguments
-main "${REMAINING_ARGS[@]}" 
+main "${REMAINING_ARGS[@]}"
