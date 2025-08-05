@@ -1,0 +1,44 @@
+appId: com.askewsoft.pantryplus
+name: Logout User
+tags:
+  - auth
+  - logout
+  - setup
+
+---
+# Launch the app
+- launchApp
+
+# Wait for app to load
+- waitForAnimationToEnd
+
+# Check if we're on the Welcome screen (Let's begin! button)
+- runFlow:
+    when:
+      visible: "Let's begin!"
+    commands:
+      # User is on Welcome screen, tap Let's begin! to proceed
+      - takeScreenshot: "screenshots/${SCREENSHOT_DIR}/welcome-screen"
+      - tapOn: "Let's begin!"
+      - waitForAnimationToEnd
+
+# Check if user is logged in by looking for the Settings tab
+# If Settings tab exists, user is logged in and we need to log out
+- runFlow:
+    when:
+      visible: "Settings"
+    commands:
+      # User is logged in, navigate to Settings and log out
+      - tapOn: "Settings"
+      - assertVisible: "My Settings"
+      - takeScreenshot: "screenshots/${SCREENSHOT_DIR}/settings-screen"
+      - tapOn: "Log Out"
+
+# If user is already logged out
+- runFlow:
+    when:
+      visible: "Sign in"
+    commands:
+      # User is not logged in, we're already on the login screen
+      - assertVisible: "Sign in"
+      - takeScreenshot: "screenshots/${SCREENSHOT_DIR}/sign-in-screen"

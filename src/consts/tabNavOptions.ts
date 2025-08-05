@@ -4,8 +4,9 @@ import { BottomTabNavigationOptions } from "@react-navigation/bottom-tabs";
 import colors from "./colors";
 
 // Shared tab options
-const tabOptions = ({iconName}: {iconName: string}): BottomTabNavigationOptions => {
+const tabOptions = ({tabName, iconName}: {tabName: string, iconName: string}): BottomTabNavigationOptions => {
     const numInvites = domainStore.user?.numInvites || 0;
+    
     return {
       tabBarShowLabel: true,
       tabBarLabelPosition: 'below-icon',
@@ -17,6 +18,7 @@ const tabOptions = ({iconName}: {iconName: string}): BottomTabNavigationOptions 
       tabBarItemStyle: { paddingTop: 5 },
       tabBarBadge: iconName === 'groups' && numInvites > 0 ? numInvites : undefined,
       tabBarBadgeStyle: { color: colors.white, backgroundColor: colors.alertColor },
+      tabBarAccessibilityLabel: tabName
     }
   };
   

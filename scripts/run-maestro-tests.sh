@@ -15,6 +15,17 @@ NC='\033[0m' # No Color
 # Default screenshot directory
 SCREENSHOT_DIR="current"
 
+# Load environment variables from .env file if it exists
+load_env() {
+    if [ -f ".env" ]; then
+        print_status "Loading environment variables from .env file..."
+        export $(grep -v '^#' .env | xargs)
+        print_success "Environment variables loaded"
+    else
+        print_warning "No .env file found. Create one from .env.example for test credentials."
+    fi
+}
+
 # Function to print colored output
 print_status() {
     echo -e "${BLUE}[INFO]${NC} $1"
@@ -61,9 +72,16 @@ run_test() {
         exit 1
     fi
     
-    # Run Maestro test with screenshot directory parameter
-    maestro test -e SCREENSHOT_DIR=$SCREENSHOT_DIR $test_file
+    # Run Maestro test with screenshot directory and auth parameters
+    maestro test -e SCREENSHOT_DIR=$SCREENSHOT_DIR -e TEST_USER_EMAIL=$TEST_USER_EMAIL -e TEST_USER_PASSWORD=$TEST_USER_PASSWORD $test_file
     print_success "Test completed: $test_file"
+}
+
+# Run auth suite (logout -> login)
+run_auth_suite() {
+    print_status "Running auth suite (logout -> login)..."
+    maestro test -e SCREENSHOT_DIR=$SCREENSHOT_DIR -e TEST_USER_EMAIL=$TEST_USER_EMAIL -e TEST_USER_PASSWORD=$TEST_USER_PASSWORD tests/auth/logout.yaml tests/auth/login.yaml
+    print_success "Auth suite completed"
 }
 
 # Run all tests
@@ -151,24 +169,27 @@ show_help() {
     echo "  --help, -h          Show this help"
     echo ""
     echo "Commands:"
-    echo "  test <file>     Run a specific test file"
-    echo "  all             Run all tests"
-    echo "  compare         Compare current vs baseline screenshots"
-    echo "  promote         Promote current screenshots to baseline"
-    echo "  clear           Clear current screenshots"
-    echo "  setup           Setup directories"
-    echo "  help            Show this help"
+echo "  test <file>     Run a specific test file"
+echo "  auth            Run auth suite (logout -> login)"
+echo "  all             Run all tests"
+echo "  compare         Compare current vs baseline screenshots"
+echo "  promote         Promote current screenshots to baseline"
+echo "  clear           Clear current screenshots"
+echo "  setup           Setup directories"
+echo "  help            Show this help"
     echo ""
     echo "Examples:"
-    echo "  $0 test tests/grocery-list-navigation.yaml"
-    echo "  $0 --screenshots baseline test tests/grocery-list-navigation.yaml"
-    echo "  $0 --screenshots current all"
-    echo "  $0 compare"
+echo "  $0 test tests/auth/login.yaml"
+echo "  $0 auth"
+echo "  $0 --screenshots baseline auth"
+echo "  $0 --screenshots current all"
+echo "  $0 compare"
 }
 
 # Main script logic
 main() {
     check_maestro
+    load_env
     setup_directories
     
     case "${REMAINING_ARGS[0]:-help}" in
@@ -178,6 +199,9 @@ main() {
                 exit 1
             fi
             run_test "${REMAINING_ARGS[1]}"
+            ;;
+        "auth")
+            run_auth_suite
             ;;
         "all")
             run_all_tests

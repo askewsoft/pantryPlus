@@ -21,6 +21,26 @@ import tabOptions from '@/consts/tabNavOptions';
 
 type MaterialIconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
+// Tab configuration - single source of truth
+const tabConfig = {
+  Lists: {
+    iconName: 'list-alt' as MaterialIconName,
+    tabLabel: 'Lists'
+  },
+  Groups: {
+    iconName: 'groups' as MaterialIconName,
+    tabLabel: 'Groups'
+  },
+  Locations: {
+    iconName: 'store' as MaterialIconName,
+    tabLabel: 'Locations'
+  },
+  Settings: {
+    iconName: 'settings' as MaterialIconName,
+    tabLabel: 'Settings'
+  }
+} as const;
+
 const { Navigator, Screen } = createBottomTabNavigator<AppTabsParamList>();
 
 const AppWrapper = () => {
@@ -68,10 +88,40 @@ const AppWrapper = () => {
       >
         <NavigationContainer>
           <Navigator initialRouteName={getInitialAppTabsRouteName()} screenOptions={screenOptions} screenListeners={{ state: onScreenChange }}>
-            <Screen name="Lists" component={ListsNavigation} options={{...tabOptions({iconName: 'list-alt'}), tabBarIcon: tabBarIconCreator('list-alt')}} />
-            <Screen name="Groups" component={GroupsNavigation} options={{...tabOptions({iconName: 'groups'}), tabBarIcon: tabBarIconCreator('groups')}} />
-            <Screen name="Locations" component={LocationsNavigation} options={{...tabOptions({iconName: 'store'}), tabBarIcon: tabBarIconCreator('store')}} />
-            <Screen name="Settings" component={SettingsNavigation} options={{...tabOptions({iconName: 'settings'}), tabBarIcon: tabBarIconCreator('settings')}} />
+            <Screen
+              name="Lists"
+              component={ListsNavigation}
+              options={{...tabOptions({
+                tabName: tabConfig.Lists.tabLabel,
+                iconName: tabConfig.Lists.iconName
+              }),
+              tabBarIcon: tabBarIconCreator(tabConfig.Lists.iconName)
+            }}/>
+            <Screen
+              name="Groups"
+              component={GroupsNavigation}
+              options={{...tabOptions({
+                tabName: tabConfig.Groups.tabLabel,
+                iconName: tabConfig.Groups.iconName
+              }), tabBarIcon: tabBarIconCreator(tabConfig.Groups.iconName)
+            }}/>
+            <Screen
+              name="Locations"
+              component={LocationsNavigation}
+              options={{...tabOptions({
+                tabName: tabConfig.Locations.tabLabel,
+                iconName: tabConfig.Locations.iconName
+              }),
+              tabBarIcon: tabBarIconCreator(tabConfig.Locations.iconName)
+            }}/>
+            <Screen
+              name="Settings"
+              component={SettingsNavigation}
+              options={{...tabOptions({
+                tabName: tabConfig.Settings.tabLabel,
+                iconName: tabConfig.Settings.iconName}),
+              tabBarIcon: tabBarIconCreator(tabConfig.Settings.iconName)
+            }}/>
           </Navigator>
         </NavigationContainer>
       </KeyboardAvoidingView>

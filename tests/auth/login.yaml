@@ -1,0 +1,46 @@
+appId: com.askewsoft.pantryplus
+name: Login User
+tags:
+  - auth
+  - login
+  - setup
+
+---
+
+# User needs to log in, look for Sign in form
+- assertVisible: "Sign in"
+- takeScreenshot: "screenshots/${SCREENSHOT_DIR}/login-screen"
+
+# Enter email/username
+- tapOn: "Enter your Email"
+- inputText: "${TEST_USER_EMAIL}"
+
+# Enter password
+- tapOn: "Enter your Password Show password"
+- inputText: "${TEST_USER_PASSWORD}"
+
+# Wait for validation to complete and button to become enabled
+- waitForAnimationToEnd
+
+# Check if Sign in button is visible and enabled
+- assertVisible:
+    id: "amplify__button"
+
+# Tap Sign in button
+- tapOn:
+    id: "amplify__button"
+
+# Wait for login to complete (longer wait for authentication)
+- waitForAnimationToEnd
+
+# Additional wait for login processing
+- waitForAnimationToEnd
+
+# Take screenshot after login attempt (for debugging)
+- takeScreenshot: "screenshots/${SCREENSHOT_DIR}/after-login-attempt"
+
+# Verify successful login by checking for Welcome screen
+- assertVisible: "Let's begin!"
+
+# Take screenshot of successful login
+- takeScreenshot: "screenshots/${SCREENSHOT_DIR}/login-success" 
