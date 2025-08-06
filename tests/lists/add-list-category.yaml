@@ -1,0 +1,71 @@
+appId: com.askewsoft.pantryplus
+name: Create List
+tags:
+  - lists
+  - create
+
+---
+
+# Assumes the user is already on the My Lists tab
+- runFlow:
+    when:
+      visible: "Test List"
+    commands:
+      - tapOn: "Test List"
+      - waitForAnimationToEnd
+      - assertVisible: "Test List"
+      - takeScreenshot: "screenshots/${SCREENSHOT_DIR}/empty-list-screen"
+      # Add Category via the context menu
+      - tapOn: "Shopping List Menu"
+      - waitForAnimationToEnd
+      - takeScreenshot: "screenshots/${SCREENSHOT_DIR}/list-context-menu"
+      - tapOn: "Add Category"
+      - waitForAnimationToEnd
+      - takeScreenshot: "screenshots/${SCREENSHOT_DIR}/add-category-modal"
+      - assertVisible: "Category Name"
+      - tapOn: "Category Name"
+      - inputText: "Test Category"
+      - pressKey: "enter"
+      - waitForAnimationToEnd
+      - assertVisible: " Test Category Category Menu"
+      - takeScreenshot: "screenshots/${SCREENSHOT_DIR}/list-with-category-screen"
+      - tapOn: "Shopping List Menu"
+      - waitForAnimationToEnd
+      - tapOn: "Open All Categories"
+      - waitForAnimationToEnd
+      - takeScreenshot: "screenshots/${SCREENSHOT_DIR}/list-with-category-open"
+      # Add Item via the context menu
+      - tapOn: "Shopping List Menu"
+      - waitForAnimationToEnd
+      - tapOn: "Add Item"
+      - waitForAnimationToEnd
+      - assertVisible: "Item Name"
+      - tapOn: "Item Name"
+      - inputText: "Test Item Uncategorized"
+      - pressKey: "enter"
+      - waitForAnimationToEnd
+
+
+      # # Tap on the Category dropdown
+      # - tapOn:
+      #     point: 50%,38%
+      # - waitForAnimationToEnd
+      # # Tap on the first category
+      # - tapOn:
+      #     text: 0%
+      #     index: 1
+      # - waitForAnimationToEnd
+      # - tapOn: Item Name
+      # - inputText: "Test Item Categorized"
+      # - pressKey: "enter"
+      # - waitForAnimationToEnd
+      # # Tap on the Done button
+      # - tapOn:
+      #     point: 50%,55%
+      # - assertVisible: "Test Item Categorized"
+      # - assertVisible: "Test Item Uncategorized"
+      # - takeScreenshot: "screenshots/${SCREENSHOT_DIR}/list-with-items-screen"
+      # # Close all categories to prep for the next run
+      # - tapOn: "Shopping List Menu"
+      # - waitForAnimationToEnd
+      # - tapOn: "Close All Categories"

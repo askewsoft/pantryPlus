@@ -58,34 +58,3 @@ setup_directories() {
     mkdir -p screenshots/baseline
     print_success "Directories ready"
 }
-
-# Run a specific test with common parameters
-run_maestro_test() {
-    local test_file=$1
-    local description=${2:-"test"}
-
-    print_status "Running $description: $test_file"
-
-    if [ ! -f "$test_file" ]; then
-        print_error "Test file not found: $test_file"
-        exit 1
-    fi
-
-    # Run Maestro test with screenshot directory and auth parameters
-    maestro test -e SCREENSHOT_DIR=$SCREENSHOT_DIR -e TEST_USER_EMAIL=$TEST_USER_EMAIL -e TEST_USER_PASSWORD=$TEST_USER_PASSWORD $test_file
-    print_success "$description completed: $test_file"
-}
-
-# Run multiple tests in sequence
-run_test_suite() {
-    local test_files=("$@")
-    local suite_name=${test_files[0]}
-    
-    print_status "Running test suite: $suite_name"
-    
-    for test_file in "${test_files[@]:1}"; do
-        run_maestro_test "$test_file" "test"
-    done
-    
-    print_success "Test suite completed: $suite_name"
-} 

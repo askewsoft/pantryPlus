@@ -9,6 +9,7 @@ source "$SCRIPT_DIR/test-helpers/common.sh"
 
 # Run all list tests
 run_list_suite() {
-    run_maestro_test "tests/lists/create-list.yaml" "list test"
+    maestro test -e SCREENSHOT_DIR=$SCREENSHOT_DIR tests/lists/create-list.yaml
+    maestro test -e SCREENSHOT_DIR=$SCREENSHOT_DIR tests/lists/add-list-category.yaml
     print_success "List test suite completed"
 }

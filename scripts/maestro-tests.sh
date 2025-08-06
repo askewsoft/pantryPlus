@@ -13,13 +13,8 @@ source "$SCRIPT_DIR/test-helpers/auth-tests.sh"
 source "$SCRIPT_DIR/test-helpers/list-tests.sh"
 source "$SCRIPT_DIR/test-helpers/location-tests.sh"
 source "$SCRIPT_DIR/test-helpers/group-tests.sh"
+source "$SCRIPT_DIR/test-helpers/cleanup-tests.sh"
 source "$SCRIPT_DIR/test-helpers/screenshot-utils.sh"
-
-# Run a specific test
-run_test() {
-    local test_file=$1
-    run_maestro_test "$test_file" "test"
-}
 
 # Run all tests
 run_all_tests() {
@@ -86,6 +81,7 @@ show_help() {
     echo "  location <name>     Run specific location test"
     echo "  groups              Run all group tests"
     echo "  group <name>        Run specific group test"
+    echo "  cleanup             Run cleanup tests"
     echo "  all                 Run all tests"
     echo "  compare             Compare current vs baseline screenshots"
     echo "  promote             Promote current screenshots to baseline"
@@ -129,6 +125,9 @@ main() {
             ;;
         "groups")
             run_group_suite
+            ;;
+        "cleanup")
+            run_cleanup_suite
             ;;
         "all")
             run_all_tests

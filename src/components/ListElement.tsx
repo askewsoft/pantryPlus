@@ -65,7 +65,7 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: FnReturnVoid, na
         overSwipe={20}
         snapPointsLeft={[80]}
         renderUnderlayLeft={() => (
-          <RemoveButton onPress={onRemoveList} />
+          <RemoveButton onPress={onRemoveList} accessibilityLabel={`Delete ${list?.name}`} />
         )}
         swipeEnabled={userIsListOwner}
       >

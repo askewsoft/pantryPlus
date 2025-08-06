@@ -92,6 +92,9 @@ const ShoppingListContextMenu = observer(({
         <TouchableOpacity
           style={styles.hamburgerButton}
           activeOpacity={0.7}
+          accessibilityLabel="Shopping List Menu"
+          accessibilityHint="Opens menu with options to add items, categories, and manage list settings"
+          accessibilityRole="button"
         >
           <MaterialIcons
             name="menu"

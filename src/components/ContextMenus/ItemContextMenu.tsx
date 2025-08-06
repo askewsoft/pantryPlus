@@ -49,6 +49,9 @@ const ItemContextMenu = observer(({
         <TouchableOpacity
           style={styles.hamburgerButton}
           activeOpacity={0.7}
+          accessibilityLabel="Item Menu"
+          accessibilityHint="Opens menu with options to assign category or remove item"
+          accessibilityRole="button"
         >
           <MaterialIcons
             name="more-horiz"

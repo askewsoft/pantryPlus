@@ -1,0 +1,57 @@
+appId: com.askewsoft.pantryplus
+name: Cleanup Test Data
+tags:
+  - cleanup
+
+---
+
+# Navigate to Lists tab
+- tapOn: "Lists"
+- waitForAnimationToEnd
+
+# Take a screenshot to see current state
+- takeScreenshot: "screenshots/${SCREENSHOT_DIR}/lists-screen"
+
+# Clean up Test List if it exists
+- runFlow:
+    when:
+      visible: "Test List"
+    commands:
+      # Take a screenshot before attempting to delete
+      - takeScreenshot: "screenshots/${SCREENSHOT_DIR}/before-delete-attempt"
+      
+      # Try swiping from the Test List element
+      - swipe:
+          start: 60%,15%
+          end: 11%,15%
+          duration: 200
+
+      # Wait for swipe animation
+      - waitForAnimationToEnd
+      
+      # Take screenshot after swipe
+      - takeScreenshot: "screenshots/${SCREENSHOT_DIR}/after-swipe"
+      
+      # Try to find and tap the delete button
+      - runFlow:
+          when:
+            visible: "Delete Test List"
+          commands:
+            - tapOn: "Delete Test List"
+            - waitForAnimationToEnd
+            - assertNotVisible: "Test List"
+            - takeScreenshot: "screenshots/${SCREENSHOT_DIR}/after-delete"
+      
+      # If delete button didn't appear, take a screenshot for debugging
+      - runFlow:
+          when:
+            notVisible: "Delete Test List"
+          commands:
+            - takeScreenshot: "screenshots/${SCREENSHOT_DIR}/delete-button-not-found"
+
+# If Test List doesn't exist, that's fine - cleanup is complete
+- runFlow:
+    when:
+      notVisible: "Test List"
+    commands:
+      - takeScreenshot: "screenshots/${SCREENSHOT_DIR}/no-test-list-to-cleanup"
