@@ -1,0 +1,47 @@
+appId: com.askewsoft.pantryplus
+name: Create List
+tags:
+  - lists
+  - create
+
+---
+# Launch the app
+- launchApp
+
+# Wait for app to load
+- waitForAnimationToEnd
+
+# Check if we're on the Welcome screen (Let's begin! button)
+- runFlow:
+    when:
+      visible: "Let's begin!"
+    commands:
+      # User is on Welcome screen, tap Let's begin! to proceed
+      - tapOn: "Let's begin!"
+      - waitForAnimationToEnd
+
+# Check if user is already on the My Lists tab
+- runFlow:
+    when:
+      visible: "My Lists"
+    commands:
+      - takeScreenshot: "screenshots/${SCREENSHOT_DIR}/my-lists-screen"
+      - tapOn: "Add List"
+      - waitForAnimationToEnd
+      - assertVisible: "Create New List"
+      - takeScreenshot: "screenshots/${SCREENSHOT_DIR}/add-list-modal"
+      - tapOn: "List Name"
+      - inputText: "Test List"
+      - pressKey: "enter"
+      - waitForAnimationToEnd
+      - assertVisible: "Test List"
+      - takeScreenshot: "screenshots/${SCREENSHOT_DIR}/my-new-lists-screen"
+
+# If user is already logged out, we should be on the Sign in screen
+- runFlow:
+    when:
+      notVisible: "My Lists"
+    commands:
+      - tapOn: "My Lists"
+      - waitForAnimationToEnd
+      - assertVisible: "My Lists"

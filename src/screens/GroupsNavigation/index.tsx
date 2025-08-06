@@ -26,7 +26,9 @@ const { Navigator, Screen } = createStackNavigator<GroupsStackParamList>();
 const renderHeader = () => {
   return (
     <View style={styles.headerContainer}>
-      <AddButton onPress={onPressAddGroup}
+      <AddButton
+        label="Add Group"
+        onPress={onPressAddGroup}
         foreground={colors.white}
         background={colors.brandColor}
         materialIconName="add-circle"

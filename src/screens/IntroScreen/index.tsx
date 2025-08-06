@@ -46,7 +46,6 @@ const IntroScreen = () => {
             onPress={() => uiStore.setLastViewedSection('Lists')} 
             color={colors.brandColor}
             accessibilityLabel="Let's begin!"
-            accessibilityHint="Starts the app and navigates to the main interface"
           />
         </View>
       </View>

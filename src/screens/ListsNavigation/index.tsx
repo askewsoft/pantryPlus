@@ -99,6 +99,7 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
     headerRight: () => {
       return (
         <AddButton
+          label="Add List"
           foreground={colors.white}
           background={colors.brandColor}
           materialIconName="add-circle"
