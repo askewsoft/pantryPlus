@@ -65,7 +65,13 @@ const MySettings = ({ navigation }: StackPropsMySettings) => {
           />
           <Text style={styles.buttonText}>Check for Updates</Text>
         </Pressable>
-        <Pressable style={styles.buttonContainer} onPress={logout}>
+        <Pressable 
+          style={styles.buttonContainer} 
+          onPress={logout}
+          accessibilityLabel="Log Out"
+          accessibilityHint="Signs out of the current user account"
+          accessibilityRole="button"
+        >
           <MaterialIcons
             name="logout"
             size={iconSize.rowIconSize}

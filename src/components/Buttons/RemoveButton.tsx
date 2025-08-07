@@ -5,7 +5,7 @@ import colors from '@/consts/colors';
 import { iconSize } from '@/consts/iconButtons';
 import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
-const RemoveButton = ({ onPress }: { onPress: FnReturnVoid }) => {
+const RemoveButton = ({ onPress, accessibilityLabel = "Delete" }: { onPress: FnReturnVoid, accessibilityLabel?: string }) => {
     const onPressDelete = () => {
         onPress();
     }
@@ -26,6 +26,9 @@ const RemoveButton = ({ onPress }: { onPress: FnReturnVoid }) => {
             }}
             underlayColor={colors.itemBackground}
             onPress={onPressDelete}
+            accessibilityLabel={accessibilityLabel}
+            accessibilityHint="Deletes this item"
+            accessibilityRole="button"
         />
     );
 }

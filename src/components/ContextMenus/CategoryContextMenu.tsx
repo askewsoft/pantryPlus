@@ -50,6 +50,9 @@ const CategoryContextMenu = observer(({
         <TouchableOpacity
           style={styles.hamburgerButton}
           activeOpacity={0.7}
+          accessibilityLabel="Category Menu"
+          accessibilityHint="Opens menu with options to rename or delete category"
+          accessibilityRole="button"
         >
           <MaterialIcons
             name="edit-note"

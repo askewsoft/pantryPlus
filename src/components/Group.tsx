@@ -95,7 +95,7 @@ const Group = ({groupId, title, userIsGroupOwner, children}: {groupId: string, t
             <Text style={styles.title}>{title}</Text>
           )}
           {userIsGroupOwner && (
-            <AddButton onPress={() => setIsAddingShopper(!isAddingShopper)} foreground={colors.white} background={colors.lightBrandColor} materialIconName="person-add-alt" />
+            <AddButton label="Add Shopper" onPress={() => setIsAddingShopper(!isAddingShopper)} foreground={colors.white} background={colors.lightBrandColor} materialIconName="person-add-alt" />
           )}
           </View>
         </Pressable>

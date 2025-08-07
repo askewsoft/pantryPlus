@@ -48,6 +48,7 @@ const LocationsNavigation = ({navigation}: {navigation: any}) => {
     headerRight: () => {
       return (
         <AddButton
+          label="Add Location"
           foreground={colors.white}
           background={colors.brandColor}
           materialIconName="add-circle"

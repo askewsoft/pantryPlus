@@ -36,6 +36,8 @@ Manage your shopping lists, and then some.
     - `brew install cocoapods`
 * [XCode](https://developer.apple.com/xcode/)
     - for building the app for iOS devices
+* [Maestro](https://maestro.dev/)
+    - end-to-end testing framework that can grab screenshots of mobile simulators for regression testing
 
 ## Developing
 ### XCode Configuration
@@ -139,4 +141,5 @@ npm run update:prod "Add new category management features"
 ## Helper Scripts
 - **Get API Token**: `npm run gettoken <username> <password>`
 - **Expo Updates**: `npm run update:preview "message"` or `npm run update:prod "message"`
+- **Automated Tests**: `npm run maestro:baseline` or `npm run maestro:current`
 - See **[./scripts/README.md](./scripts/README.md)** for more detail

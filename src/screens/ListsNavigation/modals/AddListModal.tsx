@@ -18,6 +18,9 @@ const AddListModal = () => {
         <Text style={styles.modalTitle}>Create New List</Text>
         <TextInput
             style={styles.input}
+            accessibilityLabel="List Name"
+            accessibilityHint="Enter the name of the list"
+            accessibilityRole="text"
             autoFocus={true}
             inputMode="text"
             lineBreakStrategyIOS="none"

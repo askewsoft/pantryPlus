@@ -65,7 +65,7 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: FnReturnVoid, na
         overSwipe={20}
         snapPointsLeft={[80]}
         renderUnderlayLeft={() => (
-          <RemoveButton onPress={onRemoveList} />
+          <RemoveButton onPress={onRemoveList} accessibilityLabel={`Delete ${list?.name}`} />
         )}
         swipeEnabled={userIsListOwner}
       >
@@ -73,6 +73,9 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: FnReturnVoid, na
           <Pressable style={styles.titleContainer}
             onPress={handlePress}
             onLongPress={prepareToEditName}
+            accessibilityLabel={list?.name}
+            accessibilityHint="Opens the shopping list to view and manage items"
+            accessibilityRole="button"
           >
             <MaterialIcons name="format-list-bulleted" size={iconSize.rowIconSize} color={colors.brandColor} />
             <View style={styles.titleAndBadgeContainer}>
@@ -92,7 +95,14 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: FnReturnVoid, na
                   blurOnSubmit={true}
                 />
               ) : (
-                <Text style={styles.title}>{list?.name}</Text>
+                <Text 
+                  style={styles.title}
+                  accessibilityLabel={list?.name}
+                  accessibilityHint="Shopping list name"
+                  accessibilityRole="button"
+                >
+                  {list?.name}
+                </Text>
               )}
               <Badge count={unpurchasedItemsCount} size="small" />
             </View>
