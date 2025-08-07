@@ -68,7 +68,11 @@ const AddItemModal = () => {
         if (selectedCategoryId && selectedCategoryId !== '') {
           // Add item to specific category
           const category = currentList.categories.find(c => c.id === selectedCategoryId);
-          category?.addItem({ item: { name: trimmedName, upc: '' }, xAuthUser });
+          category?.addItem({ 
+            item: { name: trimmedName, upc: '' }, 
+            xAuthUser,
+            onItemAdded: () => currentList.loadUnpurchasedItemsCount({ xAuthUser })
+          });
         } else {
           // Add item to list without category
           currentList.addItem({ item: { name: trimmedName, upc: '' }, xAuthUser });
@@ -109,7 +113,11 @@ const AddItemModal = () => {
       itemToMove = originalCategory?.items.find(i => i.name === uiStore.editingItemName);
       if (itemToMove && originalCategory) {
         // Remove from original category
-        originalCategory.removeItem({ itemId: itemToMove.id });
+        originalCategory.removeItem({ 
+          itemId: itemToMove.id, 
+          xAuthUser,
+          onItemRemoved: () => currentList.loadUnpurchasedItemsCount({ xAuthUser })
+        });
       }
     } else {
       // Item was in the list without category
@@ -124,7 +132,11 @@ const AddItemModal = () => {
     if (itemToMove) {
       if (newCategoryId && newCategoryId !== '') {
         const newCategory = currentList.categories.find(c => c.id === newCategoryId);
-        newCategory?.addItem({ item: { name: uiStore.editingItemName!, upc: itemToMove.upc || '' }, xAuthUser });
+        newCategory?.addItem({ 
+          item: { name: uiStore.editingItemName!, upc: itemToMove.upc || '' }, 
+          xAuthUser,
+          onItemAdded: () => currentList.loadUnpurchasedItemsCount({ xAuthUser })
+        });
       } else {
         currentList.addItem({ item: { name: uiStore.editingItemName!, upc: itemToMove.upc || '' }, xAuthUser });
       }

@@ -30,14 +30,22 @@ export const useItemActions = ({
 
   const onRemoveItem = useCallback(async () => {
     if (categoryId) {
-      currCategory?.removeItem({ itemId });
+      currCategory?.removeItem({ 
+        itemId, 
+        xAuthUser,
+        onItemRemoved: () => currList?.loadUnpurchasedItemsCount({ xAuthUser })
+      });
     }
     await currList?.removeItem({ itemId, xAuthUser });
   }, [categoryId, currCategory, currList, itemId, xAuthUser]);
 
   const onUncategorizeItem = useCallback(async () => {
     if (categoryId) {
-      await currCategory?.unCategorizeItem({ itemId, xAuthUser });
+      await currCategory?.unCategorizeItem({ 
+        itemId, 
+        xAuthUser,
+        onItemRemoved: () => currList?.loadUnpurchasedItemsCount({ xAuthUser })
+      });
       await currList?.removeItem({ itemId, xAuthUser });
     }
   }, [categoryId, currCategory, currList, itemId, xAuthUser]);

@@ -23,18 +23,32 @@ export const CategoryModel = t.model('CategoryModel', {
             console.error(`Error setting name: ${error}`);
         }
     }),
-    addItem: flow(function*({ item, xAuthUser }: { item: Pick<ItemType, 'name' | 'upc'>, xAuthUser: string }): Generator<any, any, any> {
+    addItem: flow(function*({ item, xAuthUser, onItemAdded }: { item: Pick<ItemType, 'name' | 'upc'>, xAuthUser: string, onItemAdded?: () => void }): Generator<any, any, any> {
         try {
             const newItemId = randomUUID(); 
             const newItem = ItemModel.create({ id: newItemId, name: item.name, upc: item.upc });
             yield newItem.saveItem(xAuthUser);
             yield api.category.associateCategoryItem({ categoryId: self.id, itemId: newItemId, xAuthUser });
             self.items.push(newItem);
+            
+            // Notify parent that an item was added so it can update its count
+            if (onItemAdded) {
+                onItemAdded();
+            }
+            
+            // If this was the first item added to the category and allFoldersOpen is true,
+            // open the category to make it visible
+            if (self.items.length === 1) {
+                const { uiStore } = require('@/stores/UIStore');
+                if (uiStore.allFoldersOpen) {
+                    uiStore.setOpenCategory(self.id, true);
+                }
+            }
         } catch (error) {
             console.error(`Error adding item to category: ${error}`);
         }
     }),
-    removeItem: ({ itemId }: { itemId: string }): void => {
+    removeItem: flow(function*({ itemId, xAuthUser, onItemRemoved }: { itemId: string, xAuthUser: string, onItemRemoved?: () => void }): Generator<any, any, any> {
         try {
             // we intentionally do not call the API, we do not want to remove the item from the category
             // the component will remove the item from the shopping list
@@ -42,17 +56,27 @@ export const CategoryModel = t.model('CategoryModel', {
             if (index !== undefined && index >= 0) {
                 self.items!.splice(index, 1);
             }
+            
+            // Notify parent that an item was removed so it can update its count
+            if (onItemRemoved) {
+                onItemRemoved();
+            }
         } catch (error) {
             console.error(`Error removing item from shopping list: ${error}`);
         }
-    },
-    unCategorizeItem: flow(function*({ itemId, xAuthUser }: { itemId: string, xAuthUser: string }): Generator<any, any, any> {
+    }),
+    unCategorizeItem: flow(function*({ itemId, xAuthUser, onItemRemoved }: { itemId: string, xAuthUser: string, onItemRemoved?: () => void }): Generator<any, any, any> {
         try {
             // disassociate the item from the category and remove the item from the shopping list
             yield api.category.removeCategoryItem({ categoryId: self.id, itemId, xAuthUser });
             const index = self.items?.findIndex(i => i.id === itemId);
             if (index !== undefined && index >= 0) {
                 self.items!.splice(index, 1);
+            }
+            
+            // Notify parent that an item was removed so it can update its count
+            if (onItemRemoved) {
+                onItemRemoved();
             }
         } catch (error) {
             console.error(`Error un-categorizing item: ${error}`);

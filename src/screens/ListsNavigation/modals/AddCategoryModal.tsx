@@ -45,7 +45,12 @@ const onSubmit = async (evt: any) => {
     const currList = domainStore.lists.find((list) => list.id === listId);
     const user = domainStore.user;
     const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
-    currList?.addCategory({ name: evt.nativeEvent.text, xAuthUser: user?.email!, xAuthLocation });
+    currList?.addCategory({ 
+        name: evt.nativeEvent.text, 
+        xAuthUser: user?.email!, 
+        xAuthLocation,
+        defaultOpen: uiStore.allFoldersOpen 
+    });
     uiStore.setAddCategoryModalVisible(false);
 }
 

@@ -31,7 +31,7 @@ export const ListModel = t.model('ListModel', {
             console.error(`Error updating list: ${error}`);
         }
     }),
-    addCategory: flow(function*({ name, xAuthUser, xAuthLocation }: { name: string, xAuthUser: string, xAuthLocation: string }): Generator<any, any, any> {
+    addCategory: flow(function*({ name, xAuthUser, xAuthLocation, defaultOpen }: { name: string, xAuthUser: string, xAuthLocation: string, defaultOpen?: boolean }): Generator<any, any, any> {
         const newCategoryId = randomUUID();
         const ordinal = self.categories.length;
         const newCategory = CategoryModel.create({ id: newCategoryId, name, ordinal });
@@ -39,6 +39,13 @@ export const ListModel = t.model('ListModel', {
         try {
             yield api.list.addListCategory({ listId, category: { id: newCategoryId, name, ordinal, listId }, xAuthUser, xAuthLocation });
             self.categories.push(newCategory);
+            
+            // Set the default open state for the new category if provided
+            if (defaultOpen !== undefined) {
+                // Import uiStore here to avoid circular dependency issues
+                const { uiStore } = require('@/stores/UIStore');
+                uiStore.setOpenCategory(newCategoryId, defaultOpen);
+            }
         } catch (error) {
             console.error(`Error adding category to list: ${error}`);
         }
@@ -76,6 +83,17 @@ export const ListModel = t.model('ListModel', {
                     yield category.loadCategoryItems({ xAuthUser });
                 }
             }
+
+            // Set default open state for loaded categories based on allFoldersOpen setting
+            // Only set if categories don't already have an open state defined
+            const { uiStore } = require('@/stores/UIStore');
+            categories.forEach((category: CategoryType) => {
+                const existingOpenState = uiStore.openCategories.get(category.id);
+                if (existingOpenState === undefined) {
+                    // Category doesn't have an open state set yet, use the global setting
+                    uiStore.setOpenCategory(category.id, uiStore.allFoldersOpen);
+                }
+            });
         } catch (error) {
             console.error(`Error loading categories: ${error}`);
         }
