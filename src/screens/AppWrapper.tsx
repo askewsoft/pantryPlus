@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, Platform, KeyboardAvoidingView, SafeAreaView } from 'react-native';
 import { observer } from 'mobx-react';
-import { EventArg, NavigationContainer, TabNavigationState, NavigationState, EventListenerCallback, NavigationContainerEventMap } from '@react-navigation/native';
-import { createBottomTabNavigator, BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
+import { NavigationContainer, EventListenerCallback } from '@react-navigation/native';
+import { createDrawerNavigator, DrawerNavigationOptions } from '@react-navigation/drawer';
 import { StatusBar } from 'expo-status-bar';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-import { AppTabs,AppTabsParamList } from '@/types/AppNavTypes';
+import { AppTabs, AppTabsParamList } from '@/types/AppNavTypes';
 import ListsNavigation from './ListsNavigation';
 import SettingsNavigation from './SettingsNavigation';
 import GroupsNavigation from './GroupsNavigation';
@@ -17,52 +17,49 @@ import { uiStore } from '@/stores/UIStore';
 import { locationService } from '@/services/LocationService';
 
 import colors from '@/consts/colors';
-import tabOptions from '@/consts/tabNavOptions';
+import fonts from '@/consts/fonts';
 
-type MaterialIconName = React.ComponentProps<typeof MaterialIcons>['name'];
+const { Navigator, Screen } = createDrawerNavigator<AppTabsParamList>();
 
-// Tab configuration - single source of truth
-const tabConfig = {
-  Lists: {
-    iconName: 'list-alt' as MaterialIconName,
-    tabLabel: 'Lists'
-  },
-  Groups: {
-    iconName: 'groups' as MaterialIconName,
-    tabLabel: 'Groups'
-  },
-  Locations: {
-    iconName: 'store' as MaterialIconName,
-    tabLabel: 'Locations'
-  },
-  Settings: {
-    iconName: 'settings' as MaterialIconName,
-    tabLabel: 'Settings'
-  }
-} as const;
-
-const { Navigator, Screen } = createBottomTabNavigator<AppTabsParamList>();
+// Icon configuration for drawer items
+const getDrawerIcon = (iconName: string) => ({ color, size }: { color: string, size: number }) => (
+  <MaterialIcons name={iconName as any} size={size} color={color} style={{ marginRight: -10 }} />
+);
 
 const AppWrapper = () => {
-  const screenOptions: BottomTabNavigationOptions = { headerShown: false, lazy: false };
-
-  const tabBarIconCreator = (name: MaterialIconName) => {
-      return function ({ color, size }: { color: string, size: number }) {
-          return <MaterialIcons name={name} color={color} size={size} />;
-      }
+  const screenOptions: DrawerNavigationOptions = {
+    headerShown: false,
+    drawerActiveTintColor: colors.white,
+    drawerInactiveTintColor: colors.brandColor,
+    drawerActiveBackgroundColor: colors.lightBrandColor,
+    drawerInactiveBackgroundColor: 'transparent',
+    drawerLabelStyle: {
+      fontSize: fonts.messageTextSize,
+      fontWeight: '600',
+      marginLeft: -10,
+    },
+    drawerItemStyle: {
+      borderRadius: 8,
+    },
+    drawerStyle: {
+      backgroundColor: colors.detailsBackground,
+      width: 200,
+    },
+    drawerContentStyle: {
+      paddingTop: 25
+    },
   };
 
-  const getInitialAppTabsRouteName = (): typeof AppTabs[number] => {
-    // One of those times where TypeScript is just not smart enough to infer the type
+  const getInitialRouteName = (): typeof AppTabs[number] => {
     return AppTabs.includes(uiStore.lastViewedSection as typeof AppTabs[number]) ? uiStore.lastViewedSection as typeof AppTabs[number] : 'Lists';
   };
 
   const onScreenChange: EventListenerCallback<any, 'state'> = (e) => {
     const state = e.data?.state;
-    if (!state?.history?.length) return;
-    
-    const lastTab = state.history[state.history.length - 1];
-    const routeName = lastTab.key.split('-')[0] as typeof AppTabs[number];
+    if (!state?.routes?.length) return;
+
+    const currentRoute = state.routes[state.index];
+    const routeName = currentRoute?.name as typeof AppTabs[number];
     if (routeName && AppTabs.includes(routeName)) {
       uiStore.setLastViewedSection(routeName);
     }
@@ -82,46 +79,48 @@ const AppWrapper = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardContainer}
       >
         <NavigationContainer>
-          <Navigator initialRouteName={getInitialAppTabsRouteName()} screenOptions={screenOptions} screenListeners={{ state: onScreenChange }}>
+          <Navigator
+            initialRouteName={getInitialRouteName()}
+            screenOptions={screenOptions}
+            screenListeners={{ state: onScreenChange }}
+          >
             <Screen
               name="Lists"
               component={ListsNavigation}
-              options={{...tabOptions({
-                tabName: tabConfig.Lists.tabLabel,
-                iconName: tabConfig.Lists.iconName
-              }),
-              tabBarIcon: tabBarIconCreator(tabConfig.Lists.iconName)
-            }}/>
+              options={{
+                title: 'Lists',
+                drawerIcon: getDrawerIcon('list-alt')
+              }}
+            />
             <Screen
               name="Groups"
               component={GroupsNavigation}
-              options={{...tabOptions({
-                tabName: tabConfig.Groups.tabLabel,
-                iconName: tabConfig.Groups.iconName
-              }), tabBarIcon: tabBarIconCreator(tabConfig.Groups.iconName)
-            }}/>
+              options={{
+                title: 'Groups',
+                drawerIcon: getDrawerIcon('groups')
+              }}
+            />
             <Screen
               name="Locations"
               component={LocationsNavigation}
-              options={{...tabOptions({
-                tabName: tabConfig.Locations.tabLabel,
-                iconName: tabConfig.Locations.iconName
-              }),
-              tabBarIcon: tabBarIconCreator(tabConfig.Locations.iconName)
-            }}/>
+              options={{
+                title: 'Locations',
+                drawerIcon: getDrawerIcon('store')
+              }}
+            />
             <Screen
               name="Settings"
               component={SettingsNavigation}
-              options={{...tabOptions({
-                tabName: tabConfig.Settings.tabLabel,
-                iconName: tabConfig.Settings.iconName}),
-              tabBarIcon: tabBarIconCreator(tabConfig.Settings.iconName)
-            }}/>
+              options={{
+                title: 'Settings',
+                drawerIcon: getDrawerIcon('settings')
+              }}
+            />
           </Navigator>
         </NavigationContainer>
       </KeyboardAvoidingView>

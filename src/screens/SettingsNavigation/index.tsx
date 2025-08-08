@@ -5,6 +5,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { SettingsStack, SettingsStackParamList } from '@/types/SettingsNavTypes';
 import stackNavScreenOptions from '@/consts/stackNavOptions';
 
+import HamburgerButton from '@/components/Buttons/HamburgerButton';
+
 import MySettings from './MySettings';
 import Profile from './Profile';
 import Permissions from './Permissions';
@@ -37,9 +39,20 @@ const SettingsNavigation = ({navigation}: {navigation: any}) => {
     prevRoute.current = currentRoute;
   }
 
+  const onOpenDrawer = () => {
+    navigation.openDrawer();
+  };
+
   return (
     <Navigator initialRouteName="MySettings" screenOptions={stackNavScreenOptions} screenListeners={{ state: onScreenChange }}>
-      <Screen name="MySettings" component={MySettings} options={{ title: 'My Settings' }} />
+      <Screen
+        name="MySettings"
+        component={MySettings}
+        options={{
+          title: 'My Settings',
+          headerRight: () => <HamburgerButton onPress={onOpenDrawer} />
+        }}
+      />
       <Screen name="Profile" component={Profile} options={{ title: 'Profile' }} />
       <Screen name="Permissions" component={Permissions} options={{ title: 'Permissions' }} />
       <Screen name="About" component={About} options={{ title: 'About' }} />

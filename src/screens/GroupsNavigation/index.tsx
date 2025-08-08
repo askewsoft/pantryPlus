@@ -1,45 +1,26 @@
 import { useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
-import { View, StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { EventArg, StackNavigationState } from '@react-navigation/native';
 
 import { GroupsStack, GroupsStackParamList } from '@/types/GroupNavTypes';
 import stackNavScreenOptions from '@/consts/stackNavOptions';
 
 import MyGroups from './MyGroups';
 import MyInvites from './MyInvites';
-import AddButton from '@/components/Buttons/AddButton';
+import HamburgerButton from '@/components/Buttons/HamburgerButton';
 
-import colors from '@/consts/colors';
 import { uiStore } from '@/stores/UIStore';
 import { domainStore } from '@/stores/DomainStore';
 
-const onPressAddGroup = () => {
-  // Track that user is creating a group from the Groups screen directly
-  uiStore.setGroupCreationOrigin('Groups');
-  uiStore.setAddGroupModalVisible(true);
-};
-
 const { Navigator, Screen } = createStackNavigator<GroupsStackParamList>();
-
-const renderHeader = () => {
-  return (
-    <View style={styles.headerContainer}>
-      <AddButton
-        label="Add Group"
-        onPress={onPressAddGroup}
-        foreground={colors.white}
-        background={colors.brandColor}
-        materialIconName="add-circle"
-      />
-    </View>
-  );
-}
 
 const GroupsNavigation = ({navigation}: {navigation: any}) => {
   // Add a ref to track the previous route so we can detect when the user navigates to a non-default screen explicitly
   const prevRoute = useRef<string | null>(null);
+
+  const onOpenDrawer = () => {
+    navigation.openDrawer();
+  };
 
   useEffect(() => {
     if (uiStore.lastViewedSection === 'Groups' && GroupsStack.includes(uiStore.lastViewedSubSection as typeof GroupsStack[number])) {
@@ -78,7 +59,7 @@ const GroupsNavigation = ({navigation}: {navigation: any}) => {
         options={{
           title: 'My Groups',
           headerMode: 'float',
-          headerRight: renderHeader,
+          headerRight: () => <HamburgerButton onPress={onOpenDrawer} />,
         }}
       />
       <Screen
@@ -91,16 +72,5 @@ const GroupsNavigation = ({navigation}: {navigation: any}) => {
     </Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  headerContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    margin: 0,
-    padding: 0,
-  }
-});
 
 export default observer(GroupsNavigation);

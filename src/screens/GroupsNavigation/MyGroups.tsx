@@ -1,9 +1,12 @@
-import { Text, StyleSheet, Pressable, RefreshControl } from 'react-native';
+import { Text, StyleSheet, Pressable, RefreshControl, View } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { NestableScrollContainer, NestableDraggableFlatList } from "react-native-draggable-flatlist";
 import { MaterialIcons } from '@expo/vector-icons';
+
+import BottomActionBar from '@/components/BottomActionBar';
+import BottomActionButton from '@/components/Buttons/BottomActionButton';
 
 import { domainStore, GroupType } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
@@ -34,6 +37,11 @@ const MyGroups = ({navigation}: StackPropsMyGroups) => {
     navigation.navigate('MyInvites');
   }
 
+  const onPressAddGroup = () => {
+    uiStore.setGroupCreationOrigin('Groups');
+    uiStore.setAddGroupModalVisible(true);
+  };
+
   const renderGroupElement = ({ item }: { item: GroupType }) => {
     const group = domainStore.groups.find(g => g.id === item.id);
     const userIsGroupOwner = group?.owner.email === domainStore.user?.email;
@@ -62,20 +70,40 @@ const MyGroups = ({navigation}: StackPropsMyGroups) => {
 
   return (
     <ErrorBoundary>
-      <NestableScrollContainer refreshControl={<RefreshControl refreshing={!uiStore.groupsLoaded} onRefresh={onRefresh} />}>
-        {numInvites > 0 && <InviteNotice />}
-        <NestableDraggableFlatList
-          data={toJS(domainStore.groups)}
-          renderItem={renderGroupElement}
-          keyExtractor={group => group.id}
-        />
-        <AddGroupModal navigation={navigation} />
-      </NestableScrollContainer>
+      <View style={styles.container}>
+        <NestableScrollContainer style={styles.scrollContainer} refreshControl={<RefreshControl refreshing={!uiStore.groupsLoaded} onRefresh={onRefresh} />}>
+          {numInvites > 0 && <InviteNotice />}
+          <NestableDraggableFlatList
+            style={styles.draggableList}
+            data={toJS(domainStore.groups)}
+            renderItem={renderGroupElement}
+            keyExtractor={group => group.id}
+          />
+        </NestableScrollContainer>
+        <BottomActionBar>
+          <BottomActionButton
+            label="Add Group"
+            iconName="add-circle"
+            onPress={onPressAddGroup}
+          />
+        </BottomActionBar>
+      </View>
+      <AddGroupModal navigation={navigation} />
     </ErrorBoundary>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    height: '100%',
+  },
+  scrollContainer: {
+    flex: 1,
+  },
+  draggableList: {
+    height: '80%',
+  },
   inviteBadge: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -13,6 +13,8 @@ import colors from '@/consts/colors';
 
 import AddLocationModal from './modals/AddLocationModal';
 import LocationElement from '@/components/LocationElement';
+import BottomActionBar from '@/components/BottomActionBar';
+import BottomActionButton from '@/components/Buttons/BottomActionButton';
 
 const MyLocations = ({navigation, route}: {navigation: any, route: any}) => {
   const returnToList = route.params?.returnToList;
@@ -40,31 +42,53 @@ const MyLocations = ({navigation, route}: {navigation: any, route: any}) => {
     uiStore.setLocationsLoaded(true);
   }
 
+  const onPressAddLocation = () => {
+    uiStore.setAddLocationModalVisible(true);
+  };
+
   return (
     <ErrorBoundary>
       <View style={styles.container}>
-        {domainStore.nearestKnownLocation && (
-          <LocationElement id={domainStore.nearestKnownLocation.id} navigation={navigation} returnToList={returnToList}/>
-        )}
-        <Text style={styles.title}>Locations of past purchases</Text>
-        <DraggableFlatList
-          data={toJS(domainStore.locations)}
-          renderItem={renderLocationElement(navigation)}
-          keyExtractor={location => location.id}
-          refreshControl={<RefreshControl refreshing={!uiStore.locationsLoaded} onRefresh={onRefresh} />}
-        />
-        {domainStore.locations?.length === 0 && (
-          <Button title="Reload Locations" onPress={() => domainStore.loadRecentLocations()} />
-        )}
-        <AddLocationModal />
+        <View style={styles.contentContainer}>
+          {domainStore.nearestKnownLocation && (
+            <LocationElement id={domainStore.nearestKnownLocation.id} navigation={navigation} returnToList={returnToList}/>
+          )}
+          <Text style={styles.title}>Locations of past purchases</Text>
+          <DraggableFlatList
+            style={styles.draggableFlatListStyle}
+            data={toJS(domainStore.locations)}
+            renderItem={renderLocationElement(navigation)}
+            keyExtractor={location => location.id}
+            refreshControl={<RefreshControl refreshing={!uiStore.locationsLoaded} onRefresh={onRefresh} />}
+          />
+          {domainStore.locations?.length === 0 && (
+            <Button title="Reload Locations" onPress={() => domainStore.loadRecentLocations()} />
+          )}
+        </View>
+        <BottomActionBar>
+          <BottomActionButton
+            label="Add Location"
+            iconName="add-location"
+            onPress={onPressAddLocation}
+          />
+        </BottomActionBar>
       </View>
+      <AddLocationModal />
     </ErrorBoundary>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  contentContainer: {
+    flex: 1,
     alignItems: 'center',
+  },
+  draggableFlatListStyle: {
+    height: '93%',
   },
   title: {
     fontSize: fonts.infoTextSize,

@@ -56,9 +56,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: colors.brandColor,
-    opacity: 0.9,
-    paddingVertical: 50,
-    marginTop: '60%',
+    marginTop: '50%',
   },
   modalTitle: {
     fontSize: fonts.modalTitleSize,
@@ -78,4 +76,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default observer(AddListModal);  
+export default observer(AddListModal);

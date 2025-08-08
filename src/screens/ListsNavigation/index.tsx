@@ -6,14 +6,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 import MyLists from './MyLists';
 import ShoppingList from './ShoppingList';
 
-import AddButton from '@/components/Buttons/AddButton';
+import HamburgerButton from '@/components/Buttons/HamburgerButton';
 import ShoppingListContextMenu from '@/components/ContextMenus/ShoppingListContextMenu';
 import { uiStore } from '@/stores/UIStore';
 import { domainStore } from '@/stores/DomainStore';
 
 import { ListsStack, ListsStackParamList } from '@/types/ListNavTypes';
 import stackNavScreenOptions from '@/consts/stackNavOptions';
-import colors from '@/consts/colors';
 
 const { Navigator, Screen } = createStackNavigator<ListsStackParamList>();
 
@@ -41,10 +40,6 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
     prevRoute.current = currentRoute;
   }
 
-  const onPressAddList = () => {
-    uiStore.setAddListModalVisible(true);
-  };
-
   const onPressAddCategory = () => {
     uiStore.setAddCategoryModalVisible(true);
   };
@@ -52,6 +47,10 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
   const onPressAddProduct = () => {
     uiStore.setAddItemModalVisible(true);
   }
+
+  const onOpenDrawer = () => {
+    navigation.openDrawer();
+  };
 
   const ListHeaderRight = () => {
     return (
@@ -90,23 +89,11 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
       />
     );
   }
-
-
   
   const myListsOptions = {
     title: 'My Lists',
     headerMode: 'float' as const,
-    headerRight: () => {
-      return (
-        <AddButton
-          label="Add List"
-          foreground={colors.white}
-          background={colors.brandColor}
-          materialIconName="add-circle"
-          onPress={onPressAddList}
-        />
-      );
-    }
+    headerRight: () => <HamburgerButton onPress={onOpenDrawer} />
   }
 
   const shoppingListOptions = {

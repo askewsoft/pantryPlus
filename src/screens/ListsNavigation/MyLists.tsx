@@ -3,6 +3,9 @@ import { StyleSheet, View, Text, Button, RefreshControl } from 'react-native';
 import { toJS } from 'mobx';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 
+import BottomActionBar from '@/components/BottomActionBar';
+import BottomActionButton from '@/components/Buttons/BottomActionButton';
+
 import { StackPropsListsMyLists } from '@/types/ListNavTypes';
 import ListElement from '@/components/ListElement';
 import AddListModal from './modals/AddListModal';
@@ -39,36 +42,58 @@ const MyLists = ({navigation}: StackPropsListsMyLists) => {
   if (domainStore.lists.length <= 0 && !uiStore.addListModalVisible) {
     return (
       <ErrorBoundary>
-        <View style={styles.noListsContainer}>
-          <Text style={styles.noListsText}>No lists yet.</Text>
-          <Button title="Click here to create a list" onPress={onPressAddList} color={colors.brandColor} />
+        <View style={styles.container}>
+          <View style={styles.noListsContainer}>
+            <Text style={styles.noListsText}>No lists yet.</Text>
+            <Button title="Click here to create a list" onPress={onPressAddList} color={colors.brandColor} />
+          </View>
+          <BottomActionBar>
+            <BottomActionButton
+              label="Add List"
+              iconName="add-circle"
+              onPress={onPressAddList}
+            />
+          </BottomActionBar>
         </View>
       </ErrorBoundary>
     );
   } else {
     return (
-      /* IFF DraggableFlatList creates problems,
-      * investigate https://github.com/fivecar/react-native-draglist
-      */
       <ErrorBoundary>
-        <DraggableFlatList
-          style={styles.draggableFlatListStyle}
-          data={toJS(domainStore.lists).sort(sortByOrdinal)}
-          onDragEnd={domainStore.updateListOrder}
-          renderItem={renderListElement(navigation)}
-          keyExtractor={list => list.id}
-          refreshControl={<RefreshControl refreshing={!uiStore.listsLoaded} onRefresh={onRefresh} />}
-        />
+        <View style={styles.container}>
+          <DraggableFlatList
+            style={styles.draggableFlatListStyle}
+            contentContainerStyle={styles.listContentContainer}
+            data={toJS(domainStore.lists).sort(sortByOrdinal)}
+            onDragEnd={domainStore.updateListOrder}
+            renderItem={renderListElement(navigation)}
+            keyExtractor={list => list.id}
+            refreshControl={<RefreshControl refreshing={!uiStore.listsLoaded} onRefresh={onRefresh} />}
+          />
+          <BottomActionBar>
+            <BottomActionButton
+              label="Add List"
+              iconName="add-circle"
+              onPress={onPressAddList}
+            />
+          </BottomActionBar>
+        </View>
         <AddListModal />
         <ShareListModal navigation={navigation} />
-    </ErrorBoundary>
+      </ErrorBoundary>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   draggableFlatListStyle: {
-    height: '100%',
+    height: '93.5%',
+  },
+  listContentContainer: {
+    paddingBottom: 0,
   },
   noListsContainer: {
     flex: 1,

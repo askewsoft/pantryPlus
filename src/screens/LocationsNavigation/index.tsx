@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import { createStackNavigator } from '@react-navigation/stack';
-import { EventArg, StackNavigationState } from '@react-navigation/native';
 
 import { LocationsStack, LocationsStackParamList } from '@/types/LocationNavTypes';
 import stackNavScreenOptions from '@/consts/stackNavOptions';
@@ -9,8 +8,7 @@ import stackNavScreenOptions from '@/consts/stackNavOptions';
 import MyLocations from './MyLocations';
 import LocationDetails from './LocationDetails';
 
-import AddButton from '@/components/Buttons/AddButton';
-import colors from '@/consts/colors';
+import HamburgerButton from '@/components/Buttons/HamburgerButton';
 import { uiStore } from '@/stores/UIStore';
 
 const { Navigator, Screen } = createStackNavigator<LocationsStackParamList>();
@@ -39,21 +37,15 @@ const LocationsNavigation = ({navigation}: {navigation: any}) => {
     prevRoute.current = currentRoute;
   }
 
-  const onPressAddLocation = () => {
-    uiStore.setAddLocationModalVisible(true);
+  const onOpenDrawer = () => {
+    navigation.openDrawer();
   };
 
   const myLocationOptions = {
     title: 'My Locations',
     headerRight: () => {
       return (
-        <AddButton
-          label="Add Location"
-          foreground={colors.white}
-          background={colors.brandColor}
-          materialIconName="add-circle"
-          onPress={onPressAddLocation}
-        />
+        <HamburgerButton onPress={onOpenDrawer} />
       );
     }
   };

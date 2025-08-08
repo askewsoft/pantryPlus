@@ -15,7 +15,7 @@ const AddItemModal = () => {
 
   const listId = uiStore.selectedShoppingList;
   const currentList = domainStore.lists.find((list) => list.id === listId);
-  
+
   // Get category items directly from the DomainStore - always up to date
   const categoryItems = useMemo(() => {
     if (currentList) {
@@ -68,8 +68,8 @@ const AddItemModal = () => {
         if (selectedCategoryId && selectedCategoryId !== '') {
           // Add item to specific category
           const category = currentList.categories.find(c => c.id === selectedCategoryId);
-          category?.addItem({ 
-            item: { name: trimmedName, upc: '' }, 
+          category?.addItem({
+            item: { name: trimmedName, upc: '' },
             xAuthUser,
             onItemAdded: () => currentList.loadUnpurchasedItemsCount({ xAuthUser })
           });
@@ -78,7 +78,7 @@ const AddItemModal = () => {
           currentList.addItem({ item: { name: trimmedName, upc: '' }, xAuthUser });
         }
       }
-      
+
       // Clear the input for next item
       setItemName('');
       // Clear editing information
@@ -89,23 +89,23 @@ const AddItemModal = () => {
 
   const handleCategoryChange = () => {
     if (!currentList || !uiStore.editingItemName) return;
-    
+
     const user = domainStore.user;
     const xAuthUser = user?.email!;
     const originalCategoryId = uiStore.editingItemCategoryId;
     const newCategoryId = selectedCategoryId;
-    
+
     // Only proceed if category actually changed
     if (originalCategoryId === newCategoryId) return;
-    
-    // NOTE: When an Item is moved to a different category, that relationship needs to be 
-    // persisted to the database via the API. Currently, this implementation removes the item 
-    // from the original location and creates a new item in the new location, which results 
+
+    // NOTE: When an Item is moved to a different category, that relationship needs to be
+    // persisted to the database via the API. Currently, this implementation removes the item
+    // from the original location and creates a new item in the new location, which results
     // in API calls to createItem() and associateCategoryItem()/associateListItem().
-    // 
-    // Future consideration: Prevent duplicate Items by first looking for similarly named 
+    //
+    // Future consideration: Prevent duplicate Items by first looking for similarly named
     // Items when adding to a List, but this depends on how the data model unfolds in the database.
-    
+
     // Find the item in the original category or list
     let itemToMove = null;
     if (originalCategoryId) {
@@ -113,8 +113,8 @@ const AddItemModal = () => {
       itemToMove = originalCategory?.items.find(i => i.name === uiStore.editingItemName);
       if (itemToMove && originalCategory) {
         // Remove from original category
-        originalCategory.removeItem({ 
-          itemId: itemToMove.id, 
+        originalCategory.removeItem({
+          itemId: itemToMove.id,
           xAuthUser,
           onItemRemoved: () => currentList.loadUnpurchasedItemsCount({ xAuthUser })
         });
@@ -127,13 +127,13 @@ const AddItemModal = () => {
         currentList.removeItem({ itemId: itemToMove.id, xAuthUser });
       }
     }
-    
+
     // Add to new category or list
     if (itemToMove) {
       if (newCategoryId && newCategoryId !== '') {
         const newCategory = currentList.categories.find(c => c.id === newCategoryId);
-        newCategory?.addItem({ 
-          item: { name: uiStore.editingItemName!, upc: itemToMove.upc || '' }, 
+        newCategory?.addItem({
+          item: { name: uiStore.editingItemName!, upc: itemToMove.upc || '' },
           xAuthUser,
           onItemAdded: () => currentList.loadUnpurchasedItemsCount({ xAuthUser })
         });
@@ -148,7 +148,7 @@ const AddItemModal = () => {
     if (uiStore.editingItemName && uiStore.editingItemCategoryId !== selectedCategoryId) {
       handleCategoryChange();
     }
-    
+
     uiStore.setAddItemModalVisible(false);
     uiStore.setEditingItemName(null);
     uiStore.setEditingItemCategoryId(null);
@@ -169,7 +169,7 @@ const AddItemModal = () => {
       transparent={true}
       animationType="slide"
     >
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingView}
       >
@@ -177,7 +177,7 @@ const AddItemModal = () => {
           <Text style={styles.modalTitle}>
             {uiStore.editingItemName ? 'Edit Item' : 'Add Item'}
           </Text>
-          
+
           <View style={styles.dropdownContainer}>
             <DropDownPicker
               open={categoryOpen}
@@ -238,8 +238,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: colors.brandColor,
-    paddingVertical: 20,
-    marginTop: '40%',
+    marginTop: '50%',
   },
   modalTitle: {
     fontSize: fonts.modalTitleSize,
@@ -282,4 +281,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default observer(AddItemModal); 
+export default observer(AddItemModal);
