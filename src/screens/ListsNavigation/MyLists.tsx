@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react-lite';
-import { StyleSheet, View, Text, Button, RefreshControl } from 'react-native';
+import { StyleSheet, View, Text, Button, RefreshControl, FlatList } from 'react-native';
 import { toJS } from 'mobx';
-import DraggableFlatList from 'react-native-draggable-flatlist';
 
 import BottomActionBar from '@/components/BottomActionBar';
 import BottomActionButton from '@/components/Buttons/BottomActionButton';
@@ -10,10 +9,10 @@ import { StackPropsListsMyLists } from '@/types/ListNavTypes';
 import ListElement from '@/components/ListElement';
 import AddListModal from './modals/AddListModal';
 import ShareListModal from './modals/ShareListModal';
+import ReorderListsModal from './modals/ReorderListsModal';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 import { domainStore, ListType } from '@/stores/DomainStore';
-import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
@@ -21,9 +20,9 @@ import { uiStore } from '@/stores/UIStore';
 import { sortByOrdinal } from '@/stores/utils/sorter';
 
 const renderListElement = (navigation: any) => {
-  return ({ item, drag }: { item: ListType, drag: FnReturnVoid }) => {
+  return ({ item }: { item: ListType }) => {
     return (
-      <ListElement id={item.id} drag={drag} navigation={navigation}/>
+      <ListElement id={item.id} navigation={navigation}/>
     );
   }
 }
@@ -31,6 +30,10 @@ const renderListElement = (navigation: any) => {
 const MyLists = ({navigation}: StackPropsListsMyLists) => {
   const onPressAddList = () => {
     uiStore.setAddListModalVisible(true);
+  };
+
+  const onPressReorderLists = () => {
+    uiStore.setReorderListsModalVisible(true);
   };
 
   const onRefresh = async () => {
@@ -61,16 +64,20 @@ const MyLists = ({navigation}: StackPropsListsMyLists) => {
     return (
       <ErrorBoundary>
         <View style={styles.container}>
-          <DraggableFlatList
-            style={styles.draggableFlatListStyle}
+          <FlatList
+            style={styles.flatListStyle}
             contentContainerStyle={styles.listContentContainer}
             data={toJS(domainStore.lists).sort(sortByOrdinal)}
-            onDragEnd={domainStore.updateListOrder}
             renderItem={renderListElement(navigation)}
             keyExtractor={list => list.id}
             refreshControl={<RefreshControl refreshing={!uiStore.listsLoaded} onRefresh={onRefresh} />}
           />
           <BottomActionBar>
+            <BottomActionButton
+              label="Reorder"
+              iconName="reorder"
+              onPress={onPressReorderLists}
+            />
             <BottomActionButton
               label="Add List"
               iconName="add-circle"
@@ -80,6 +87,7 @@ const MyLists = ({navigation}: StackPropsListsMyLists) => {
         </View>
         <AddListModal />
         <ShareListModal navigation={navigation} />
+        <ReorderListsModal />
       </ErrorBoundary>
     );
   }
@@ -89,7 +97,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  draggableFlatListStyle: {
+  flatListStyle: {
     height: '93.5%',
   },
   listContentContainer: {

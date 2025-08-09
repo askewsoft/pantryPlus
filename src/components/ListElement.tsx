@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { Text, View, StyleSheet, Pressable, TextInput } from 'react-native';
+import { Text, View, StyleSheet, Pressable, TextInput, Alert } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { ScaleDecorator } from 'react-native-draggable-flatlist';
-import SwipeableItem from "react-native-swipeable-item";
 
 import { domainStore } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
@@ -11,12 +9,10 @@ import { uiStore } from '@/stores/UIStore';
 import fonts from '@/consts/fonts';
 import colors from '@/consts/colors';
 import { iconSize } from '@/consts/iconButtons';
-import { iconStyleStyle, iconStyle } from '@/consts/iconButtons';
-import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
-import RemoveButton from './Buttons/RemoveButton';
 import Badge from './Badge';
+import ListContextMenu from './ContextMenus/ListContextMenu';
 
-const ListElement = ({id, drag, navigation}: {id: string, drag: FnReturnVoid, navigation: any}) => {
+const ListElement = ({id, navigation}: {id: string, navigation: any}) => {
   const list = domainStore.lists.find(list => list.id === id);
   const userIsListOwner = list?.ownerId === domainStore.user?.id;
 
@@ -54,85 +50,77 @@ const ListElement = ({id, drag, navigation}: {id: string, drag: FnReturnVoid, na
   }
 
   const onRemoveList = () => {
-    domainStore.removeList(id);
+    Alert.alert(
+      'Delete List',
+      `Are you sure you want to delete "${list?.name}"? This action cannot be undone.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => domainStore.removeList(id)
+        }
+      ]
+    );
+  }
+
+  const onRenameList = () => {
+    if (userIsListOwner) {
+      setEditedTitle(list!.name);
+      setIsEditing(true);
+    }
   }
 
   return (
-    <ScaleDecorator activeScale={1.04}>
-      <SwipeableItem
-        key={id}
-        item={list!}
-        overSwipe={20}
-        snapPointsLeft={[80]}
-        renderUnderlayLeft={() => (
-          <RemoveButton onPress={onRemoveList} accessibilityLabel={`Delete ${list?.name}`} />
-        )}
-        swipeEnabled={userIsListOwner}
+    <View style={styles.container}>
+      <Pressable style={styles.titleContainer}
+        onPress={handlePress}
+        onLongPress={prepareToEditName}
+        accessibilityLabel={list?.name}
+        accessibilityHint="Opens the shopping list to view and manage items"
+        accessibilityRole="button"
       >
-        <View style={styles.container}>
-          <Pressable style={styles.titleContainer}
-            onPress={handlePress}
-            onLongPress={prepareToEditName}
-            accessibilityLabel={list?.name}
-            accessibilityHint="Opens the shopping list to view and manage items"
-            accessibilityRole="button"
-          >
-            <MaterialIcons name="format-list-bulleted" size={iconSize.rowIconSize} color={colors.brandColor} />
-            <View style={styles.titleAndBadgeContainer}>
-              {isEditing ? (
-                <TextInput
-                  style={[styles.title, styles.titleInput]}
-                  value={editedTitle}
-                  onSubmitEditing={onSubmit}
-                  onChangeText={(text: string) => setEditedTitle(text)}
-                  autoFocus={true}
-                  inputMode="text"
-                  lineBreakStrategyIOS="none"
-                  clearButtonMode="while-editing"
-                  enablesReturnKeyAutomatically={true}
-                  keyboardAppearance="light"
-                  returnKeyType="done"
-                  blurOnSubmit={true}
-                />
-              ) : (
-                <Text 
-                  style={styles.title}
-                  accessibilityLabel={list?.name}
-                  accessibilityHint="Shopping list name"
-                  accessibilityRole="button"
-                >
-                  {list?.name}
-                </Text>
-              )}
-              <Badge count={unpurchasedItemsCount} size="small" />
-            </View>
-          </Pressable>
-          <View style={styles.buttonContainer}>
-            {userIsListOwner && (
-              <MaterialIcons.Button
-                name="ios-share"
-                size={iconSize.rowIconSize}
-                backgroundColor={colors.itemBackground}
-                color={colors.brandColor}
-                iconStyle={iconStyleStyle}
-                style={iconStyle}
-                underlayColor={colors.lightBrandColor}
-                onPress={openShareModal}
-              />
-            )}
-            <MaterialIcons.Button
-              name="drag-indicator"
-              size={iconSize.rowIconSize}
-              backgroundColor={colors.itemBackground}
-              color={colors.brandColor}
-              iconStyle={iconStyleStyle}
-              style={iconStyle}
-              onLongPress={drag}
+        <MaterialIcons name="format-list-bulleted" size={iconSize.rowIconSize} color={colors.brandColor} />
+        <View style={styles.titleAndBadgeContainer}>
+          {isEditing ? (
+            <TextInput
+              style={[styles.title, styles.titleInput]}
+              value={editedTitle}
+              onSubmitEditing={onSubmit}
+              onChangeText={(text: string) => setEditedTitle(text)}
+              autoFocus={true}
+              inputMode="text"
+              lineBreakStrategyIOS="none"
+              clearButtonMode="while-editing"
+              enablesReturnKeyAutomatically={true}
+              keyboardAppearance="light"
+              returnKeyType="done"
+              blurOnSubmit={true}
             />
-          </View>
+          ) : (
+            <Text
+              style={styles.title}
+              accessibilityLabel={list?.name}
+              accessibilityHint="Shopping list name"
+              accessibilityRole="button"
+            >
+              {list?.name}
+            </Text>
+          )}
+          <Badge count={unpurchasedItemsCount} size="small" />
         </View>
-      </SwipeableItem>
-    </ScaleDecorator>
+      </Pressable>
+      <View style={styles.buttonContainer}>
+        {userIsListOwner && (
+          <ListContextMenu
+            onShare={openShareModal}
+            onRename={onRenameList}
+            onDelete={onRemoveList}
+            userIsListOwner={userIsListOwner}
+          />
+        )}
+      </View>
+    </View>
   );
 }
 
@@ -176,6 +164,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     display: 'flex',
     flexDirection: 'row',
+    alignItems: 'center',
   }
 });
 
