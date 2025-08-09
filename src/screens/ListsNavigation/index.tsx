@@ -40,14 +40,6 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
     prevRoute.current = currentRoute;
   }
 
-  const onPressAddCategory = () => {
-    uiStore.setAddCategoryModalVisible(true);
-  };
-
-  const onPressAddProduct = () => {
-    uiStore.setAddItemModalVisible(true);
-  }
-
   const onOpenDrawer = () => {
     navigation.openDrawer();
   };
@@ -55,8 +47,6 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
   const ListHeaderRight = () => {
     return (
       <ShoppingListContextMenu
-        onAddCategory={onPressAddCategory}
-        onAddItem={onPressAddProduct}
         onToggleEmptyFolders={() => {
           uiStore.setShowEmptyFolders(!uiStore.showEmptyFolders);
         }}
@@ -89,7 +79,7 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
       />
     );
   }
-  
+
   const myListsOptions = {
     title: 'My Lists',
     headerMode: 'float' as const,

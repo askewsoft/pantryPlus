@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react';
 import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import { ScaleDecorator } from 'react-native-draggable-flatlist';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
 import colors from '@/consts/colors';
@@ -26,8 +25,7 @@ const CategoryFolder = ({categoryId, title, children}: {categoryId: string, titl
 
   // Calculate unpurchased items count for this category
   // Since purchased items are removed from the category, all items are unpurchased
-  const unpurchasedItemsCount = currCategory ? 
-    currCategory.items.length : 0;
+  const unpurchasedItemsCount = currCategory ? currCategory.items.length : 0;
 
   const onSubmit = async () => {
     if (editedTitle.trim().toLowerCase() !== currCategory?.name.trim().toLowerCase()) {
@@ -52,53 +50,49 @@ const CategoryFolder = ({categoryId, title, children}: {categoryId: string, titl
   }
 
   return (
-    <ScaleDecorator activeScale={1.04}>
-      <View ref={categoryRef} style={styles.container}>
-          {uiStore.showCategoryLabels && (
-            <Pressable
-              onPress={toggleFolderOpenClose}
-            >
-              <View style={styles.titleContainer}>
-                <AntDesign
-                  name={open ? "folderopen" : "folder1"}
-                  size={iconSize.rowIconSize}
-                  backgroundColor={colors.lightBrandColor}
-                  color={colors.white}
-                  iconStyle={{ padding: 0, margin: 0 }}
+    <View ref={categoryRef} style={styles.container}>
+      {uiStore.showCategoryLabels && (
+        <Pressable onPress={toggleFolderOpenClose}>
+          <View style={styles.titleContainer}>
+            <AntDesign
+              name={open ? "folderopen" : "folder1"}
+              size={iconSize.rowIconSize}
+              backgroundColor={colors.lightBrandColor}
+              color={colors.white}
+              iconStyle={{ padding: 0, margin: 0 }}
+            />
+            <View style={styles.titleAndBadgeContainer}>
+              {isEditing ? (
+                <TextInput
+                  style={[styles.title, styles.titleInput]}
+                  value={editedTitle}
+                  onSubmitEditing={onSubmit}
+                  onChangeText={(text) => setEditedTitle(text)}
+                  autoFocus={true}
+                  inputMode="text"
+                  lineBreakStrategyIOS="none"
+                  clearButtonMode="while-editing"
+                  enablesReturnKeyAutomatically={true}
+                  keyboardAppearance="light"
+                  returnKeyType="done"
+                  blurOnSubmit={true}
                 />
-                <View style={styles.titleAndBadgeContainer}>
-                  {isEditing ? (
-                    <TextInput
-                      style={[styles.title, styles.titleInput]}
-                      value={editedTitle}
-                      onSubmitEditing={onSubmit}
-                      onChangeText={(text) => setEditedTitle(text)}
-                      autoFocus={true}
-                      inputMode="text"
-                      lineBreakStrategyIOS="none"
-                      clearButtonMode="while-editing"
-                      enablesReturnKeyAutomatically={true}
-                      keyboardAppearance="light"
-                      returnKeyType="done"
-                      blurOnSubmit={true}
-                    />
-                  ) : (
-                    <Text style={styles.title}>{title}</Text>
-                  )}
-                  <Badge count={unpurchasedItemsCount} size="small" />
-                </View>
-                <View style={styles.buttonContainer}>
-                  <CategoryContextMenu
-                    onRename={onRenameCategory}
-                    onDelete={onDeleteCategory}
-                  />
-                </View>
-              </View>
-            </Pressable>
-          )}
-          {children}
-        </View>
-    </ScaleDecorator>
+              ) : (
+                <Text style={styles.title}>{title}</Text>
+              )}
+              <Badge count={unpurchasedItemsCount} size="small" />
+            </View>
+            <View style={styles.buttonContainer}>
+              <CategoryContextMenu
+                onRename={onRenameCategory}
+                onDelete={onDeleteCategory}
+              />
+            </View>
+          </View>
+        </Pressable>
+      )}
+      {children}
+    </View>
   );
 };
 
