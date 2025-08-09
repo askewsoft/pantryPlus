@@ -113,30 +113,22 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
 
   return (
     <ErrorBoundary>
-      <View style={styles.container}>
-        <View style={styles.contentWrapper}>
-          <CurrentLocation onPress={setCurrentLocation} />
-          <ScrollView
+            <View style={styles.container}>
+        <CurrentLocation onPress={setCurrentLocation} />
+        {/* Only render content if we have a valid list */}
+        {currentList && (
+          <FlatList
             ref={scrollViewRef}
-            style={styles.scrollContainer}
+            style={styles.flatListStyle}
+            data={toJS(currentList.categories)
+              .filter(category => uiStore.showEmptyFolders || category.items.length > 0)
+              .sort(sortByOrdinal)}
+            renderItem={renderCategoryElement}
+            keyExtractor={category => category.id}
+            ListHeaderComponent={<ListItems listId={listId!} />}
             refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={loadData} />}
-          >
-            {/* Only render content if we have a valid list */}
-            {currentList && (
-              <View style={styles.contentContainer}>
-                <ListItems listId={listId!} />
-                <FlatList
-                  style={styles.flatListStyle}
-                  data={toJS(currentList.categories)
-                    .filter(category => uiStore.showEmptyFolders || category.items.length > 0)
-                    .sort(sortByOrdinal)}
-                  renderItem={renderCategoryElement}
-                  keyExtractor={category => category.id}
-                />
-              </View>
-            )}
-          </ScrollView>
-        </View>
+          />
+        )}
         <BottomActionBar>
           <BottomActionButton
             label="Add Item"
@@ -163,18 +155,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
-  contentWrapper: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-  scrollContainer: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-  contentContainer: {
-    paddingBottom: 20, // padding for content above bottom action bar
-  },
   flatListStyle: {
+    flex: 1,
     backgroundColor: colors.detailsBackground,
   }
 });

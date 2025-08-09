@@ -15,14 +15,14 @@ type ItemsListProps = {
   indent?: number;
 };
 
-const ItemsList = observer(({ 
-  items, 
+const ItemsList = observer(({
+  items,
   listId,
   categoryId,
   indent = 10,
 }: ItemsListProps) => {
   return (
-    <View style={[styles.draggableFlatListStyle, { paddingTop: uiStore.showCategoryLabels ? 5 : 0 }]}>
+    <View style={[styles.draggableFlatListStyle, { paddingTop: uiStore.showCategoryLabels ? 1 : 0 }]}>
       {toJS(items).map((item: ItemType) => (
         <Item
           key={item.id}
@@ -42,4 +42,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ItemsList; 
+export default ItemsList;
