@@ -50,7 +50,7 @@ const SettingsNavigation = ({navigation}: {navigation: any}) => {
         component={MySettings}
         options={{
           title: 'My Settings',
-          headerRight: () => <HamburgerButton onPress={onOpenDrawer} />
+          headerLeft: () => <HamburgerButton onPress={onOpenDrawer} />
         }}
       />
       <Screen name="Profile" component={Profile} options={{ title: 'Profile' }} />

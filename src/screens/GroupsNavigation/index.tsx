@@ -59,7 +59,7 @@ const GroupsNavigation = ({navigation}: {navigation: any}) => {
         options={{
           title: 'My Groups',
           headerMode: 'float',
-          headerRight: () => <HamburgerButton onPress={onOpenDrawer} />,
+          headerLeft: () => <HamburgerButton onPress={onOpenDrawer} />,
         }}
       />
       <Screen

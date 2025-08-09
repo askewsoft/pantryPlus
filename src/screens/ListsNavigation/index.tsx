@@ -83,7 +83,7 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
   const myListsOptions = {
     title: 'My Lists',
     headerMode: 'float' as const,
-    headerRight: () => <HamburgerButton onPress={onOpenDrawer} />
+    headerLeft: () => <HamburgerButton onPress={onOpenDrawer} />
   }
 
   const shoppingListOptions = {

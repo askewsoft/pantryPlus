@@ -43,7 +43,7 @@ const LocationsNavigation = ({navigation}: {navigation: any}) => {
 
   const myLocationOptions = {
     title: 'My Locations',
-    headerRight: () => {
+    headerLeft: () => {
       return (
         <HamburgerButton onPress={onOpenDrawer} />
       );
