@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Button, Modal, Text, TextInput, View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { Button, Modal, Text, TextInput, View, StyleSheet, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
 import { observer } from 'mobx-react';
 import DropDownPicker from 'react-native-dropdown-picker';
 
@@ -12,6 +12,7 @@ const AddItemModal = () => {
   const [itemName, setItemName] = useState('');
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const textInputRef = useRef<TextInput>(null);
 
   const listId = uiStore.selectedShoppingList;
   const currentList = domainStore.lists.find((list) => list.id === listId);
@@ -143,12 +144,29 @@ const AddItemModal = () => {
     }
   };
 
+  const handleNext = () => {
+    // Add the current item if there's text
+    if (itemName.trim() !== '') {
+      handleAddItem();
+    }
+    // Modal stays open for next item, input is already cleared by handleAddItem
+  };
+
   const handleDone = () => {
+    // Dismiss keyboard first
+    Keyboard.dismiss();
+
+    // Add the current item if there's text
+    if (itemName.trim() !== '') {
+      handleAddItem();
+    }
+
     // If we're editing an item and the category has changed, save the changes
     if (uiStore.editingItemName && uiStore.editingItemCategoryId !== selectedCategoryId) {
       handleCategoryChange();
     }
 
+    // Close modal and clean up
     uiStore.setAddItemModalVisible(false);
     uiStore.setEditingItemName(null);
     uiStore.setEditingItemCategoryId(null);
@@ -156,12 +174,21 @@ const AddItemModal = () => {
     setSelectedCategoryId(null);
   };
 
-  const handleSubmitEditing = () => {
-    // Only add item if we have a name to add
-    if (itemName.trim() !== '') {
-      handleAddItem();
+  // Effect to handle dropdown open/close
+  useEffect(() => {
+    if (categoryOpen) {
+      Keyboard.dismiss();
     }
-  };
+  }, [categoryOpen]);
+
+  // Effect to handle category selection
+  useEffect(() => {
+    if (selectedCategoryId !== null) {
+      setTimeout(() => {
+        textInputRef.current?.focus();
+      }, 100);
+    }
+  }, [selectedCategoryId]);
 
   return (
     <Modal
@@ -200,6 +227,7 @@ const AddItemModal = () => {
           </View>
 
           <TextInput
+            ref={textInputRef}
             style={styles.input}
             value={itemName}
             onChangeText={setItemName}
@@ -212,16 +240,22 @@ const AddItemModal = () => {
             maxLength={100}
             placeholder="Item Name"
             placeholderTextColor={colors.lightBrandColor}
-            returnKeyType="next"
+            returnKeyType="none"
             blurOnSubmit={false}
-            onSubmitEditing={handleSubmitEditing}
           />
 
-         <Button
-            title="Done"
-            onPress={handleDone}
-            color={colors.white}
-         />
+          <View style={styles.buttonContainer}>
+            <Button
+              title="Done"
+              onPress={handleDone}
+              color={colors.white}
+            />
+            <Button
+              title="Next"
+              onPress={handleNext}
+              color={colors.white}
+            />
+          </View>
         </View>
       </KeyboardAvoidingView>
     </Modal>
@@ -243,7 +277,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: fonts.modalTitleSize,
     fontWeight: 'bold',
-    marginBottom: 30,
+    marginBottom: 15,
     marginTop: 60,
     color: colors.white,
   },
@@ -251,14 +285,14 @@ const styles = StyleSheet.create({
     height: 40,
     minWidth: "80%",
     backgroundColor: colors.white,
-    marginBottom: 30,
+    marginBottom: 15,
     padding: 10,
     textAlign: 'center',
     fontSize: fonts.rowTextSize,
   },
   dropdownContainer: {
     width: "80%",
-    marginBottom: 30,
+    marginBottom: 15,
     zIndex: 3000,
   },
   dropdown: {
@@ -278,6 +312,12 @@ const styles = StyleSheet.create({
   dropdownPlaceholder: {
     color: colors.lightBrandColor,
     fontSize: fonts.rowTextSize,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '80%',
+    // marginTop: 10,
   }
 });
 
