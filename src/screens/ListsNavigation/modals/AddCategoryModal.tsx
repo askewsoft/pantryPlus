@@ -41,15 +41,15 @@ const AddCategoryModal = () => {
 }
 
 const onSubmit = async (evt: any) => {
-    const { selectedShoppingList: listId } = uiStore; 
+    const { selectedShoppingList: listId } = uiStore;
     const currList = domainStore.lists.find((list) => list.id === listId);
     const user = domainStore.user;
     const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
-    currList?.addCategory({ 
-        name: evt.nativeEvent.text, 
-        xAuthUser: user?.email!, 
+    currList?.addCategory({
+        name: evt.nativeEvent.text,
+        xAuthUser: user?.email!,
         xAuthLocation,
-        defaultOpen: uiStore.allFoldersOpen 
+        defaultOpen: uiStore.allFoldersOpen
     });
     uiStore.setAddCategoryModalVisible(false);
 }
@@ -61,8 +61,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: colors.brandColor,
-    paddingVertical: 50,
-    marginTop: '60%',
+    marginTop: '50%',
   },
   modalTitle: {
     fontSize: fonts.modalTitleSize,
@@ -82,4 +81,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default observer(AddCategoryModal);  
+export default observer(AddCategoryModal);

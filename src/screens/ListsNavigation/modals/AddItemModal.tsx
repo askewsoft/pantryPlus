@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Button, Modal, Text, TextInput, View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { Button, Modal, Text, TextInput, View, StyleSheet, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
 import { observer } from 'mobx-react';
 import DropDownPicker from 'react-native-dropdown-picker';
 
@@ -12,10 +12,11 @@ const AddItemModal = () => {
   const [itemName, setItemName] = useState('');
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const textInputRef = useRef<TextInput>(null);
 
   const listId = uiStore.selectedShoppingList;
   const currentList = domainStore.lists.find((list) => list.id === listId);
-  
+
   // Get category items directly from the DomainStore - always up to date
   const categoryItems = useMemo(() => {
     if (currentList) {
@@ -68,8 +69,8 @@ const AddItemModal = () => {
         if (selectedCategoryId && selectedCategoryId !== '') {
           // Add item to specific category
           const category = currentList.categories.find(c => c.id === selectedCategoryId);
-          category?.addItem({ 
-            item: { name: trimmedName, upc: '' }, 
+          category?.addItem({
+            item: { name: trimmedName, upc: '' },
             xAuthUser,
             onItemAdded: () => currentList.loadUnpurchasedItemsCount({ xAuthUser })
           });
@@ -78,7 +79,7 @@ const AddItemModal = () => {
           currentList.addItem({ item: { name: trimmedName, upc: '' }, xAuthUser });
         }
       }
-      
+
       // Clear the input for next item
       setItemName('');
       // Clear editing information
@@ -89,23 +90,23 @@ const AddItemModal = () => {
 
   const handleCategoryChange = () => {
     if (!currentList || !uiStore.editingItemName) return;
-    
+
     const user = domainStore.user;
     const xAuthUser = user?.email!;
     const originalCategoryId = uiStore.editingItemCategoryId;
     const newCategoryId = selectedCategoryId;
-    
+
     // Only proceed if category actually changed
     if (originalCategoryId === newCategoryId) return;
-    
-    // NOTE: When an Item is moved to a different category, that relationship needs to be 
-    // persisted to the database via the API. Currently, this implementation removes the item 
-    // from the original location and creates a new item in the new location, which results 
+
+    // NOTE: When an Item is moved to a different category, that relationship needs to be
+    // persisted to the database via the API. Currently, this implementation removes the item
+    // from the original location and creates a new item in the new location, which results
     // in API calls to createItem() and associateCategoryItem()/associateListItem().
-    // 
-    // Future consideration: Prevent duplicate Items by first looking for similarly named 
+    //
+    // Future consideration: Prevent duplicate Items by first looking for similarly named
     // Items when adding to a List, but this depends on how the data model unfolds in the database.
-    
+
     // Find the item in the original category or list
     let itemToMove = null;
     if (originalCategoryId) {
@@ -113,8 +114,8 @@ const AddItemModal = () => {
       itemToMove = originalCategory?.items.find(i => i.name === uiStore.editingItemName);
       if (itemToMove && originalCategory) {
         // Remove from original category
-        originalCategory.removeItem({ 
-          itemId: itemToMove.id, 
+        originalCategory.removeItem({
+          itemId: itemToMove.id,
           xAuthUser,
           onItemRemoved: () => currentList.loadUnpurchasedItemsCount({ xAuthUser })
         });
@@ -127,13 +128,13 @@ const AddItemModal = () => {
         currentList.removeItem({ itemId: itemToMove.id, xAuthUser });
       }
     }
-    
+
     // Add to new category or list
     if (itemToMove) {
       if (newCategoryId && newCategoryId !== '') {
         const newCategory = currentList.categories.find(c => c.id === newCategoryId);
-        newCategory?.addItem({ 
-          item: { name: uiStore.editingItemName!, upc: itemToMove.upc || '' }, 
+        newCategory?.addItem({
+          item: { name: uiStore.editingItemName!, upc: itemToMove.upc || '' },
           xAuthUser,
           onItemAdded: () => currentList.loadUnpurchasedItemsCount({ xAuthUser })
         });
@@ -143,12 +144,29 @@ const AddItemModal = () => {
     }
   };
 
+  const handleNext = () => {
+    // Add the current item if there's text
+    if (itemName.trim() !== '') {
+      handleAddItem();
+    }
+    // Modal stays open for next item, input is already cleared by handleAddItem
+  };
+
   const handleDone = () => {
+    // Dismiss keyboard first
+    Keyboard.dismiss();
+
+    // Add the current item if there's text
+    if (itemName.trim() !== '') {
+      handleAddItem();
+    }
+
     // If we're editing an item and the category has changed, save the changes
     if (uiStore.editingItemName && uiStore.editingItemCategoryId !== selectedCategoryId) {
       handleCategoryChange();
     }
-    
+
+    // Close modal and clean up
     uiStore.setAddItemModalVisible(false);
     uiStore.setEditingItemName(null);
     uiStore.setEditingItemCategoryId(null);
@@ -156,12 +174,21 @@ const AddItemModal = () => {
     setSelectedCategoryId(null);
   };
 
-  const handleSubmitEditing = () => {
-    // Only add item if we have a name to add
-    if (itemName.trim() !== '') {
-      handleAddItem();
+  // Effect to handle dropdown open/close
+  useEffect(() => {
+    if (categoryOpen) {
+      Keyboard.dismiss();
     }
-  };
+  }, [categoryOpen]);
+
+  // Effect to handle category selection
+  useEffect(() => {
+    if (selectedCategoryId !== null) {
+      setTimeout(() => {
+        textInputRef.current?.focus();
+      }, 100);
+    }
+  }, [selectedCategoryId]);
 
   return (
     <Modal
@@ -169,7 +196,7 @@ const AddItemModal = () => {
       transparent={true}
       animationType="slide"
     >
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingView}
       >
@@ -177,7 +204,7 @@ const AddItemModal = () => {
           <Text style={styles.modalTitle}>
             {uiStore.editingItemName ? 'Edit Item' : 'Add Item'}
           </Text>
-          
+
           <View style={styles.dropdownContainer}>
             <DropDownPicker
               open={categoryOpen}
@@ -200,6 +227,7 @@ const AddItemModal = () => {
           </View>
 
           <TextInput
+            ref={textInputRef}
             style={styles.input}
             value={itemName}
             onChangeText={setItemName}
@@ -212,16 +240,22 @@ const AddItemModal = () => {
             maxLength={100}
             placeholder="Item Name"
             placeholderTextColor={colors.lightBrandColor}
-            returnKeyType="next"
+            returnKeyType="none"
             blurOnSubmit={false}
-            onSubmitEditing={handleSubmitEditing}
           />
 
-         <Button
-            title="Done"
-            onPress={handleDone}
-            color={colors.white}
-         />
+          <View style={styles.buttonContainer}>
+            <Button
+              title="Done"
+              onPress={handleDone}
+              color={colors.white}
+            />
+            <Button
+              title="Next"
+              onPress={handleNext}
+              color={colors.white}
+            />
+          </View>
         </View>
       </KeyboardAvoidingView>
     </Modal>
@@ -238,13 +272,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: colors.brandColor,
-    paddingVertical: 20,
-    marginTop: '40%',
+    marginTop: '50%',
   },
   modalTitle: {
     fontSize: fonts.modalTitleSize,
     fontWeight: 'bold',
-    marginBottom: 30,
+    marginBottom: 15,
     marginTop: 60,
     color: colors.white,
   },
@@ -252,14 +285,14 @@ const styles = StyleSheet.create({
     height: 40,
     minWidth: "80%",
     backgroundColor: colors.white,
-    marginBottom: 30,
+    marginBottom: 15,
     padding: 10,
     textAlign: 'center',
     fontSize: fonts.rowTextSize,
   },
   dropdownContainer: {
     width: "80%",
-    marginBottom: 30,
+    marginBottom: 15,
     zIndex: 3000,
   },
   dropdown: {
@@ -279,7 +312,13 @@ const styles = StyleSheet.create({
   dropdownPlaceholder: {
     color: colors.lightBrandColor,
     fontSize: fonts.rowTextSize,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '80%',
+    // marginTop: 10,
   }
 });
 
-export default observer(AddItemModal); 
+export default observer(AddItemModal);

@@ -45,7 +45,7 @@ const AddLocationModal = () => {
 const onSubmitCurrentLocation = async (evt: any) => {
   // Capture the text value immediately to avoid event reuse issues
   const locationName = evt.nativeEvent.text;
-  
+
   try {
     const locationExplicitlyDisabled = domainStore.locationExplicitlyDisabled;
     if (locationExplicitlyDisabled) {
@@ -66,16 +66,16 @@ const onSubmitCurrentLocation = async (evt: any) => {
       );
       return; // Don't proceed if permissions are denied
     }
-    
+
     // Create the location
     await domainStore.addLocation({ name: locationName });
     uiStore.setAddLocationModalVisible(false);
   } catch (error) {
     console.error('Failed to create location:', error);
-    
+
     // Provide more specific error messages
     let errorMessage = 'Unable to get your current location. Please try again.';
-    
+
     if (error instanceof Error) {
       if (error.message.includes('Location request timed out')) {
         errorMessage = 'Location request timed out. Please check your location settings and try again.';
@@ -85,7 +85,7 @@ const onSubmitCurrentLocation = async (evt: any) => {
         errorMessage = 'Location is currently unavailable. Please try again in a moment.';
       }
     }
-    
+
     Alert.alert('Location Error', errorMessage);
   }
 }
@@ -97,9 +97,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: colors.brandColor,
-    opacity: 0.9,
-    paddingVertical: 50,
-    marginTop: '60%',
+    marginTop: '50%',
   },
   modalTitle: {
     fontSize: fonts.modalTitleSize,
@@ -119,4 +117,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default observer(AddLocationModal);  
+export default observer(AddLocationModal);

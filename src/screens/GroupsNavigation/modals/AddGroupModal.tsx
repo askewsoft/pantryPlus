@@ -21,7 +21,7 @@ const AddGroupModal = ({ navigation }: { navigation: any }) => {
 
   const handleGroupCreation = async (newGroupId: string) => {
     uiStore.setAddGroupModalVisible(false);
-    
+
     // Handle navigation based on origin
     if (uiStore.groupCreationOrigin === 'Lists') {
       // Navigate back to Lists if user came from there
@@ -30,10 +30,10 @@ const AddGroupModal = ({ navigation }: { navigation: any }) => {
       // Stay on Groups screen if user navigated directly there
       // The new group will be visible in the list
     }
-    
+
     // Clear the origin tracking
     uiStore.clearGroupCreationOrigin();
-    
+
     // Handle sharing if needed
     optionallyShareShoppingList(newGroupId);
   };
@@ -46,7 +46,7 @@ const AddGroupModal = ({ navigation }: { navigation: any }) => {
   const onCancel = () => {
     uiStore.setAddGroupModalVisible(false);
     uiStore.clearGroupCreationOrigin();
-    
+
     if (uiStore.selectedShoppingList) {
       uiStore.setShareModalVisible(true);
       navigation.goBack();
@@ -93,8 +93,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: colors.brandColor,
-    paddingVertical: 50,
-    marginTop: '60%',
+    marginTop: '50%',
   },
   modalTitle: {
     fontSize: fonts.modalTitleSize,
@@ -114,4 +113,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default observer(AddGroupModal);  
+export default observer(AddGroupModal);

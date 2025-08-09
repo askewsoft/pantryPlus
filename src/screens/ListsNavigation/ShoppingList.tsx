@@ -1,11 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
-import { StyleSheet, RefreshControl, Alert, View } from 'react-native';
+import { StyleSheet, RefreshControl, Alert, View, FlatList, ScrollView } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { DragEndParams } from 'react-native-draggable-flatlist';
-import { NestableScrollContainer, NestableDraggableFlatList } from "react-native-draggable-flatlist";
 
-import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 import CategoryFolder from '@/components/CategoryFolder';
 import CategoryItems from '@/components/CategoryItems';
 import ListItems from '@/components/ListItems';
@@ -15,6 +12,8 @@ import PickLocationPrompt from './modals/PickLocationPrompt';
 import ReorderCategoriesModal from './modals/ReorderCategoriesModal';
 import CurrentLocation from '@/components/CurrentLocation';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import BottomActionBar from '@/components/BottomActionBar';
+import BottomActionButton from '@/components/Buttons/BottomActionButton';
 
 import { uiStore } from '@/stores/UIStore';
 import { domainStore } from '@/stores/DomainStore';
@@ -27,7 +26,7 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
   const xAuthUser = domainStore.user?.email;
   const [isRefreshing, setIsRefreshing] = useState(false);
   const scrollViewRef = useRef<any>(null);
-  
+
   // Get current list as a computed value and ensure it exists
   const currentList = domainStore.lists.find((list) => list.id === listId);
 
@@ -35,18 +34,18 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
     // Verify list still exists in store before loading
     const listStillExists = domainStore.lists.find((list) => list.id === listId);
     if (!listStillExists || !xAuthUser) return;
-    
+
     setIsRefreshing(true);
     try {
       // Create a reference to the current list's ID to verify it hasn't changed
       const loadingListId = listId;
-      
+
       // Verify list ID hasn't changed before each operation
       if (loadingListId === uiStore.selectedShoppingList) {
         const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
         await listStillExists.loadCategories({ xAuthUser, xAuthLocation });
       }
-      
+
       if (loadingListId === uiStore.selectedShoppingList) {
         await listStillExists.loadListItems({ xAuthUser });
       }
@@ -61,63 +60,16 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
     }
   };
 
-  const renderCategoryElement = ({ item: category, drag }: { item: CategoryType, drag: FnReturnVoid }) => {
-    const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
-    
-    // Only allow drag if location is set
-    const conditionalDrag = () => {
-      if (xAuthLocation === '') {
-        uiStore.setPickLocationPromptVisible(true);
-        return;
-      }
-      drag();
-    };
-
+  const renderCategoryElement = ({ item: category }: { item: CategoryType }) => {
     return (
-      <CategoryFolder 
-        key={category.id} 
-        categoryId={category.id} 
-        title={category.name} 
+      <CategoryFolder
+        key={category.id}
+        categoryId={category.id}
+        title={category.name}
       >
         <CategoryItems listId={listId!} categoryId={category.id} />
       </CategoryFolder>
     );
-  };
-
-  const onDragBegin = () => {
-    // This will only be called if drag is allowed (location is set)
-    // No need to check location here since we prevent drag from starting
-  }
-
-  const onDragEnd = ({ data }: DragEndParams<CategoryType>) => {
-    if (!currentList || !xAuthUser) return;
-
-    const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
-    if (xAuthLocation === '') {
-      // Prompt the user to select a location, if there is no nearest known location already set
-      uiStore.setPickLocationPromptVisible(true);
-      return;
-    }
-
-    // Update the ordinals in sequence to avoid race conditions
-    const updateOrdinals = async () => {
-      try {
-        for (let i = 0; i < data.length; i++) {
-          const category = data[i];
-          if (category.ordinal !== i) {
-            const updatedCategory = currentList.categories.find(c => c.id === category.id);
-            if (updatedCategory) {
-              await updatedCategory.setOrdinal(i, xAuthUser, xAuthLocation);
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error updating category order:', error);
-        Alert.alert('Error', 'Failed to update category order. Please try again.');
-      }
-    };
-
-    updateOrdinals();
   };
 
   useEffect(() => {
@@ -129,7 +81,7 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
       // Get a fresh reference to the list
       const currentList = domainStore.lists.find((list) => list.id === listId);
       if (!currentList || !xAuthUser) return;
-      
+
       loadData();
       // Only update navigation title if list still exists
       if (currentList && currentList.name) {
@@ -151,52 +103,60 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
     navigation.navigate('Locations', { screen: 'MyLocations', params: { returnToList: true } });
   }
 
+  const onPressAddCategory = () => {
+    uiStore.setAddCategoryModalVisible(true);
+  };
+
+  const onPressAddItem = () => {
+    uiStore.setAddItemModalVisible(true);
+  };
+
   return (
     <ErrorBoundary>
-      <View style={styles.container}>
+            <View style={styles.container}>
         <CurrentLocation onPress={setCurrentLocation} />
-        <NestableScrollContainer 
-          ref={scrollViewRef}
-          style={styles.scrollContainer} 
-          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={loadData} />}
-        >
-          {/* Only render content if we have a valid list */}
-          {currentList && (
-            <View style={styles.contentContainer}>
-              <ListItems listId={listId!} />
-              <NestableDraggableFlatList
-                style={styles.draggableFlatListStyle}
-                data={toJS(currentList.categories)
-                  .filter(category => uiStore.showEmptyFolders || category.items.length > 0)
-                  .sort(sortByOrdinal)}
-                renderItem={renderCategoryElement}
-                keyExtractor={category => category.id}
-                onDragBegin={onDragBegin}
-                onDragEnd={onDragEnd}
-              />
-              <AddCategoryModal />
-              <AddItemModal />
-              <PickLocationPrompt onPress={setCurrentLocation} />
-              <ReorderCategoriesModal />
-            </View>
-          )}
-        </NestableScrollContainer>
+        {/* Only render content if we have a valid list */}
+        {currentList && (
+          <FlatList
+            ref={scrollViewRef}
+            style={styles.flatListStyle}
+            data={toJS(currentList.categories)
+              .filter(category => uiStore.showEmptyFolders || category.items.length > 0)
+              .sort(sortByOrdinal)}
+            renderItem={renderCategoryElement}
+            keyExtractor={category => category.id}
+            ListHeaderComponent={<ListItems listId={listId!} />}
+            refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={loadData} />}
+          />
+        )}
+        <BottomActionBar>
+          <BottomActionButton
+            label="Add Item"
+            iconName="add-circle"
+            onPress={onPressAddItem}
+          />
+          <BottomActionButton
+            label="Add Category"
+            iconName="create-new-folder"
+            onPress={onPressAddCategory}
+          />
+        </BottomActionBar>
       </View>
+      <AddCategoryModal />
+      <AddItemModal />
+      <PickLocationPrompt onPress={setCurrentLocation} />
+      <ReorderCategoriesModal />
     </ErrorBoundary>
   );
 });
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     flexDirection: 'column',
   },
-  scrollContainer: {
-    flexDirection: 'column',
-  },
-  contentContainer: {
-    marginBottom: 18, // unsure why w/o this the tabNavBar covers the bottom of the list
-  },
-  draggableFlatListStyle: {
+  flatListStyle: {
+    flex: 1,
     backgroundColor: colors.detailsBackground,
   }
 });

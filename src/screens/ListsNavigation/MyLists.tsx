@@ -1,16 +1,18 @@
 import { observer } from 'mobx-react-lite';
-import { StyleSheet, View, Text, Button, RefreshControl } from 'react-native';
+import { StyleSheet, View, Text, Button, RefreshControl, FlatList } from 'react-native';
 import { toJS } from 'mobx';
-import DraggableFlatList from 'react-native-draggable-flatlist';
+
+import BottomActionBar from '@/components/BottomActionBar';
+import BottomActionButton from '@/components/Buttons/BottomActionButton';
 
 import { StackPropsListsMyLists } from '@/types/ListNavTypes';
 import ListElement from '@/components/ListElement';
 import AddListModal from './modals/AddListModal';
 import ShareListModal from './modals/ShareListModal';
+import ReorderListsModal from './modals/ReorderListsModal';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 import { domainStore, ListType } from '@/stores/DomainStore';
-import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
@@ -18,9 +20,9 @@ import { uiStore } from '@/stores/UIStore';
 import { sortByOrdinal } from '@/stores/utils/sorter';
 
 const renderListElement = (navigation: any) => {
-  return ({ item, drag }: { item: ListType, drag: FnReturnVoid }) => {
+  return ({ item }: { item: ListType }) => {
     return (
-      <ListElement id={item.id} drag={drag} navigation={navigation}/>
+      <ListElement id={item.id} navigation={navigation}/>
     );
   }
 }
@@ -28,6 +30,10 @@ const renderListElement = (navigation: any) => {
 const MyLists = ({navigation}: StackPropsListsMyLists) => {
   const onPressAddList = () => {
     uiStore.setAddListModalVisible(true);
+  };
+
+  const onPressReorderLists = () => {
+    uiStore.setReorderListsModalVisible(true);
   };
 
   const onRefresh = async () => {
@@ -39,36 +45,63 @@ const MyLists = ({navigation}: StackPropsListsMyLists) => {
   if (domainStore.lists.length <= 0 && !uiStore.addListModalVisible) {
     return (
       <ErrorBoundary>
-        <View style={styles.noListsContainer}>
-          <Text style={styles.noListsText}>No lists yet.</Text>
-          <Button title="Click here to create a list" onPress={onPressAddList} color={colors.brandColor} />
+        <View style={styles.container}>
+          <View style={styles.noListsContainer}>
+            <Text style={styles.noListsText}>No lists yet.</Text>
+            <Button title="Click here to create a list" onPress={onPressAddList} color={colors.brandColor} />
+          </View>
+          <BottomActionBar>
+            <BottomActionButton
+              label="Add List"
+              iconName="add-circle"
+              onPress={onPressAddList}
+            />
+          </BottomActionBar>
         </View>
       </ErrorBoundary>
     );
   } else {
     return (
-      /* IFF DraggableFlatList creates problems,
-      * investigate https://github.com/fivecar/react-native-draglist
-      */
       <ErrorBoundary>
-        <DraggableFlatList
-          style={styles.draggableFlatListStyle}
-          data={toJS(domainStore.lists).sort(sortByOrdinal)}
-          onDragEnd={domainStore.updateListOrder}
-          renderItem={renderListElement(navigation)}
-          keyExtractor={list => list.id}
-          refreshControl={<RefreshControl refreshing={!uiStore.listsLoaded} onRefresh={onRefresh} />}
-        />
+        <View style={styles.container}>
+          <FlatList
+            style={styles.flatListStyle}
+            contentContainerStyle={styles.listContentContainer}
+            data={toJS(domainStore.lists).sort(sortByOrdinal)}
+            renderItem={renderListElement(navigation)}
+            keyExtractor={list => list.id}
+            refreshControl={<RefreshControl refreshing={!uiStore.listsLoaded} onRefresh={onRefresh} />}
+          />
+          <BottomActionBar>
+            <BottomActionButton
+              label="Reorder"
+              iconName="reorder"
+              onPress={onPressReorderLists}
+            />
+            <BottomActionButton
+              label="Add List"
+              iconName="add-circle"
+              onPress={onPressAddList}
+            />
+          </BottomActionBar>
+        </View>
         <AddListModal />
         <ShareListModal navigation={navigation} />
-    </ErrorBoundary>
+        <ReorderListsModal />
+      </ErrorBoundary>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  draggableFlatListStyle: {
-    height: '100%',
+  container: {
+    flex: 1,
+  },
+  flatListStyle: {
+    height: '93.5%',
+  },
+  listContentContainer: {
+    paddingBottom: 0,
   },
   noListsContainer: {
     flex: 1,

@@ -11,8 +11,6 @@ import colors from '@/consts/colors';
 import { iconSize } from '@/consts/iconButtons';
 
 type ShoppingListContextMenuProps = {
-  onAddCategory: () => void;
-  onAddItem: () => void;
   onToggleEmptyFolders: () => void;
   onToggleAllFolders: () => void;
   onReorderCategories: () => void;
@@ -20,8 +18,6 @@ type ShoppingListContextMenuProps = {
 };
 
 const ShoppingListContextMenu = observer(({
-  onAddCategory,
-  onAddItem,
   onToggleEmptyFolders,
   onToggleAllFolders,
   onReorderCategories,
@@ -32,17 +28,8 @@ const ShoppingListContextMenu = observer(({
   const unpurchasedItemsCount = currentList?.unpurchasedItemsCount ?? 0;
 
   // Single source of truth for actions and their handlers
+  // Note: Add Item and Add Category have been moved to the bottom action bar
   const actionConfigs = [
-    {
-      title: 'Add Item',
-      systemIcon: 'plus.circle',
-      handler: onAddItem,
-    },
-    {
-      title: 'Add Category',
-      systemIcon: 'folder.badge.plus',
-      handler: onAddCategory,
-    },
     {
       title: 'Reorder Categories',
       systemIcon: 'arrow.up.arrow.down',
@@ -120,4 +107,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ShoppingListContextMenu; 
+export default ShoppingListContextMenu;

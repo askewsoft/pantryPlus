@@ -24,9 +24,9 @@ const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: str
       easing: Easing.cubic,
       useNativeDriver: false,
     });
-    
+
     animation.start();
-    
+
     return () => {
       animation.stop();
     };
@@ -40,7 +40,7 @@ const CategoryItems = ({ listId, categoryId }: { listId: string, categoryId: str
       }),
       opacity: heightAnim,
       overflow: 'hidden',
-      marginTop: uiStore.showCategoryLabels ? 5 : 0,
+      marginTop: uiStore.showCategoryLabels ? 1 : 0,
     }}>
       <ItemsList
         items={currCategory?.items ?? []}

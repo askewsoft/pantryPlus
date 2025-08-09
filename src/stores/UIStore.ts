@@ -43,6 +43,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
     showCategoryLabels: t.optional(t.boolean, true),
     allFoldersOpen: t.optional(t.boolean, false),
     reorderCategoriesModalVisible: t.optional(t.boolean, false),
+    reorderListsModalVisible: t.optional(t.boolean, false),
 })
 .actions(self => ({
     initialize: () => {
@@ -166,6 +167,9 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setReorderCategoriesModalVisible(reorderCategoriesModalVisible: boolean) {
         self.reorderCategoriesModalVisible = reorderCategoriesModalVisible;
+    },
+    setReorderListsModalVisible(reorderListsModalVisible: boolean) {
+        self.reorderListsModalVisible = reorderListsModalVisible;
     }
 }));
 
