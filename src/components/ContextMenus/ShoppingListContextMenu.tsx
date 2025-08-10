@@ -26,6 +26,7 @@ const ShoppingListContextMenu = observer(({
   // Get the current list to display the count
   const currentList = domainStore.lists.find(list => list.id === uiStore.selectedShoppingList);
   const unpurchasedItemsCount = currentList?.unpurchasedItemsCount ?? 0;
+  const categoriesCount = currentList?.categories?.length ?? 0;
 
   // Single source of truth for actions and their handlers
   // Note: Add Item and Add Category have been moved to the bottom action bar
@@ -34,25 +35,25 @@ const ShoppingListContextMenu = observer(({
       title: 'Reorder Categories',
       systemIcon: 'arrow.up.arrow.down',
       handler: onReorderCategories,
-      showWhen: (currentList?.categories?.length ?? 0) > 0,
+      showWhen: categoriesCount > 1, // Only show when there are multiple categories to reorder
     },
     {
       title: uiStore.showEmptyFolders ? 'Hide Empty Categories' : 'Show Empty Categories',
       systemIcon: uiStore.showEmptyFolders ? 'eye.slash' : 'eye.fill',
       handler: onToggleEmptyFolders,
-      showWhen: uiStore.showCategoryLabels && (currentList?.categories?.length ?? 0) > 0,
+      showWhen: uiStore.showCategoryLabels && categoriesCount > 0,
     },
     {
       title: uiStore.allFoldersOpen ? 'Close All Categories' : 'Open All Categories',
       systemIcon: uiStore.allFoldersOpen ? 'folder' : 'folder.fill',
       handler: onToggleAllFolders,
-      showWhen: uiStore.showCategoryLabels && (currentList?.categories?.length ?? 0) > 0,
+      showWhen: uiStore.showCategoryLabels && categoriesCount > 0,
     },
     {
       title: uiStore.showCategoryLabels ? 'Hide Category Labels' : 'Show Category Labels',
       systemIcon: uiStore.showCategoryLabels ? 'tag.slash' : 'tag.fill',
       handler: onToggleCategoryLabels,
-      showWhen: (currentList?.categories?.length ?? 0) > 0,
+      showWhen: categoriesCount > 0,
     },
   ];
 
@@ -67,6 +68,15 @@ const ShoppingListContextMenu = observer(({
   // Filter out actions that shouldn't be shown
   const visibleActions = actionConfigs.filter(config => config.showWhen !== false);
 
+  // Hide the entire menu if there are no actions to display
+  if (visibleActions.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Badge count={unpurchasedItemsCount} size="small" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Badge count={unpurchasedItemsCount} size="small" />
@@ -80,7 +90,7 @@ const ShoppingListContextMenu = observer(({
           style={styles.hamburgerButton}
           activeOpacity={0.7}
           accessibilityLabel="Shopping List Menu"
-          accessibilityHint="Opens menu with options to add items, categories, and manage list settings"
+          accessibilityHint="Opens menu with options to manage list settings"
           accessibilityRole="button"
         >
           <MaterialIcons
