@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { StyleSheet, FlatList } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';

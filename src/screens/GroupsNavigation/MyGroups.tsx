@@ -1,8 +1,7 @@
-import { Text, StyleSheet, Pressable, RefreshControl, View } from 'react-native';
+import { Text, StyleSheet, Pressable, RefreshControl, View, FlatList } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
-import { NestableScrollContainer, NestableDraggableFlatList } from "react-native-draggable-flatlist";
 import { MaterialIcons } from '@expo/vector-icons';
 
 import BottomActionBar from '@/components/BottomActionBar';
@@ -71,15 +70,14 @@ const MyGroups = ({navigation}: StackPropsMyGroups) => {
   return (
     <ErrorBoundary>
       <View style={styles.container}>
-        <NestableScrollContainer style={styles.scrollContainer} refreshControl={<RefreshControl refreshing={!uiStore.groupsLoaded} onRefresh={onRefresh} />}>
-          {numInvites > 0 && <InviteNotice />}
-          <NestableDraggableFlatList
-            style={styles.draggableList}
-            data={toJS(domainStore.groups)}
-            renderItem={renderGroupElement}
-            keyExtractor={group => group.id}
-          />
-        </NestableScrollContainer>
+        <FlatList
+          style={styles.list}
+          data={toJS(domainStore.groups)}
+          renderItem={renderGroupElement}
+          keyExtractor={group => group.id}
+          refreshControl={<RefreshControl refreshing={!uiStore.groupsLoaded} onRefresh={onRefresh} />}
+          ListHeaderComponent={numInvites > 0 ? <InviteNotice /> : null}
+        />
         <BottomActionBar>
           <BottomActionButton
             label="Add Group"
@@ -96,13 +94,9 @@ const MyGroups = ({navigation}: StackPropsMyGroups) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: '100%',
   },
-  scrollContainer: {
+  list: {
     flex: 1,
-  },
-  draggableList: {
-    height: '80%',
   },
   inviteBadge: {
     flexDirection: 'row',
