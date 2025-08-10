@@ -24,6 +24,22 @@ Then use the token in a curl command like the following (this is just an example
 curl -v "https://api.askewsoft.com/v1/shoppers" -H "Authorization: Bearer <copy auth token here>" -H "Content-Type: application/json" -d '{"id": "FB0A3A06-6222-41A7-8E80-9DA1ABD9C4AB", "nickname": "Tester", "email": "tester@my-domain-name.com"}'
 ```
 
+## version management
+
+Use these scripts to update version numbers in both `package.json` and `app.json` files. This ensures consistency between the two files and follows semantic versioning principles.
+
+```sh
+# Convenient npm scripts (recommended)
+npm run version:patch  # Increment patch version (1.4.0 → 1.4.1)
+npm run version:minor  # Increment minor version (1.4.0 → 1.5.0)
+```
+
+**What these scripts do:**
+- Read current version from `package.json`
+- Calculate new version based on semantic versioning rules
+- Update both `package.json` and `app.json` files
+- Provide clear feedback about what was updated
+
 ## expo update
 
 Use this to publish over-the-air updates to EAS and end users when no native code has been modified. Called from the root of this repo.

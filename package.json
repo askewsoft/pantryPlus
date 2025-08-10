@@ -13,6 +13,8 @@
     "publish:ios": "eas submit --platform ios",
     "update:preview": "node scripts/update.js preview",
     "update:prod": "node scripts/update.js prod",
+    "version:patch": "./scripts/version.sh patch",
+    "version:minor": "./scripts/version.sh minor",
     "killport": "sudo kill -9 $(sudo lsof -t -i :8081) # Do this if the Metro Bundler fails to start",
     "gettoken": "npx ts-node scripts/get-token.ts",
     "expoupdate": "node scripts/update.js",

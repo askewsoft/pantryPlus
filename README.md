@@ -86,60 +86,103 @@ These can take a while to complete. You must have the iOS emulator already runni
 ## Build & Publish
 These are compiled using the EAS (i.e., Expo Application Services) build service
 
-To build the app for publishing to the Apple App Store or Test Flight, run:
+1. Always first update version numbers using semantic versioning
+These helper scripts will update both the `package.json` and the `app.json`
+    ```sh
+    # bug fixes
+    npm run version:patch
 
-- update the `version` property in the `app.json`, `package.json`, and `package-lock.json` files (e.g., `1.2.0`)
+    # OR
+
+    # minor feature enhancements
+    npm run version:minor
+    ```
+1. Github Tag & Release
+1. Decide on [Native Publish](#native-publish) or [OTA Update](#ota-updates)
+
+### Native Publish
+To build the app for publishing to the Apple App Store or Test Flight, run:
 - `npm run prod:ios`
 - `npm run publish:ios`
 - Create a release in Github with a semantic version (e.g., `v1.2.0`, note the prepended `v`)
 
-### Other contexts
+#### Build Contexts
+To build the app for a specific context use `--profile`; e.g., `eas build --platform ios --profile preview --clear-cache`. These relate to the [Update Channels](#update-channels)
 
-To build the app for a specific context use `--profile`; e.g., `eas build --platform ios --profile preview --clear-cache`.
+The following other contexts are also supported:
+- `preview` - preview build for testing
+- `production` - production build for release
 
-- The following other contexts are also supported:
-    - `dev-simulator` - development on an iOS simulator
-    - `dev-ios` - development on an iOS device
-    - `preview` - preview build for testing
-    - `production` - production build for release
+### OTA Updates
+pantryPlus uses EAS Updates to deploy minor changes "over the air" (OTA) without requiring a full app store submission. This allows for quick bug fixes and feature updates. The app uses `fingerprint` runtime version policy, which automatically detects native code changes.
 
-## EAS Updates
-pantryPlus uses EAS Updates to deploy minor changes without requiring a full app store submission. This allows for quick bug fixes and feature updates.
+#### Update Channels
+These relate to the [Build Contexts](#build-contexts)
+- `preview` - For testing updates before production
+- `published` - For production updates to users
 
-### Update Channels
-- **preview**: For testing updates before production
-- **published**: For production updates to users
+#### Publishing
+**Note:** Always provide a clear, descriptive message for your updates. This message will be visible to users and helps with tracking what changes were deployed.
 
-### Publishing Updates
-
-**Preview Testing:**
-```bash
+```sh
+# Preview Testing:
 npm run update:preview "Fix shopping list sorting issue"
-```
 
-**Production Release:**
-```bash
+# OR
+
+# Production Release:
 npm run update:prod "Add new category management features"
 ```
 
-**Note:** Always provide a clear, descriptive message for your updates. This message will be visible to users and helps with tracking what changes were deployed.
+#### Important Notes
+##### When Updates Are Allowed
+- ✅ **JavaScript/TypeScript changes only** - UI logic, component behavior, styling
+- ✅ **No new native dependencies** - No new packages or iOS-specific changes
+- ✅ **Runtime version unchanged** - EAS automatically detects compatibility
+- ✅ **Native app build is already installed** - Users must have installed from the App Store to receive OTA updates via EAS
 
-### Update Behavior
+##### When updates NOT allowed
+- ❌ Updates are only available in production builds, not development builds
+- ❌ New native packages or dependencies
+- ❌ iOS-specific configuration changes
+- ❌ Changes to native code or plugins
+- ❌ Major version bumps (use full build instead)
+
+##### Update Behavior
 - Updates are automatically checked when the app starts
 - Users can manually check for updates in Settings → Check for Updates
 - Updates are applied immediately when available
 - The app will restart to apply updates
 
-### Important Notes
-- Updates only work for JavaScript/TypeScript changes
-- Native code changes (new packages, iOS-specific changes) still require a full build
-- Updates are only available in production builds, not development builds
-- Users must have the app installed from the App Store to receive updates
-- The app uses `fingerprint` runtime version policy, which automatically detects native code changes
-- When native dependencies change, EAS will automatically require a new build instead of allowing updates
-
 ## Helper Scripts
-- **Get API Token**: `npm run gettoken <username> <password>`
-- **Expo Updates**: `npm run update:preview "message"` or `npm run update:prod "message"`
-- **Automated Tests**: `npm run maestro:baseline` or `npm run maestro:current`
-- See **[./scripts/README.md](./scripts/README.md)** for more detail
+See **[./scripts/README.md](./scripts/README.md)** for more detail
+
+```sh
+# GET API TOKEN
+
+    npm run gettoken <username> <password>
+
+# EXPO UPDATES
+
+    npm run update:preview "message"
+
+    # OR
+
+    npm run update:prod "message"
+
+# VERSION MANAGEMENT
+
+    npm run version:patch # (e.g., 1.4.0 → 1.4.1)
+
+    # OR
+
+    npm run version:minor # (e.g., 1.4.0 → 1.5.0)
+
+# AUTOMATED TESTS
+
+    npm run maestro:baseline
+
+    # OR
+
+    npm run maestro:current
+```
