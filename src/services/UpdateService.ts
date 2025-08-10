@@ -59,12 +59,12 @@ class UpdateService {
       }
 
       const update = await Updates.checkForUpdateAsync();
-      
+
       if (update.isAvailable) {
         if (appConfig.debug) {
           console.log('Update available:', update);
         }
-        
+
         // Show user notification about the update
         Alert.alert(
           'Update Available',
@@ -111,7 +111,7 @@ class UpdateService {
       }
 
       const update = await Updates.checkForUpdateAsync();
-      
+
       if (update.isAvailable) {
         Alert.alert(
           'Update Available',
@@ -159,9 +159,15 @@ class UpdateService {
       // This is set from the "version" field in app.json during build
       appVersion: Application.nativeApplicationVersion,
       // Build version comes from CFBundleVersion in iOS Info.plist
-      buildVersion: Application.nativeBuildVersion
+      buildVersion: Application.nativeBuildVersion,
+      // Runtime version (fingerprint) - crucial for EAS update compatibility
+      fingerprint: Updates.runtimeVersion || 'N/A',
+      // Update channel (preview, published, etc.)
+      updateChannel: Updates.channel || 'N/A',
+      // Update ID if available
+      updateId: Updates.updateId || 'N/A'
     };
   }
 }
 
-export const updateService = new UpdateService(); 
+export const updateService = new UpdateService();
