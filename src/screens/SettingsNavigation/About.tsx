@@ -8,7 +8,7 @@ import fonts from '@/consts/fonts';
 
 const About = ({ navigation }: StackPropsAbout) => {
   const aboutInfo = updateService.getAboutInfo();
-  
+
   const formatValue = (value: any): string => {
     if (typeof value === 'boolean') {
       return value ? 'Yes' : 'No';
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.inactiveButtonColor,
     borderRadius: 5,
-  },
+  }
 });
 
-export default observer(About); 
+export default observer(About);
