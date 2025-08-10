@@ -41,7 +41,7 @@ fi
 echo "🔧 Updating $COMMAND version..."
 
 # Read current version from package.json
-CURRENT_VERSION=$(node -e "console.log(require('../package.json').version)")
+CURRENT_VERSION=$(node -e "console.log(require('./package.json').version)")
 echo "Current version: $CURRENT_VERSION"
 
 # Parse version components
@@ -64,18 +64,18 @@ fi
 # Update package.json
 node -e "
 const fs = require('fs');
-const pkg = require('../package.json');
+const pkg = require('./package.json');
 pkg.version = '$NEW_VERSION';
-fs.writeFileSync('../package.json', JSON.stringify(pkg, null, 2));
+fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));
 console.log('✅ Updated package.json to version $NEW_VERSION');
 "
 
 # Update app.json
 node -e "
 const fs = require('fs');
-const app = require('../app.json');
+const app = require('./app.json');
 app.expo.version = '$NEW_VERSION';
-fs.writeFileSync('../app.json', JSON.stringify(app, null, 2));
+fs.writeFileSync('./app.json', JSON.stringify(app, null, 2));
 console.log('✅ Updated app.json to version $NEW_VERSION');
 "
 
