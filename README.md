@@ -151,6 +151,11 @@ npm run update:prod "Add new category management features"
 - Updates are applied immediately when available
 - The app will restart to apply updates
 
+
+## Documentation
+- [Debugging Update Issues](docs/DEBUGGING_EAS_UPDATES.md)
+
+
 ## Helper Scripts
 See **[./scripts/README.md](./scripts/README.md)** for more detail
 
