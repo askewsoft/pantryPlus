@@ -38,7 +38,10 @@ npm run version:minor  # Increment minor version (1.4.0 → 1.5.0)
 - Read current version from `package.json`
 - Calculate new version based on semantic versioning rules
 - Update both `package.json` and `app.json` files
+- **Automatically run `npm install` to sync `package-lock.json`**
 - Provide clear feedback about what was updated
+
+**Important:** The `npm install` step ensures `package-lock.json` is always in sync with `package.json`, preventing fingerprint mismatches between EAS builds and updates.
 
 ## expo update
 

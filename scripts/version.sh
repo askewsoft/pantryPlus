@@ -79,5 +79,10 @@ fs.writeFileSync('./app.json', JSON.stringify(app, null, 2));
 console.log('✅ Updated app.json to version $NEW_VERSION');
 "
 
+# Ensure package-lock.json is in sync with package.json
+echo "📦 Running npm install to sync package-lock.json..."
+npm install
+echo "✅ package-lock.json synchronized"
+
 echo "🎉 Version updated successfully to $NEW_VERSION"
-echo "Files updated: package.json, app.json"
+echo "Files updated: package.json, app.json, package-lock.json"
