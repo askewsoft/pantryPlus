@@ -20,6 +20,7 @@ export const getApiConfiguration = async (): Promise<Configuration | undefined> 
 
         if (appConfig.debug) {
             console.error('API Configuration created with basePath:', config.basePath);
+            console.error('Full config object:', JSON.stringify(config, null, 2));
         }
 
         return config;

@@ -44,9 +44,9 @@ const registerUser = async () => {
     }
 
     authenticatedUser = {
-      email: userAttributes?.email || '',
-      id: userAttributes?.sub || '',
-      nickname: userAttributes?.nickname || ''
+        email: userAttributes?.email || '',
+        id: userAttributes?.sub || '',
+        nickname: userAttributes?.nickname || ''
     };
 
     if (appConfig?.debug) {
@@ -58,6 +58,11 @@ const registerUser = async () => {
     }
 
     try {
+        if (appConfig?.debug) {
+            console.error('Creating shopper with data:', JSON.stringify(authenticatedUser, null, 2));
+            console.error('Shopper API instance:', shopperApi);
+            console.error('createShopper method:', typeof shopperApi.createShopper);
+        }
         const response = await shopperApi.createShopper(authenticatedUser);
         if (appConfig?.debug) {
             console.error('Shopper created successfully');

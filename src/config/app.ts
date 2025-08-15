@@ -5,6 +5,10 @@ const appConfig = {
 
 type AppConfig = typeof appConfig;
 
-if (appConfig.debug) console.log('App Config = ', appConfig);
+if (appConfig.debug) {
+    console.log('App Config = ', appConfig);
+    console.log('EXPO_PUBLIC_API_URL =', process.env.EXPO_PUBLIC_API_URL);
+    console.log('Final API URL =', appConfig.apiUrl);
+}
 
 export default appConfig;
