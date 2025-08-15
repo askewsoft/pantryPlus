@@ -1,4 +1,4 @@
-import { LocationsApi, Location, LocationArea } from 'pantryplus-api-client/v1';
+import { LocationsApi, Location, LocationArea } from 'pantryplus-api-client/v2';
 import { getApiConfiguration } from '@/services/SessionService';
 import * as expoLocation from 'expo-location';
 import { Alert } from 'react-native';
@@ -23,7 +23,7 @@ const updateLocationName = async ({ location, xAuthUser }: { location: Location,
     } catch (error) {
         console.error(`Failed to updateLocation in DB: ${error}`);
     }
-} 
+}
 
 // const removeLocation = async ({ locationId, xAuthUser }: { locationId: string, xAuthUser: string }) => {
 //     try {

@@ -4,7 +4,7 @@ import { t, Instance, flow, onAction } from 'mobx-state-tree';
 import { persist } from 'mst-persist';
 import * as expoLocation from 'expo-location';
 import { randomUUID } from 'expo-crypto';
-import { List } from 'pantryplus-api-client/v1';
+import { List } from 'pantryplus-api-client/v2';
 
 import { api } from '@/api';
 import { uiStore } from './UIStore';
@@ -190,7 +190,7 @@ const DomainStoreModel = t
 
             // Load group members
             for (const group of groups) {
-                try { 
+                try {
                     yield group.loadGroupShoppers({ xAuthUser: self.user?.email! });
                     yield group.loadGroupInvitees({ xAuthUser: self.user?.email! });
                 } catch (error) {

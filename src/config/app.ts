@@ -1,5 +1,5 @@
 const appConfig = {
-    apiUrl: `${process.env.EXPO_PUBLIC_API_URL}/v1`,
+    apiUrl: `${process.env.EXPO_PUBLIC_API_URL}/v2`,
     debug: process.env.EXPO_PUBLIC_DEBUG === 'true'
 } as const;
 

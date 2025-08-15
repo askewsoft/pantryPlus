@@ -5,7 +5,7 @@ import {
     PickShopperEmail,
     PickShopperId,
     PickGroupName
-} from 'pantryplus-api-client/v1';
+} from 'pantryplus-api-client/v2';
 import { getApiConfiguration } from '@/services/SessionService';
 
 const createGroup = async ({ name, newGroupId, xAuthUser }: { name: string, newGroupId: string, xAuthUser: string }): Promise<void> => {

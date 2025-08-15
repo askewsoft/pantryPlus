@@ -4,7 +4,7 @@ import {
     List,
     Group,
     Location,
-} from 'pantryplus-api-client/v1';
+} from 'pantryplus-api-client/v2';
 
 import { getApiConfiguration } from '@/services/SessionService';
 import { fetchUserAttributes } from 'aws-amplify/auth';
@@ -21,14 +21,14 @@ const registerUser = async () => {
         console.error('Failed to get API configuration');
         return;
     }
-    
+
     if (appConfig?.debug) {
         console.error('API Configuration received:', {
             basePath: configuration.basePath,
             hasAccessToken: !!configuration.accessToken
         });
     }
-    
+
     const shopperApi = new ShoppersApi(configuration);
     let authenticatedUser;
     let userAttributes;

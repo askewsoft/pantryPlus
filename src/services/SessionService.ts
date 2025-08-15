@@ -1,12 +1,12 @@
 import { fetchAuthSession } from 'aws-amplify/auth';
-import { Configuration } from 'pantryplus-api-client/v1';
+import { Configuration } from 'pantryplus-api-client/v2';
 import appConfig from '@/config/app';
 
 export const getApiConfiguration = async (): Promise<Configuration | undefined> => {
     try {
         const session = await fetchAuthSession();
         const token = session.tokens?.accessToken?.toString();
-        
+
         if (appConfig.debug) {
             console.error('API URL = ', appConfig.apiUrl);
             console.error('Auth Token Present = ', !!token);
@@ -31,4 +31,4 @@ export const getApiConfiguration = async (): Promise<Configuration | undefined> 
         }
         return undefined;
     }
-}; 
+};

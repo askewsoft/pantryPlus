@@ -1,4 +1,4 @@
-import { ListsApi, Category, List, Item } from 'pantryplus-api-client/v1';
+import { ListsApi, Category, List, Item } from 'pantryplus-api-client/v2';
 import { getApiConfiguration } from '@/services/SessionService';
 
 const createList = async ({ list, xAuthUser }: { list: List, xAuthUser: string }) => {
@@ -21,7 +21,7 @@ const updateList = async ({ list, xAuthUser }: { list: Omit<List, "ownerId">, xA
     } catch (error) {
         console.error(`Failed to updateList in DB: ${error}`);
     }
-} 
+}
 
 const removeList = async ({ listId, xAuthUser }: { listId: string, xAuthUser: string }) => {
     const configuration = await getApiConfiguration();

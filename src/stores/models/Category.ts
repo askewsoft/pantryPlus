@@ -4,7 +4,7 @@ import { randomUUID } from 'expo-crypto';
 
 import { api } from '@/api';
 import { ItemModel } from './Item';
-import { Item } from 'pantryplus-api-client/v1';
+import { Item } from 'pantryplus-api-client/v2';
 
 export type ItemType = Instance<typeof ItemModel>;
 
@@ -25,17 +25,17 @@ export const CategoryModel = t.model('CategoryModel', {
     }),
     addItem: flow(function*({ item, xAuthUser, onItemAdded }: { item: Pick<ItemType, 'name' | 'upc'>, xAuthUser: string, onItemAdded?: () => void }): Generator<any, any, any> {
         try {
-            const newItemId = randomUUID(); 
+            const newItemId = randomUUID();
             const newItem = ItemModel.create({ id: newItemId, name: item.name, upc: item.upc });
             yield newItem.saveItem(xAuthUser);
             yield api.category.associateCategoryItem({ categoryId: self.id, itemId: newItemId, xAuthUser });
             self.items.push(newItem);
-            
+
             // Notify parent that an item was added so it can update its count
             if (onItemAdded) {
                 onItemAdded();
             }
-            
+
             // If this was the first item added to the category and allFoldersOpen is true,
             // open the category to make it visible
             if (self.items.length === 1) {
@@ -56,7 +56,7 @@ export const CategoryModel = t.model('CategoryModel', {
             if (index !== undefined && index >= 0) {
                 self.items!.splice(index, 1);
             }
-            
+
             // Notify parent that an item was removed so it can update its count
             if (onItemRemoved) {
                 onItemRemoved();
@@ -73,7 +73,7 @@ export const CategoryModel = t.model('CategoryModel', {
             if (index !== undefined && index >= 0) {
                 self.items!.splice(index, 1);
             }
-            
+
             // Notify parent that an item was removed so it can update its count
             if (onItemRemoved) {
                 onItemRemoved();
@@ -109,4 +109,3 @@ export const CategoryModel = t.model('CategoryModel', {
         }
     }),
 }));
-

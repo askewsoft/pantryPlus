@@ -1,6 +1,6 @@
 import { t, Instance, flow } from 'mobx-state-tree';
 import { randomUUID } from 'expo-crypto';
-import { Category, Item } from 'pantryplus-api-client/v1';
+import { Category, Item } from 'pantryplus-api-client/v2';
 
 import { api } from '@/api';
 
@@ -39,7 +39,7 @@ export const ListModel = t.model('ListModel', {
         try {
             yield api.list.addListCategory({ listId, category: { id: newCategoryId, name, ordinal, listId }, xAuthUser, xAuthLocation });
             self.categories.push(newCategory);
-            
+
             // Set the default open state for the new category if provided
             if (defaultOpen !== undefined) {
                 // Import uiStore here to avoid circular dependency issues

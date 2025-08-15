@@ -1,4 +1,4 @@
-import { CategoriesApi, Item } from 'pantryplus-api-client/v1';
+import { CategoriesApi, Item } from 'pantryplus-api-client/v2';
 import { getApiConfiguration } from '@/services/SessionService';
 
 const updateCategory = async ({ categoryId, name, ordinal, xAuthUser, xAuthLocation }: { categoryId: string, name: string, ordinal: number, xAuthUser: string, xAuthLocation: string }) => {
