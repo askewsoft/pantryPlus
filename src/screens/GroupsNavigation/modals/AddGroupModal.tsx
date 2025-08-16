@@ -14,7 +14,8 @@ const AddGroupModal = ({ navigation }: { navigation: any }) => {
       if (selectedList) {
         selectedList.updateList({ name: selectedList.name, groupId: newGroupId, xAuthUser: domainStore.user!.email });
       }
-      uiStore.setShareModalVisible(true);
+      // Don't show the share modal - the list is already shared with the new group
+      // User can manually reopen it if they want to see details or change sharing
       navigation.goBack();
     }
   };
@@ -22,20 +23,16 @@ const AddGroupModal = ({ navigation }: { navigation: any }) => {
   const handleGroupCreation = async (newGroupId: string) => {
     uiStore.setAddGroupModalVisible(false);
 
-    // Handle navigation based on origin
+    // Handle sharing based on origin context
     if (uiStore.groupCreationOrigin === 'Lists') {
-      // Navigate back to Lists if user came from there
-      navigation.navigate('Lists', { screen: 'ShoppingList' });
-    } else {
-      // Stay on Groups screen if user navigated directly there
-      // The new group will be visible in the list
+      // User came from Lists context, update the shopping list and show share modal
+      // The optionallyShareShoppingList function will handle navigation back to Lists
+      optionallyShareShoppingList(newGroupId);
     }
+    // If from Groups context, just stay on Groups screen (modal closes)
 
     // Clear the origin tracking
     uiStore.clearGroupCreationOrigin();
-
-    // Handle sharing if needed
-    optionallyShareShoppingList(newGroupId);
   };
 
   const onSubmit = async (evt: any) => {
@@ -44,12 +41,14 @@ const AddGroupModal = ({ navigation }: { navigation: any }) => {
   };
 
   const onCancel = () => {
+    const origin = uiStore.groupCreationOrigin;
     uiStore.setAddGroupModalVisible(false);
     uiStore.clearGroupCreationOrigin();
 
-    if (uiStore.selectedShoppingList) {
+    // Only handle sharing if user came from Lists context
+    if (origin === 'Lists') {
+      // Show the share modal - the existing navigation will handle going back to Lists
       uiStore.setShareModalVisible(true);
-      navigation.goBack();
     }
   };
 

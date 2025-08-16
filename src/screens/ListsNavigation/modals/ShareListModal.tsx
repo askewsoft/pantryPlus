@@ -12,7 +12,7 @@ import fonts from '@/consts/fonts';
 const ShareListModal = ({ navigation }: { navigation: any }) => {
   const xAuthUser = domainStore.user?.email ?? '';
   const placeholder = 'Select a Group';
-  
+
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<string | null>(null);
   const [items, setItems] = useState<ItemType<string>[]>([]);
@@ -26,9 +26,9 @@ const ShareListModal = ({ navigation }: { navigation: any }) => {
   }, [uiStore.selectedShoppingList, domainStore.lists]);
 
   useEffect(() => {
-    const groupsAssociatedWithUser = domainStore.groups.map(group => ({ 
-      label: group.name, 
-      value: group.id 
+    const groupsAssociatedWithUser = domainStore.groups.map(group => ({
+      label: group.name,
+      value: group.id
     }));
     setItems(groupsAssociatedWithUser);
 
@@ -41,7 +41,7 @@ const ShareListModal = ({ navigation }: { navigation: any }) => {
         setValue(null);
       }
     }
-  }, [domainStore.groups, uiStore.selectedShoppingList]);
+  }, [domainStore.groups, uiStore.selectedShoppingList, uiStore.shareModalVisible]);
 
   const onCancel = () => {
     uiStore.setSelectedShoppingList(null);
@@ -51,7 +51,8 @@ const ShareListModal = ({ navigation }: { navigation: any }) => {
   const onUnshare = () => {
     const listToUnshare = domainStore.lists.find(list => list.id === uiStore.selectedShoppingList);
     if (listToUnshare) {
-      listToUnshare.updateList({ name: listToUnshare.name, groupId: '', xAuthUser });
+      // Use null instead of empty string for unsharing
+      listToUnshare.updateList({ name: listToUnshare.name, groupId: null, xAuthUser });
     }
     setValue(null);
     uiStore.setSelectedShoppingList(null);
@@ -70,6 +71,7 @@ const ShareListModal = ({ navigation }: { navigation: any }) => {
   const onCreateNewGroup = () => {
     // Track that user is creating a group from the Lists screen
     uiStore.setGroupCreationOrigin('Lists');
+
     // do not reset the selected shopping list, so that the new group modal can redirect to the shopping list screen
     uiStore.setShareModalVisible(false);
     uiStore.setAddGroupModalVisible(true);
@@ -123,7 +125,7 @@ const ShareListModal = ({ navigation }: { navigation: any }) => {
             color={colors.white}
           />
         </View>
-      
+
       </View>
     </Modal>
   );
@@ -184,4 +186,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default observer(ShareListModal);  
+export default observer(ShareListModal);
