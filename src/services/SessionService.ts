@@ -7,21 +7,10 @@ export const getApiConfiguration = async (): Promise<Configuration | undefined> 
         const session = await fetchAuthSession();
         const token = session.tokens?.accessToken?.toString();
 
-        if (appConfig.debug) {
-            console.error('API URL = ', appConfig.apiUrl);
-            console.error('Auth Token Present = ', !!token);
-            console.error('Auth Token = ', token);
-        }
-
         const config = new Configuration({
             basePath: appConfig.apiUrl,
             accessToken: token
         });
-
-        if (appConfig.debug) {
-            console.error('API Configuration created with basePath:', config.basePath);
-            console.error('Full config object:', JSON.stringify(config, null, 2));
-        }
 
         return config;
     } catch (error) {

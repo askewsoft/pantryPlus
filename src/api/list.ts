@@ -15,7 +15,7 @@ const createList = async ({ list, xAuthUser }: { list: List, xAuthUser: string }
 const updateList = async ({ list, xAuthUser }: { list: Omit<List, "ownerId">, xAuthUser: string }) => {
     const configuration = await getApiConfiguration();
     const listsApi = new ListsApi(configuration);
-    const { id, name, groupId = '', ordinal } = list;
+    const { id, name, groupId, ordinal } = list;
     try {
         await listsApi.updateList(xAuthUser, id, { name, groupId, ordinal } );
     } catch (error) {
