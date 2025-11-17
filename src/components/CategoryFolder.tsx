@@ -80,13 +80,10 @@ const CategoryFolder = ({categoryId, title, children}: {categoryId: string, titl
               ) : (
                 <Text style={styles.title}>{title}</Text>
               )}
-              <Badge count={unpurchasedItemsCount} size="small" />
+              <Badge count={unpurchasedItemsCount} size="small" darkMode={true} transparentBackground={true} />
             </View>
             <View style={styles.buttonContainer}>
-              <CategoryContextMenu
-                onRename={onRenameCategory}
-                onDelete={onDeleteCategory}
-              />
+              <CategoryContextMenu onRename={onRenameCategory} onDelete={onDeleteCategory} />
             </View>
           </View>
         </Pressable>

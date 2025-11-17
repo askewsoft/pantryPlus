@@ -5,9 +5,11 @@ import colors from '@/consts/colors';
 interface BadgeProps {
   count: number;
   size?: 'small' | 'medium' | 'large';
+  darkMode?: boolean;
+  transparentBackground?: boolean;
 }
 
-const Badge: React.FC<BadgeProps> = ({ count, size = 'medium' }) => {
+const Badge: React.FC<BadgeProps> = ({ count, size = 'medium', darkMode = true, transparentBackground = false }) => {
   if (count <= 0) return null;
 
   const sizeStyles = {
@@ -26,10 +28,12 @@ const Badge: React.FC<BadgeProps> = ({ count, size = 'medium' }) => {
   };
 
   const currentSize = sizeStyles[size];
+  const backgroundColor = transparentBackground ? { backgroundColor: '' } : { backgroundColor: colors.alertColor };
+  const textColor = darkMode ? { color: colors.white } : { color: colors.brandColor };
 
   return (
-    <View style={[styles.container, currentSize.container]}>
-      <Text style={[styles.text, currentSize.text]}>
+    <View style={[styles.container, currentSize.container, backgroundColor]}>
+      <Text style={[styles.text, currentSize.text, textColor]}>
         {count > 99 ? '99+' : count.toString()}
       </Text>
     </View>
@@ -38,16 +42,14 @@ const Badge: React.FC<BadgeProps> = ({ count, size = 'medium' }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.alertColor,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 4,
   },
   text: {
-    color: colors.white,
     fontWeight: 'bold',
     textAlign: 'center',
   },
 });
 
-export default Badge; 
+export default Badge;

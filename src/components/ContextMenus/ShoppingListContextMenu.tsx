@@ -72,14 +72,14 @@ const ShoppingListContextMenu = observer(({
   if (visibleActions.length === 0) {
     return (
       <View style={styles.container}>
-        <Badge count={unpurchasedItemsCount} size="small" />
+        <Badge count={unpurchasedItemsCount} size="small" darkMode={true} transparentBackground={true} />
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Badge count={unpurchasedItemsCount} size="small" />
+      <Badge count={unpurchasedItemsCount} size="small" darkMode={true} transparentBackground={true} />
       <ContextMenu
         actions={visibleActions.map(({ title, systemIcon }) => ({ title, systemIcon }))}
         onPress={handleActionPress}
