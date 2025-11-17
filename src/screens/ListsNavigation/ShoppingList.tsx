@@ -131,14 +131,14 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
         )}
         <BottomActionBar>
           <BottomActionButton
-            label="Add Item"
-            iconName="add-circle"
-            onPress={onPressAddItem}
-          />
-          <BottomActionButton
             label="Add Category"
             iconName="create-new-folder"
             onPress={onPressAddCategory}
+          />
+          <BottomActionButton
+            label="Add Item"
+            iconName="add-circle"
+            onPress={onPressAddItem}
           />
         </BottomActionBar>
       </View>
