@@ -20,12 +20,15 @@ const AddItemModal = () => {
   // Get category items directly from the DomainStore - always up to date
   const categoryItems = useMemo(() => {
     if (currentList) {
-      // Get fresh categories from the DomainStore
-      const categories = currentList.categories.map(category => ({
+      // Get fresh categories from the DomainStore, sorted alphabetically by name
+      const sortedCategories = [...currentList.categories].sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
+      const categories = sortedCategories.map(category => ({
         label: category.name,
         value: category.id
       }));
-      // Add "No Category" option
+      // Add "No Category" option at the top
       categories.unshift({ label: 'No Category', value: '' });
       return categories;
     } else {
