@@ -5,6 +5,7 @@ import { persist } from 'mst-persist';
 
 import { Tooltip } from '@/consts/Tooltip';
 import { AppTabsMstEnum, AppTabsMstType, AppSubTabsMstEnum, AppSubTabsMstType } from '@/types/NavMSTTypes';
+import syncConstants from '@/consts/sync';
 
 const OpenCategory = t.model('OpenCategory', {
     id: t.identifier,
@@ -44,6 +45,11 @@ export const UIStoreModel = t.model('UIStoreModel', {
     allFoldersOpen: t.optional(t.boolean, false),
     reorderCategoriesModalVisible: t.optional(t.boolean, false),
     reorderListsModalVisible: t.optional(t.boolean, false),
+    // Track recently removed items to prevent them from reappearing during sync
+    // This prevents race conditions where a user purchases an item but a sync
+    // request that was already in flight returns before the purchase completes
+    // Key: itemId, Value: timestamp when item was removed
+    recentlyRemovedItems: t.optional(t.map(t.number), {}),
 })
 .actions(self => ({
     initialize: () => {
@@ -63,6 +69,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
         self.listsLoaded = false;
         self.locationsLoaded = false;
         self.openCategories.clear();
+        self.recentlyRemovedItems.clear();
         self.pickLocationPromptVisible = false;
         self.purchaseHistoryLookbackDays = 90;
         self.recentLocationsNeedRefresh = false;
@@ -170,6 +177,46 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setReorderListsModalVisible(reorderListsModalVisible: boolean) {
         self.reorderListsModalVisible = reorderListsModalVisible;
+    },
+    // Actions for managing recently removed items
+    markItemAsRecentlyRemoved(itemId: string) {
+        self.recentlyRemovedItems.set(itemId, Date.now());
+    },
+    clearRecentlyRemovedMark(itemId: string) {
+        self.recentlyRemovedItems.delete(itemId);
+    },
+    wasItemRecentlyRemoved(itemId: string): boolean {
+        const removedTime = self.recentlyRemovedItems.get(itemId) as number | undefined;
+        if (!removedTime) return false;
+
+        const age = Date.now() - removedTime;
+        const MAX_AGE_MS = syncConstants.recentlyRemovedItemMaxAgeMs;
+
+        if (age > MAX_AGE_MS) {
+            // Clean up old entry
+            self.recentlyRemovedItems.delete(itemId);
+            return false;
+        }
+
+        return true;
+    },
+    cleanupRecentlyRemovedItems() {
+        const now = Date.now();
+        const MAX_AGE_MS = syncConstants.recentlyRemovedItemMaxAgeMs;
+
+        // Create array of items to delete (can't delete while iterating)
+        const itemsToDelete: string[] = [];
+        // MST maps iterate with entries() method
+        for (const [itemId, timestamp] of self.recentlyRemovedItems.entries()) {
+            if (now - (timestamp as number) > MAX_AGE_MS) {
+                itemsToDelete.push(itemId);
+            }
+        }
+
+        // Delete old entries
+        itemsToDelete.forEach(itemId => {
+            self.recentlyRemovedItems.delete(itemId);
+        });
     }
 }));
 
@@ -195,6 +242,7 @@ persist('pantryPlusUI', uiStore, {
         'shareModalVisible',
         'selectedTooltip',
         'reorderCategoriesModalVisible',
+        'recentlyRemovedItems', // Don't persist - this is temporary/ephemeral state
     ]
 });
 

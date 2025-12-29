@@ -1,7 +1,8 @@
-import { useEffect, useState, useRef } from 'react';
-import { StyleSheet, RefreshControl, Alert, View, FlatList, ScrollView } from 'react-native';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { StyleSheet, RefreshControl, Alert, View, FlatList, ScrollView, AppState, AppStateStatus } from 'react-native';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
+import { useFocusEffect } from '@react-navigation/native';
 
 import CategoryFolder from '@/components/CategoryFolder';
 import CategoryItems from '@/components/CategoryItems';
@@ -20,6 +21,7 @@ import { domainStore } from '@/stores/DomainStore';
 import { CategoryType } from '@/stores/models/List';
 import colors from '@/consts/colors';
 import { sortByOrdinal } from '@/stores/utils/sorter';
+import syncConstants from '@/consts/sync';
 
 const ShoppingList = observer(({ navigation }: { navigation: any }) => {
   const listId = uiStore.selectedShoppingList;
@@ -30,6 +32,7 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
   // Get current list as a computed value and ensure it exists
   const currentList = domainStore.lists.find((list) => list.id === listId);
 
+  // Full refresh: used for manual pull-to-refresh
   const loadData = async () => {
     // Verify list still exists in store before loading
     const listStillExists = domainStore.lists.find((list) => list.id === listId);
@@ -60,6 +63,31 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
     }
   };
 
+  // Incremental sync: only updates what changed to avoid flicker
+  const syncData = async () => {
+    // Verify list still exists in store before syncing
+    const listStillExists = domainStore.lists.find((list) => list.id === listId);
+    if (!listStillExists || !xAuthUser) return;
+
+    try {
+      // Create a reference to the current list's ID to verify it hasn't changed
+      const syncingListId = listId;
+
+      // Verify list ID hasn't changed before each operation
+      if (syncingListId === uiStore.selectedShoppingList) {
+        const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
+        await listStillExists.syncCategories({ xAuthUser, xAuthLocation });
+      }
+
+      if (syncingListId === uiStore.selectedShoppingList) {
+        await listStillExists.syncListItems({ xAuthUser });
+      }
+    } catch (error) {
+      console.error('Problem in ShoppingList syncing Categories or Items:', error);
+      // Don't show alert for sync errors - they're expected during network issues
+    }
+  };
+
   const renderCategoryElement = ({ item: category }: { item: CategoryType }) => {
     return (
       <CategoryFolder
@@ -72,6 +100,7 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
     );
   };
 
+  // Initial load when list is selected
   useEffect(() => {
     // Don't load data until lists are fully loaded
     if (!uiStore.listsLoaded) return;
@@ -91,6 +120,73 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
 
     return () => clearTimeout(timer);
   }, [listId, uiStore.listsLoaded, xAuthUser, domainStore.selectedKnownLocationId]);
+
+  // Automatic sync polling: only when screen is focused and app is in foreground
+  useFocusEffect(
+    useCallback(() => {
+      // Don't start polling until lists are loaded
+      if (!uiStore.listsLoaded || !listId || !xAuthUser) return;
+
+      let intervalId: NodeJS.Timeout | null = null;
+      let appStateSubscription: any = null;
+      let isActive = true;
+
+      const startPolling = () => {
+        // Clear any existing interval
+        if (intervalId) {
+          clearInterval(intervalId);
+        }
+
+        // Poll at configured interval when active
+        intervalId = setInterval(() => {
+          if (isActive && AppState.currentState === 'active') {
+            // Clean up old entries from recently removed items map
+            uiStore.cleanupRecentlyRemovedItems();
+            syncData();
+          }
+        }, syncConstants.pollIntervalMs);
+      };
+
+      const stopPolling = () => {
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
+      };
+
+      // Handle app state changes
+      const handleAppStateChange = (nextAppState: AppStateStatus) => {
+        if (nextAppState === 'active' && isActive) {
+          // App came to foreground - start polling
+          startPolling();
+          // Also sync immediately when app becomes active
+          syncData();
+        } else {
+          // App went to background - stop polling
+          stopPolling();
+        }
+      };
+
+      // Start polling when screen is focused
+      if (AppState.currentState === 'active') {
+        startPolling();
+        // Sync immediately when screen is focused
+        syncData();
+      }
+
+      // Listen for app state changes
+      appStateSubscription = AppState.addEventListener('change', handleAppStateChange);
+
+      // Cleanup function
+      return () => {
+        isActive = false;
+        stopPolling();
+        if (appStateSubscription) {
+          appStateSubscription.remove();
+        }
+      };
+    }, [listId, xAuthUser, uiStore.listsLoaded, domainStore.selectedKnownLocationId])
+  );
 
   // Render null if no list is selected or user isn't authenticated
   if (!currentList || !xAuthUser) {

@@ -5,6 +5,7 @@ import { randomUUID } from 'expo-crypto';
 import { api } from '@/api';
 import { ItemModel } from './Item';
 import { Item } from 'pantryplus-api-client/v2';
+import { uiStore } from '@/stores/UIStore';
 
 export type ItemType = Instance<typeof ItemModel>;
 
@@ -97,6 +98,53 @@ export const CategoryModel = t.model('CategoryModel', {
             });
         } catch (error) {
             console.error(`Error loading category items: ${error}`);
+        }
+    }),
+    syncCategoryItems: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
+        // Incrementally sync items: only add/remove what changed to avoid flicker
+        try {
+            const itemsData = yield api.category.loadCategoryItems({ categoryId: self.id, xAuthUser });
+
+            // Create maps for efficient lookup
+            const serverItemMap = new Map<string, Item>();
+            itemsData.forEach((item: Item) => {
+                serverItemMap.set(item.id, item);
+            });
+
+            const localItemIds = new Set(self.items.map(item => item.id));
+            const serverItemIds = new Set(serverItemMap.keys());
+
+            runInAction(() => {
+                // Remove items that are no longer on the server (purchased by someone else)
+                const itemsToRemove: string[] = [];
+                self.items.forEach(item => {
+                    if (!serverItemIds.has(item.id)) {
+                        itemsToRemove.push(item.id);
+                    }
+                });
+                itemsToRemove.forEach(itemId => {
+                    const index = self.items.findIndex(i => i.id === itemId);
+                    if (index >= 0) {
+                        self.items.splice(index, 1);
+                    }
+                });
+
+                // Add items that are on the server but not locally (added by someone else)
+                // Skip items that were recently removed locally to prevent race conditions
+                serverItemIds.forEach(itemId => {
+                    if (!localItemIds.has(itemId) && !uiStore.wasItemRecentlyRemoved(itemId)) {
+                        const serverItem = serverItemMap.get(itemId)!;
+                        const newItem = ItemModel.create({
+                            id: serverItem.id,
+                            name: serverItem.name,
+                            upc: serverItem.upc
+                        });
+                        self.items.push(newItem);
+                    }
+                });
+            });
+        } catch (error) {
+            console.error(`Error syncing category items: ${error}`);
         }
     }),
 

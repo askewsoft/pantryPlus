@@ -6,6 +6,7 @@ import { api } from '@/api';
 
 import { CategoryModel } from './Category';
 import { ItemModel } from './Item';
+import { uiStore } from '@/stores/UIStore';
 
 export type ItemType = Instance<typeof ItemModel>;
 export type CategoryType = Instance<typeof CategoryModel>;
@@ -98,6 +99,78 @@ export const ListModel = t.model('ListModel', {
             console.error(`Error loading categories: ${error}`);
         }
     }),
+    syncCategories: flow(function*({ xAuthUser, xAuthLocation }: { xAuthUser: string, xAuthLocation: string }): Generator<any, any, any> {
+        // Incrementally sync categories and their items: only add/remove/update what changed to avoid flicker
+        if (!self.id) return;
+
+        try {
+            const categoriesData = yield api.list.getListCategories({ listId: self.id, xAuthUser, xAuthLocation });
+
+            // Create maps for efficient lookup
+            const serverCategoryMap = new Map<string, Category>();
+            categoriesData.forEach((category: Category) => {
+                serverCategoryMap.set(category.id, category);
+            });
+
+            const localCategoryIds = new Set(self.categories.map(cat => cat.id));
+            const serverCategoryIds = new Set(serverCategoryMap.keys());
+
+            // Remove categories that are no longer on the server
+            const categoriesToRemove: string[] = [];
+            self.categories.forEach(category => {
+                if (!serverCategoryIds.has(category.id)) {
+                    categoriesToRemove.push(category.id);
+                }
+            });
+            categoriesToRemove.forEach(categoryId => {
+                const index = self.categories.findIndex(c => c.id === categoryId);
+                if (index >= 0) {
+                    self.categories.splice(index, 1);
+                }
+            });
+
+            // Update existing categories (name, ordinal) and sync their items
+            for (const category of self.categories) {
+                const serverCategory = serverCategoryMap.get(category.id);
+                if (serverCategory) {
+                    // Update category properties if they changed
+                    if (category.name !== serverCategory.name) {
+                        category.name = serverCategory.name;
+                    }
+                    const serverOrdinal = serverCategory.ordinal ?? 0;
+                    if (category.ordinal !== serverOrdinal) {
+                        category.ordinal = serverOrdinal;
+                    }
+                    // Sync items for this category
+                    yield category.syncCategoryItems({ xAuthUser });
+                }
+            }
+
+            // Add categories that are on the server but not locally (added by someone else)
+            const { uiStore } = require('@/stores/UIStore');
+            for (const serverCategory of categoriesData) {
+                if (!localCategoryIds.has(serverCategory.id)) {
+                    const newCategory = CategoryModel.create({
+                        id: serverCategory.id,
+                        name: serverCategory.name,
+                        ordinal: serverCategory.ordinal ?? 0
+                    });
+                    self.categories.push(newCategory);
+
+                    // Load items for the new category
+                    yield newCategory.loadCategoryItems({ xAuthUser });
+
+                    // Set default open state for new category
+                    const existingOpenState = uiStore.openCategories.get(newCategory.id);
+                    if (existingOpenState === undefined) {
+                        uiStore.setOpenCategory(newCategory.id, uiStore.allFoldersOpen);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error(`Error syncing categories: ${error}`);
+        }
+    }),
     loadListItems: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
         // Check if the node is still in the tree
         if (!self.id) return;
@@ -120,6 +193,53 @@ export const ListModel = t.model('ListModel', {
             console.error(`Error loading items: ${error}`);
         }
     }),
+    syncListItems: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
+        // Incrementally sync uncategorized list items: only add/remove what changed to avoid flicker
+        if (!self.id) return;
+
+        try {
+            const itemsData = yield api.list.getListItems({ listId: self.id, xAuthUser });
+
+            // Create maps for efficient lookup
+            const serverItemMap = new Map<string, Item>();
+            itemsData.forEach((item: Item) => {
+                serverItemMap.set(item.id, item);
+            });
+
+            const localItemIds = new Set(self.items.map(item => item.id));
+            const serverItemIds = new Set(serverItemMap.keys());
+
+            // Remove items that are no longer on the server (purchased by someone else)
+            const itemsToRemove: string[] = [];
+            self.items.forEach(item => {
+                if (!serverItemIds.has(item.id)) {
+                    itemsToRemove.push(item.id);
+                }
+            });
+            itemsToRemove.forEach(itemId => {
+                const index = self.items.findIndex(i => i.id === itemId);
+                if (index >= 0) {
+                    self.items.splice(index, 1);
+                }
+            });
+
+            // Add items that are on the server but not locally (added by someone else)
+            // Skip items that were recently removed locally to prevent race conditions
+            serverItemIds.forEach(itemId => {
+                if (!localItemIds.has(itemId) && !uiStore.wasItemRecentlyRemoved(itemId)) {
+                    const serverItem = serverItemMap.get(itemId)!;
+                    const newItem = ItemModel.create({
+                        id: serverItem.id,
+                        name: serverItem.name,
+                        upc: serverItem.upc
+                    });
+                    self.items.push(newItem);
+                }
+            });
+        } catch (error) {
+            console.error(`Error syncing list items: ${error}`);
+        }
+    }),
     addItem: flow(function*({ item, xAuthUser }: { item: Pick<ItemType, 'name' | 'upc'>, xAuthUser: string }): Generator<any, any, any> {
         try {
             const newItemId = randomUUID();
@@ -136,6 +256,8 @@ export const ListModel = t.model('ListModel', {
     }),
     removeItem: flow(function*({ itemId, xAuthUser }: { itemId: string, xAuthUser: string }): Generator<any, any, any> {
         try {
+            // Mark item as recently removed to prevent it from reappearing during sync
+            uiStore.markItemAsRecentlyRemoved(itemId);
             yield api.list.removeListItem({ listId: self.id, itemId, xAuthUser });
             const index = self.items?.findIndex(i => i.id === itemId);
             if (index !== undefined && index >= 0) {

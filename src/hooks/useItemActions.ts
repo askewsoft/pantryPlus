@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { domainStore } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
-import { FnReturnVoid } from '@/types/FunctionArgumentTypes';
 
 type UseItemActionsProps = {
   listId: string;
@@ -19,10 +18,10 @@ export const useItemActions = ({
   const currCategory = categoryId ? currList?.categories.find((category) => category.id === categoryId) : undefined;
 
   const setIsChecked = useCallback((isChecked: boolean) => {
-    const item = categoryId 
+    const item = categoryId
       ? currCategory?.items.find((item) => item.id === itemId)
       : currList?.items.find((item) => item.id === itemId);
-    
+
     if (item) {
       item.setIsChecked(isChecked);
     }
@@ -30,8 +29,8 @@ export const useItemActions = ({
 
   const onRemoveItem = useCallback(async () => {
     if (categoryId) {
-      currCategory?.removeItem({ 
-        itemId, 
+      currCategory?.removeItem({
+        itemId,
         xAuthUser,
         onItemRemoved: () => currList?.loadUnpurchasedItemsCount({ xAuthUser })
       });
@@ -41,8 +40,8 @@ export const useItemActions = ({
 
   const onUncategorizeItem = useCallback(async () => {
     if (categoryId) {
-      await currCategory?.unCategorizeItem({ 
-        itemId, 
+      await currCategory?.unCategorizeItem({
+        itemId,
         xAuthUser,
         onItemRemoved: () => currList?.loadUnpurchasedItemsCount({ xAuthUser })
       });
@@ -52,7 +51,7 @@ export const useItemActions = ({
 
   const handlePurchase = useCallback(async () => {
     const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
-    
+
     if (xAuthLocation === '') {
       setIsChecked(false);
       uiStore.setPickLocationPromptVisible(true);
@@ -60,10 +59,20 @@ export const useItemActions = ({
     } else {
       uiStore.setRecentLocationsNeedRefresh(true);
     }
-    
+
     if (currList) {
-      await currList.purchaseItem({ itemId, xAuthUser, xAuthLocation });
-      await onRemoveItem();
+      // Mark item as recently removed to prevent it from reappearing during sync
+      // This prevents race conditions where a sync request returns before purchase completes
+      uiStore.markItemAsRecentlyRemoved(itemId);
+      try {
+        await currList.purchaseItem({ itemId, xAuthUser, xAuthLocation });
+        await onRemoveItem();
+      } catch (error) {
+        // If purchase fails, clear the mark so the item can be re-added if needed
+        // This ensures the item will reappear if the purchase didn't actually complete
+        uiStore.clearRecentlyRemovedMark(itemId);
+        throw error; // Re-throw to allow caller to handle the error
+      }
     }
   }, [itemId, setIsChecked, onRemoveItem, currList, xAuthUser]);
 
@@ -75,4 +84,4 @@ export const useItemActions = ({
     onRemoveItem,
     onUncategorizeItem: categoryId ? onUncategorizeItem : undefined,
   };
-}; 
+};
