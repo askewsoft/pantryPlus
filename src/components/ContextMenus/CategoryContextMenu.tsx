@@ -70,10 +70,10 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   hamburgerButton: {
-    padding: 8,
+    padding: 4,
     justifyContent: 'center',
     alignItems: 'center',
   },
 });
 
-export default CategoryContextMenu; 
+export default CategoryContextMenu;

@@ -11,4 +11,5 @@ export const iconSize = {
   editIconSize: 18,
   rowIconSize: 22,
   topNavIconSize: 24,
+  folderIconSize: 30,
 }

@@ -34,16 +34,16 @@ const AddItemModal = () => {
     }
   }, [currentList, currentList?.categories.length, uiStore.addItemModalVisible]);
 
-  // Populate form when modal opens for editing
+  // Populate form when modal opens for editing or adding to a category
   useEffect(() => {
     if (uiStore.addItemModalVisible) {
       if (uiStore.editingItemName) {
         setItemName(uiStore.editingItemName);
         setSelectedCategoryId(uiStore.editingItemCategoryId);
       } else {
-        // Clear form for new item
+        // Clear form for new item, but preserve category if set
         setItemName('');
-        setSelectedCategoryId(null);
+        setSelectedCategoryId(uiStore.editingItemCategoryId);
       }
     }
   }, [uiStore.addItemModalVisible, uiStore.editingItemName, uiStore.editingItemCategoryId]);
@@ -82,9 +82,9 @@ const AddItemModal = () => {
 
       // Clear the input for next item
       setItemName('');
-      // Clear editing information
+      // Clear editing name (but preserve category for "Next" button)
       uiStore.setEditingItemName(null);
-      uiStore.setEditingItemCategoryId(null);
+      // Note: editingItemCategoryId is only cleared in handleDone()
     }
   };
 

@@ -12,6 +12,7 @@ import { domainStore } from '@/stores/DomainStore';
 
 import Badge from './Badge';
 import CategoryContextMenu from './ContextMenus/CategoryContextMenu';
+import AddButton from '@/components/Buttons/AddButton';
 
 const CategoryFolder = ({categoryId, title, children}: {categoryId: string, title: string, children: React.ReactNode}) => {
   const open = uiStore.openCategories.get(categoryId)?.open ?? false;
@@ -49,44 +50,58 @@ const CategoryFolder = ({categoryId, title, children}: {categoryId: string, titl
     uiStore.setOpenCategory(categoryId, !open);
   }
 
+  const onPressAddItem = () => {
+    uiStore.setEditingItemCategoryId(categoryId);
+    uiStore.setAddItemModalVisible(true);
+  }
+
   return (
     <View ref={categoryRef} style={styles.container}>
       {uiStore.showCategoryLabels && (
-        <Pressable onPress={toggleFolderOpenClose}>
-          <View style={styles.titleContainer}>
+        <View style={styles.titleContainer}>
+          <Pressable onPress={toggleFolderOpenClose} style={styles.folderContainer}>
             <AntDesign
               name={open ? "folderopen" : "folder1"}
-              size={iconSize.rowIconSize}
+              size={iconSize.folderIconSize}
               backgroundColor={colors.lightBrandColor}
               color={colors.white}
               iconStyle={{ padding: 0, margin: 0 }}
             />
-            <View style={styles.titleAndBadgeContainer}>
-              {isEditing ? (
-                <TextInput
-                  style={[styles.title, styles.titleInput]}
-                  value={editedTitle}
-                  onSubmitEditing={onSubmit}
-                  onChangeText={(text) => setEditedTitle(text)}
-                  autoFocus={true}
-                  inputMode="text"
-                  lineBreakStrategyIOS="none"
-                  clearButtonMode="while-editing"
-                  enablesReturnKeyAutomatically={true}
-                  keyboardAppearance="light"
-                  returnKeyType="done"
-                  blurOnSubmit={true}
-                />
-              ) : (
-                <Text style={styles.title}>{title}</Text>
-              )}
-              <Badge count={unpurchasedItemsCount} size="small" darkMode={true} transparentBackground={true} />
-            </View>
-            <View style={styles.buttonContainer}>
-              <CategoryContextMenu onRename={onRenameCategory} onDelete={onDeleteCategory} />
-            </View>
+            {!open && unpurchasedItemsCount > 0 && (
+              <View style={styles.badgeOverlay}>
+                <Badge count={unpurchasedItemsCount} size="small" darkMode={true} transparentBackground={true} />
+              </View>
+            )}
+          </Pressable>
+          <Pressable
+            onPress={toggleFolderOpenClose}
+            style={styles.titleAndBadgeContainer}
+            disabled={isEditing}
+          >
+            {isEditing ? (
+              <TextInput
+                style={[styles.title, styles.titleInput]}
+                value={editedTitle}
+                onSubmitEditing={onSubmit}
+                onChangeText={(text) => setEditedTitle(text)}
+                autoFocus={true}
+                inputMode="text"
+                lineBreakStrategyIOS="none"
+                clearButtonMode="while-editing"
+                enablesReturnKeyAutomatically={true}
+                keyboardAppearance="light"
+                returnKeyType="done"
+                blurOnSubmit={true}
+              />
+            ) : (
+              <Text style={styles.title}>{title}</Text>
+            )}
+          </Pressable>
+          <View style={styles.buttonContainer}>
+            <AddButton onPress={onPressAddItem} label="Add Item" foreground={colors.white} background={colors.lightBrandColor} materialIconName="add-circle" />
+            <CategoryContextMenu onRename={onRenameCategory} onDelete={onDeleteCategory} />
           </View>
-        </Pressable>
+        </View>
       )}
       {children}
     </View>
@@ -105,6 +120,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightBrandColor,
     paddingLeft: 20,
     paddingVertical: 7
+  },
+  folderContainer: {
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badgeOverlay: {
+    position: 'absolute',
+    bottom: 5,
+    right: 5,
   },
   titleAndBadgeContainer: {
     flex: 1,
@@ -127,8 +152,12 @@ const styles = StyleSheet.create({
   buttonContainer: {
     alignSelf: 'flex-end',
     flexDirection: 'row',
+    alignItems: 'center',
   },
-
+  addButton: {
+    padding: 4,
+    marginLeft: 4,
+  }
 });
 
 export default observer(CategoryFolder);
