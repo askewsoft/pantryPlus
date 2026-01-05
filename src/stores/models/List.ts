@@ -112,7 +112,6 @@ export const ListModel = t.model('ListModel', {
                 serverCategoryMap.set(category.id, category);
             });
 
-            const localCategoryIds = new Set(self.categories.map(cat => cat.id));
             const serverCategoryIds = new Set(serverCategoryMap.keys());
 
             // Remove categories that are no longer on the server
@@ -130,8 +129,16 @@ export const ListModel = t.model('ListModel', {
             });
 
             // Update existing categories (name, ordinal) and sync their items
-            for (const category of self.categories) {
-                const serverCategory = serverCategoryMap.get(category.id);
+            // Create a snapshot of category IDs to iterate over, as categories may be removed during iteration
+            const categoryIdsToSync = Array.from(self.categories.map(cat => cat.id));
+            for (const categoryId of categoryIdsToSync) {
+                // Re-find category in case it was removed
+                const category = self.categories.find(cat => cat.id === categoryId);
+                if (!category) {
+                    continue; // Category was removed, skip it
+                }
+
+                const serverCategory = serverCategoryMap.get(categoryId);
                 if (serverCategory) {
                     // Update category properties if they changed
                     if (category.name !== serverCategory.name) {
@@ -141,15 +148,18 @@ export const ListModel = t.model('ListModel', {
                     if (category.ordinal !== serverOrdinal) {
                         category.ordinal = serverOrdinal;
                     }
-                    // Sync items for this category
+                    // Sync items for this category (will check if alive internally)
                     yield category.syncCategoryItems({ xAuthUser });
                 }
             }
 
             // Add categories that are on the server but not locally (added by someone else)
+            // Re-check local state right before adding to prevent race conditions with concurrent syncs
             const { uiStore } = require('@/stores/UIStore');
             for (const serverCategory of categoriesData) {
-                if (!localCategoryIds.has(serverCategory.id)) {
+                // Re-check if category already exists locally (may have been added by concurrent sync)
+                const categoryAlreadyExists = self.categories.some(cat => cat.id === serverCategory.id);
+                if (!categoryAlreadyExists) {
                     const newCategory = CategoryModel.create({
                         id: serverCategory.id,
                         name: serverCategory.name,
@@ -225,15 +235,20 @@ export const ListModel = t.model('ListModel', {
 
             // Add items that are on the server but not locally (added by someone else)
             // Skip items that were recently removed locally to prevent race conditions
+            // Re-check local state right before adding to prevent race conditions with concurrent syncs
             serverItemIds.forEach(itemId => {
-                if (!localItemIds.has(itemId) && !uiStore.wasItemRecentlyRemoved(itemId)) {
-                    const serverItem = serverItemMap.get(itemId)!;
-                    const newItem = ItemModel.create({
-                        id: serverItem.id,
-                        name: serverItem.name,
-                        upc: serverItem.upc
-                    });
-                    self.items.push(newItem);
+                if (!uiStore.wasItemRecentlyRemoved(itemId)) {
+                    // Re-check if item already exists locally (may have been added by concurrent sync)
+                    const itemAlreadyExists = self.items.some(item => item.id === itemId);
+                    if (!itemAlreadyExists) {
+                        const serverItem = serverItemMap.get(itemId)!;
+                        const newItem = ItemModel.create({
+                            id: serverItem.id,
+                            name: serverItem.name,
+                            upc: serverItem.upc
+                        });
+                        self.items.push(newItem);
+                    }
                 }
             });
         } catch (error) {

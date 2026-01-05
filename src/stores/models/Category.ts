@@ -1,5 +1,4 @@
-import { runInAction } from 'mobx';
-import { flow, Instance, t } from 'mobx-state-tree';
+import { flow, Instance, t, isAlive } from 'mobx-state-tree';
 import { randomUUID } from 'expo-crypto';
 
 import { api } from '@/api';
@@ -86,18 +85,25 @@ export const CategoryModel = t.model('CategoryModel', {
     loadCategoryItems: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
         try {
             const itemsData = yield api.category.loadCategoryItems({ categoryId: self.id, xAuthUser });
+
+            // Check if category is still alive before modifying (may have been removed during async operation)
+            if (!isAlive(self)) {
+                return;
+            }
+
             const newItems = itemsData.map(
                 (item: Item) => {
                     const { id, name, upc } = item;
                     return ItemModel.create({ id, name, upc });
                 }
             );
-            runInAction(() => {
-                self.items.clear();
-                newItems.forEach((item: ItemType) => self.items.push(item));
-            });
+            self.items.clear();
+            newItems.forEach((item: ItemType) => self.items.push(item));
         } catch (error) {
-            console.error(`Error loading category items: ${error}`);
+            // Only log if category is still alive (avoid errors for dead nodes)
+            if (isAlive(self)) {
+                console.error(`Error loading category items: ${error}`);
+            }
         }
     }),
     syncCategoryItems: flow(function*({ xAuthUser }: { xAuthUser: string }): Generator<any, any, any> {
@@ -105,34 +111,46 @@ export const CategoryModel = t.model('CategoryModel', {
         try {
             const itemsData = yield api.category.loadCategoryItems({ categoryId: self.id, xAuthUser });
 
+            // Check if category is still alive before modifying (may have been removed during async operation)
+            if (!isAlive(self)) {
+                return;
+            }
+
             // Create maps for efficient lookup
             const serverItemMap = new Map<string, Item>();
             itemsData.forEach((item: Item) => {
                 serverItemMap.set(item.id, item);
             });
 
-            const localItemIds = new Set(self.items.map(item => item.id));
             const serverItemIds = new Set(serverItemMap.keys());
 
-            runInAction(() => {
-                // Remove items that are no longer on the server (purchased by someone else)
-                const itemsToRemove: string[] = [];
-                self.items.forEach(item => {
-                    if (!serverItemIds.has(item.id)) {
-                        itemsToRemove.push(item.id);
-                    }
-                });
-                itemsToRemove.forEach(itemId => {
-                    const index = self.items.findIndex(i => i.id === itemId);
-                    if (index >= 0) {
-                        self.items.splice(index, 1);
-                    }
-                });
+            // Double-check before modifying (flow functions automatically handle actions)
+            if (!isAlive(self)) {
+                return;
+            }
 
-                // Add items that are on the server but not locally (added by someone else)
-                // Skip items that were recently removed locally to prevent race conditions
-                serverItemIds.forEach(itemId => {
-                    if (!localItemIds.has(itemId) && !uiStore.wasItemRecentlyRemoved(itemId)) {
+            // Remove items that are no longer on the server (purchased by someone else)
+            const itemsToRemove: string[] = [];
+            self.items.forEach(item => {
+                if (!serverItemIds.has(item.id)) {
+                    itemsToRemove.push(item.id);
+                }
+            });
+            itemsToRemove.forEach(itemId => {
+                const index = self.items.findIndex(i => i.id === itemId);
+                if (index >= 0) {
+                    self.items.splice(index, 1);
+                }
+            });
+
+            // Add items that are on the server but not locally (added by someone else)
+            // Skip items that were recently removed locally to prevent race conditions
+            // Re-check local state right before adding to prevent race conditions with concurrent syncs
+            serverItemIds.forEach(itemId => {
+                if (!uiStore.wasItemRecentlyRemoved(itemId)) {
+                    // Re-check if item already exists locally (may have been added by concurrent sync)
+                    const itemAlreadyExists = self.items.some(item => item.id === itemId);
+                    if (!itemAlreadyExists) {
                         const serverItem = serverItemMap.get(itemId)!;
                         const newItem = ItemModel.create({
                             id: serverItem.id,
@@ -141,10 +159,13 @@ export const CategoryModel = t.model('CategoryModel', {
                         });
                         self.items.push(newItem);
                     }
-                });
+                }
             });
         } catch (error) {
-            console.error(`Error syncing category items: ${error}`);
+            // Only log if category is still alive (avoid errors for dead nodes)
+            if (isAlive(self)) {
+                console.error(`Error syncing category items: ${error}`);
+            }
         }
     }),
 
