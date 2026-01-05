@@ -28,6 +28,7 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
   const xAuthUser = domainStore.user?.email;
   const [isRefreshing, setIsRefreshing] = useState(false);
   const scrollViewRef = useRef<any>(null);
+  const syncInProgressRef = useRef<Promise<void> | null>(null);
 
   // Get current list as a computed value and ensure it exists
   const currentList = domainStore.lists.find((list) => list.id === listId);
@@ -65,27 +66,42 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
 
   // Incremental sync: only updates what changed to avoid flicker
   const syncData = async () => {
+    // Prevent concurrent sync operations to avoid race conditions
+    if (syncInProgressRef.current) {
+      // If a sync is already in progress, skip this sync
+      return;
+    }
+
     // Verify list still exists in store before syncing
     const listStillExists = domainStore.lists.find((list) => list.id === listId);
     if (!listStillExists || !xAuthUser) return;
 
-    try {
-      // Create a reference to the current list's ID to verify it hasn't changed
-      const syncingListId = listId;
+    // Create the sync promise and store it
+    const syncPromise = (async () => {
+      try {
+        // Create a reference to the current list's ID to verify it hasn't changed
+        const syncingListId = listId;
 
-      // Verify list ID hasn't changed before each operation
-      if (syncingListId === uiStore.selectedShoppingList) {
-        const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
-        await listStillExists.syncCategories({ xAuthUser, xAuthLocation });
-      }
+        // Verify list ID hasn't changed before each operation
+        if (syncingListId === uiStore.selectedShoppingList) {
+          const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
+          await listStillExists.syncCategories({ xAuthUser, xAuthLocation });
+        }
 
-      if (syncingListId === uiStore.selectedShoppingList) {
-        await listStillExists.syncListItems({ xAuthUser });
+        if (syncingListId === uiStore.selectedShoppingList) {
+          await listStillExists.syncListItems({ xAuthUser });
+        }
+      } catch (error) {
+        console.error('Problem in ShoppingList syncing Categories or Items:', error);
+        // Don't show alert for sync errors - they're expected during network issues
+      } finally {
+        // Clear the ref when sync completes
+        syncInProgressRef.current = null;
       }
-    } catch (error) {
-      console.error('Problem in ShoppingList syncing Categories or Items:', error);
-      // Don't show alert for sync errors - they're expected during network issues
-    }
+    })();
+
+    syncInProgressRef.current = syncPromise;
+    await syncPromise;
   };
 
   const renderCategoryElement = ({ item: category }: { item: CategoryType }) => {
