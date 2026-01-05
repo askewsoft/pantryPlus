@@ -9,7 +9,7 @@
     "android": "NODE_NO_WARNINGS=1 npx expo run:android",
     "dev:ios": "eas build --platform ios --profile development --clear-cache --local",
     "preview:ios": "eas build --platform ios --profile preview --clear-cache",
-    "prod:ios": "eas build --platform ios --profile prod --clear-cache",
+    "prod:ios": "eas build --platform ios --profile production --clear-cache",
     "publish:ios": "eas submit --platform ios",
     "update:preview": "node scripts/update.js preview",
     "update:prod": "node scripts/update.js prod",
