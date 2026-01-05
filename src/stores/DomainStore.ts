@@ -49,7 +49,17 @@ const DomainStoreModel = t
     }))
     .actions(self => ({
         initUser: flow(function* () {
+            // Clear any stale user data before initializing
+            // This ensures we start fresh after OTA updates or app reloads
+            self.user = undefined;
+            self.lists.spliceWithArray(0, self.lists.length, []);
+            self.groups.spliceWithArray(0, self.groups.length, []);
+            self.locations.spliceWithArray(0, self.locations.length, []);
+
             const authenticatedUser = yield api.shopper.registerUser();
+            if (!authenticatedUser) {
+                throw new Error('Failed to register/authenticate user');
+            }
             self.user = authenticatedUser;
         }),
         initialize: () => {
