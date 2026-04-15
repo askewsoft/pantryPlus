@@ -30,6 +30,7 @@
       ]
     ],
     "ios": {
+      "appleTeamId": "QCCN3A2ZNS",
       "supportsTablet": true,
       "bundleIdentifier": "com.askewsoft.pantryplus",
       "associatedDomains": [
