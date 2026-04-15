@@ -10,6 +10,7 @@
     "esModuleInterop": true
   },
   "include": [
+    "App.tsx",
     "src/**/*",
     "scripts/**/*"
   ],
