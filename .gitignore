@@ -1,7 +1,5 @@
 node_modules/**/*
 certs/
-ios/
-android/
 credentials.json
 .expo/*
 npm-debug.*
@@ -17,6 +15,24 @@ web-build/
 .env
 .env.*
 build-*.tar.gz
+
+# iOS native project (track source/config, ignore generated)
+ios/Pods/
+ios/build/
+ios/Build *.txt
+ios/DerivedData/
+ios/.symlinks/
+ios/Podfile.lock.tmp
+ios/.xcode.env.local
+ios/*.xcworkspace/xcuserdata/
+ios/**/*.xcuserstate
+
+# Android native project (track source/config, ignore generated)
+android/.gradle/
+android/build/
+android/app/build/
+android/app/debug.keystore
+android/local.properties
 
 # macOS
 .DS_Store
