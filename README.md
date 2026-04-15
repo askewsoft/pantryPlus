@@ -108,7 +108,7 @@ To build the app for a specific context use `--profile`; e.g., `eas build --plat
 
 The following other contexts are also supported:
 - `preview` - preview build for testing
-- `production` - production build for release
+- `prod` - production build for release
 
 ### OTA Updates
 pantryPlus uses EAS Updates to deploy minor changes "over the air" (OTA) without requiring a full app store submission. This allows for quick bug fixes and feature updates. The app uses `fingerprint` runtime version policy, which automatically detects native code changes.
