@@ -1,0 +1,20 @@
+---
+description: Prevent changes under deprecated v1 paths
+alwaysApply: true
+---
+
+# Deprecated v1 Paths
+
+- Do not create, edit, rename, or delete files under any `v1` API path.
+- Treat all `v1` code as read-only unless the user explicitly says to modify `v1`.
+- Default all API work to `v2` and shared modules.
+
+## Protected Paths
+
+- `pantryPlusApiTs/src/v1/**`
+- `src/v1/**`
+
+## If a requested fix appears to involve v1
+
+- Explain that `v1` is deprecated in this workspace.
+- Propose and implement the equivalent change in `v2` instead.
