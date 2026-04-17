@@ -1,10 +1,9 @@
 import { domainStore } from "@/stores/DomainStore";
-import { BottomTabNavigationOptions } from "@react-navigation/bottom-tabs";
 
 import colors from "./colors";
 
 // Shared tab options
-const tabOptions = ({tabName, iconName}: {tabName: string, iconName: string}): BottomTabNavigationOptions => {
+const tabOptions = ({tabName, iconName}: {tabName: string, iconName: string}) => {
     const numInvites = domainStore.user?.numInvites || 0;
     
     return {

@@ -61,7 +61,7 @@ const CategoryFolder = ({categoryId, title, children}: {categoryId: string, titl
         <View style={styles.titleContainer}>
           <Pressable onPress={toggleFolderOpenClose} style={styles.folderContainer}>
             <AntDesign
-              name={open ? "folderopen" : "folder1"}
+              name={open ? "folder-open" : "folder"}
               size={iconSize.folderIconSize}
               backgroundColor={colors.lightBrandColor}
               color={colors.white}
