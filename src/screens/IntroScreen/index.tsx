@@ -1,7 +1,5 @@
-import { View, Text, Button, Dimensions } from 'react-native';
+import { View, Text, Button, Dimensions, FlatList } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import Carousel from 'react-native-reanimated-carousel';
-import { useSharedValue } from 'react-native-reanimated';
 
 import { styles } from './style';
 import colors from '@/consts/colors';
@@ -13,7 +11,6 @@ const IntroScreen = () => {
   const { width, height } = Dimensions.get('window');
   const carouselWidth = width * 0.8;
   const carouselHeight = height * 0.4;
-  const progress = useSharedValue(0);
 
   return (
     <View style={styles.container}>
@@ -23,21 +20,27 @@ const IntroScreen = () => {
       <View style={styles.introContainer}>
         <View style={styles.introTextContainer}>
           <Text style={styles.introText}>Explain some features</Text>
-          <Carousel
-            width={carouselWidth}
-            height={carouselHeight}
-            mode="parallax"
-            modeConfig={{
-              parallaxScrollingScale: 0.80,
-              parallaxScrollingOffset: 80
-            }}
+          <FlatList
             data={carouselData}
+            keyExtractor={(item) => String(item.id)}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            style={{ width: carouselWidth, height: carouselHeight, alignSelf: 'center' }}
+            snapToInterval={carouselWidth}
+            snapToAlignment="start"
+            decelerationRate="fast"
+            disableIntervalMomentum
+            getItemLayout={(_, index) => ({
+              length: carouselWidth,
+              offset: carouselWidth * index,
+              index,
+            })}
             renderItem={({ item }) => (
-              <FeatureHighlightTemplate title={item.title} description={item.description} image={null} />
+              <View style={{ width: carouselWidth, height: carouselHeight }}>
+                <FeatureHighlightTemplate title={item.title} description={item.description} image={null} />
+              </View>
             )}
-            onProgressChange={(offsetProgress, absoluteProgress) => {
-              progress.value = absoluteProgress;
-            }}
           />
         </View>
         <View style={styles.carouselControlsContainer}>
