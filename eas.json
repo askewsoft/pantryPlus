@@ -28,7 +28,7 @@
       "ios": {
         "simulator": false,
         "buildConfiguration": "Release",
-        "image": "macos-sequoia-15.3-xcode-16.2"
+        "image": "macos-sequoia-15.6-xcode-26.2"
       }
     },
     "prod": {
@@ -39,7 +39,7 @@
       "ios": {
         "simulator": false,
         "buildConfiguration": "Release",
-        "image": "macos-sequoia-15.3-xcode-16.2"
+        "image": "macos-sequoia-15.6-xcode-26.2"
       }
     }
   },
