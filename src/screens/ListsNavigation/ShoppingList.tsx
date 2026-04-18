@@ -45,7 +45,11 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
       const loadingListId = listId;
 
       // Verify list ID hasn't changed before each operation
-      if (loadingListId === uiStore.selectedShoppingList) {
+      if (
+        loadingListId === uiStore.selectedShoppingList &&
+        !uiStore.reorderCategoriesModalVisible &&
+        !uiStore.categoryOrderSaveInProgress
+      ) {
         const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
         await listStillExists.loadCategories({ xAuthUser, xAuthLocation });
       }
@@ -82,8 +86,13 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
         // Create a reference to the current list's ID to verify it hasn't changed
         const syncingListId = listId;
 
-        // Verify list ID hasn't changed before each operation
-        if (syncingListId === uiStore.selectedShoppingList) {
+        // Category sync overwrites ordinals from the server; skip during reorder so
+        // in-flight saves are not reverted by a poll (ShoppingList is the only caller).
+        if (
+          syncingListId === uiStore.selectedShoppingList &&
+          !uiStore.reorderCategoriesModalVisible &&
+          !uiStore.categoryOrderSaveInProgress
+        ) {
           const xAuthLocation = domainStore.selectedKnownLocationId ?? '';
           await listStillExists.syncCategories({ xAuthUser, xAuthLocation });
         }

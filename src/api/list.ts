@@ -1,4 +1,4 @@
-import { ListsApi, Category, List, Item } from 'pantryplus-api-client/v2';
+import { ListsApi, Category, List, Item, ReorderCategoriesAtLocationRequest } from 'pantryplus-api-client/v2';
 import { getApiConfiguration } from '@/services/SessionService';
 
 const createList = async ({ list, xAuthUser }: { list: List, xAuthUser: string }) => {
@@ -123,6 +123,28 @@ const getListItemsCount = async ({ listId, xAuthUser }: { listId: string, xAuthU
     }
 }
 
+const reorderCategoriesAtLocation = async ({
+    listId,
+    orderedCategoryIds,
+    xAuthUser,
+    xAuthLocation,
+}: {
+    listId: string;
+    orderedCategoryIds: string[];
+    xAuthUser: string;
+    xAuthLocation: string;
+}): Promise<void> => {
+    const configuration = await getApiConfiguration();
+    const listsApi = new ListsApi(configuration);
+    const body: ReorderCategoriesAtLocationRequest = { orderedCategoryIds };
+    try {
+        await listsApi.reorderCategoriesAtLocation(xAuthUser, xAuthLocation, listId, body);
+    } catch (error) {
+        console.error(`Failed to reorder categories in DB: ${error}`);
+        throw error;
+    }
+};
+
 export default {
     createList,
     getListCategories,
@@ -135,4 +157,5 @@ export default {
     updateList,
     removeList,
     purchaseItem,
+    reorderCategoriesAtLocation,
 };

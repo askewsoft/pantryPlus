@@ -51,6 +51,32 @@ export const ListModel = t.model('ListModel', {
             console.error(`Error adding category to list: ${error}`);
         }
     }),
+    /** Apply new ordinals locally in one action so UI updates before API calls finish */
+    applyLocalCategoryOrdinals(orderedCategoryIds: string[]) {
+        orderedCategoryIds.forEach((id, index) => {
+            const cat = self.categories.find(c => c.id === id);
+            if (cat) {
+                cat.ordinal = index;
+            }
+        });
+    },
+    /** Single API call: transactional reorder of CATEGORY_ORDER for this list + location */
+    persistCategoryOrderToServer: flow(function* ({
+        orderedCategoryIds,
+        xAuthUser,
+        xAuthLocation,
+    }: {
+        orderedCategoryIds: string[];
+        xAuthUser: string;
+        xAuthLocation: string;
+    }): Generator<any, any, any> {
+        yield api.list.reorderCategoriesAtLocation({
+            listId: self.id,
+            orderedCategoryIds,
+            xAuthUser,
+            xAuthLocation,
+        });
+    }),
     removeCategory: flow(function* ({ categoryId, xAuthUser }: { categoryId: string, xAuthUser: string }): Generator<any, any, any> {
         const index = self.categories?.findIndex(c => c.id === categoryId);
         try {

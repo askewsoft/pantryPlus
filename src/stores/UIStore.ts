@@ -44,6 +44,8 @@ export const UIStoreModel = t.model('UIStoreModel', {
     showCategoryLabels: t.optional(t.boolean, true),
     allFoldersOpen: t.optional(t.boolean, false),
     reorderCategoriesModalVisible: t.optional(t.boolean, false),
+    /** True while category order is being persisted — blocks sync from overwriting ordinals */
+    categoryOrderSaveInProgress: t.optional(t.boolean, false),
     reorderListsModalVisible: t.optional(t.boolean, false),
     // Track recently removed items to prevent them from reappearing during sync
     // This prevents race conditions where a user purchases an item but a sync
@@ -80,6 +82,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
         self.showIntroScreen = false;
         self.signInOrUp = 'signIn';
         self.groupCreationOrigin = null;
+        self.categoryOrderSaveInProgress = false;
     },
     setSignInOrUp(signInOrUp: 'signIn' | 'signUp') {
         self.signInOrUp = cast(signInOrUp);
@@ -175,6 +178,9 @@ export const UIStoreModel = t.model('UIStoreModel', {
     setReorderCategoriesModalVisible(reorderCategoriesModalVisible: boolean) {
         self.reorderCategoriesModalVisible = reorderCategoriesModalVisible;
     },
+    setCategoryOrderSaveInProgress(categoryOrderSaveInProgress: boolean) {
+        self.categoryOrderSaveInProgress = categoryOrderSaveInProgress;
+    },
     setReorderListsModalVisible(reorderListsModalVisible: boolean) {
         self.reorderListsModalVisible = reorderListsModalVisible;
     },
@@ -242,6 +248,7 @@ persist('pantryPlusUI', uiStore, {
         'shareModalVisible',
         'selectedTooltip',
         'reorderCategoriesModalVisible',
+        'categoryOrderSaveInProgress',
         'recentlyRemovedItems', // Don't persist - this is temporary/ephemeral state
     ]
 });

@@ -55,21 +55,23 @@ const ReorderCategoriesModal = () => {
       return;
     }
 
-    // Update the ordinals in sequence to avoid race conditions
+    const orderedIds = data.map(c => c.id);
+
+    currentList.applyLocalCategoryOrdinals(orderedIds);
+
     const updateOrdinals = async () => {
+      uiStore.setCategoryOrderSaveInProgress(true);
       try {
-        for (let i = 0; i < data.length; i++) {
-          const category = data[i];
-          if (category.ordinal !== i) {
-            const updatedCategory = currentList.categories.find(c => c.id === category.id);
-            if (updatedCategory) {
-              await updatedCategory.setOrdinal(i, xAuthUser, xAuthLocation);
-            }
-          }
-        }
+        await currentList.persistCategoryOrderToServer({
+          orderedCategoryIds: orderedIds,
+          xAuthUser,
+          xAuthLocation,
+        });
       } catch (error) {
         console.error('Error updating category order:', error);
         Alert.alert('Error', 'Failed to update category order. Please try again.');
+      } finally {
+        uiStore.setCategoryOrderSaveInProgress(false);
       }
     };
 
