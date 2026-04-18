@@ -28,7 +28,9 @@ const Badge: React.FC<BadgeProps> = ({ count, size = 'medium', darkMode = true, 
   };
 
   const currentSize = sizeStyles[size];
-  const backgroundColor = transparentBackground ? { backgroundColor: '' } : { backgroundColor: colors.alertColor };
+  const backgroundColor = transparentBackground
+    ? { backgroundColor: 'transparent' }
+    : { backgroundColor: colors.alertColor };
   const textColor = darkMode ? { color: colors.white } : { color: colors.brandColor };
 
   return (

@@ -23,7 +23,7 @@ const { Navigator, Screen } = createDrawerNavigator<AppTabsParamList>();
 
 // Icon configuration for drawer items
 const getDrawerIcon = (iconName: string) => ({ color, size }: { color: string, size: number }) => (
-  <MaterialIcons name={iconName as any} size={size} color={color} style={{ marginRight: -10 }} />
+  <MaterialIcons name={iconName as any} size={size} color={color} />
 );
 
 const AppWrapper = () => {
@@ -36,7 +36,6 @@ const AppWrapper = () => {
     drawerLabelStyle: {
       fontSize: fonts.messageTextSize,
       fontWeight: '600',
-      marginLeft: -10,
     },
     drawerItemStyle: {
       borderRadius: 8,

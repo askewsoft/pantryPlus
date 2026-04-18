@@ -63,13 +63,16 @@ const CategoryFolder = ({categoryId, title, children}: {categoryId: string, titl
             <AntDesign
               name={open ? "folder-open" : "folder"}
               size={iconSize.folderIconSize}
-              backgroundColor={colors.lightBrandColor}
               color={colors.white}
-              iconStyle={{ padding: 0, margin: 0 }}
             />
             {!open && unpurchasedItemsCount > 0 && (
               <View style={styles.badgeOverlay}>
-                <Badge count={unpurchasedItemsCount} size="small" darkMode={true} transparentBackground={true} />
+                <Badge
+                  count={unpurchasedItemsCount}
+                  size="small"
+                  darkMode={false}
+                  transparentBackground={true}
+                />
               </View>
             )}
           </Pressable>
