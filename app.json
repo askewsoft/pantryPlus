@@ -28,7 +28,8 @@
         }
       ],
       "expo-asset",
-      "expo-font"
+      "expo-font",
+      "./plugins/withFmtPodfile.js"
     ],
     "ios": {
       "appleTeamId": "QCCN3A2ZNS",

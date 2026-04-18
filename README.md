@@ -31,18 +31,31 @@ Manage your shopping lists, and then some.
 * [Cocoapods](https://cocoapods.org/)
     - for managing iOS dependencies
     - `brew install cocoapods`
-* [XCode](https://developer.apple.com/xcode/)
+* [Xcode](https://developer.apple.com/xcode/)
     - for building the app for iOS devices
 * [Maestro](https://maestro.dev/)
     - end-to-end testing framework that can grab screenshots of mobile simulators for regression testing
 
 ## Developing
-### XCode Configuration
-1. Install XCode from the Mac App Store
+### Native projects (CNG)
+The **`ios/`** and **`android/`** directories are **not committed**. They are generated from **`app.json`**, **`package.json`**, and **config plugins** (see `plugins/`) whenever you run **`expo prebuild`**. EAS Build does the same in the cloud, so local and CI stay aligned with that config.
+
+After a fresh clone or any change that affects native code (new Expo modules, `app.json` `ios` / `plugins`, etc.):
+
+```sh
+npm run prebuild
+# or, to wipe and regenerate native folders from scratch:
+npm run prebuild:clean
+```
+
+The Podfile **`fmt`** workaround for newer Xcode / Clang lives in **`plugins/withFmtPodfile.js`** and is applied automatically at prebuild time.
+
+### Xcode Configuration
+1. Install Xcode from the Mac App Store
 1. Install the Xcode command line tools: `xcode-select --install`
 1. Accept the Xcode license: `sudo xcodebuild -license`
-1. Ensure you have a target device configured in XCode
-    - Open XCode
+1. Ensure you have a target device configured in Xcode
+    - Open Xcode
     - Open `Settings` (⌘,)
     - Open `Accounts` tab
     - Click `+` and login with your Apple ID
@@ -56,28 +69,34 @@ You can find the version of node used for this project in the `.nvmrc` file.
 
 The app can be built for a variety of contexts. Builds can be **local** or **cloud-based**.
 
-These can take a while to complete. You must have the iOS emulator already running (XCode -> Open Developer Tool -> Simulator)
+These can take a while to complete. You must have the iOS Simulator already running (**Xcode → Open Developer Tool → Simulator**), or use a connected device.
 
-1. `nvm use` - Switch to the correct node.js version
-1. `npm install` to get all dependencies
-1. `npm run ios` to build and run the app for your iOS device emulator
-    - **NOTE** if you install new expo packages, you need to build the app using this command, `npm start` will not work
+1. `nvm use` — switch to the correct Node.js version
+1. `npm install` — install JavaScript dependencies
+1. If you do not yet have an **`ios/`** folder (e.g. right after `git clone`), run **`npm run prebuild`** once (see [Native projects](#native-projects-cng))
+1. `npm run ios` — generate native projects if needed, install pods, build, and run the dev client on the iOS Simulator (or device)
+    - **NOTE:** If you add or upgrade **native** Expo packages, run **`npm run prebuild`** (or **`npm run prebuild:clean`**) and then **`npm run ios`**. **`npm start`** alone does not rebuild native code.
 
 #### If build fails
 
-- You may need to:
+- If **`ios/`** is missing or out of date:
+    1. `npm run prebuild` (or `npm run prebuild:clean` if something looks corrupted)
+    1. `npm run ios` again
+
+- You may need to refresh CocoaPods:
     1. `cd ios`
     1. `pod install`
     1. `cd ..`
     1. `npm run ios` again
 
 - If you continue to experience issues, you may need to:
-    1. open XCode
-    1. open the pantryPlus project from `./ios/pantryPlus.xcworkspace`
-    1. select the "Target" from below the project name
-    1. click on the "Build Settings" tab along the top
-    1. ensure that the `> Build Options > User Scripting Sandbox` setting is set to `No`
-    1. you may close XCode at this point
+    1. Ensure **`ios/`** exists (`npm run prebuild` if not)
+    1. Open **Xcode**
+    1. Open **`ios/pantryPlus.xcworkspace`** (workspace, not the `.xcodeproj` alone)
+    1. Select the **pantryPlus** target under the project
+    1. Open the **Build Settings** tab
+    1. Ensure **Build Options → User Script Sandboxing** is set to **No**
+    1. Close Xcode
     1. `npm run ios` again
 
 ## Build & Publish
