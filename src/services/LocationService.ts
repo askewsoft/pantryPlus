@@ -8,6 +8,22 @@ import { api } from '@/api';
 class LocationService {
     private subscription: expoLocation.LocationSubscription | null = null;
 
+    private async applyNearestKnownFromExpoLocation(location: expoLocation.LocationObject) {
+        const email = domainStore.user?.email;
+        if (!email) return;
+
+        try {
+            const nearestKnownLocationProps = await api.location.getNearestStore(email, location) as LocationType | undefined;
+            if (!nearestKnownLocationProps) return;
+            if (nearestKnownLocationProps.id !== domainStore.selectedKnownLocationId) {
+                domainStore.setNearestKnownLocation(nearestKnownLocationProps);
+                domainStore.setSelectedKnownLocationId(nearestKnownLocationProps.id ?? null);
+            }
+        } catch (error) {
+            console.error('Failed to resolve nearest store from position:', error);
+        }
+    }
+
     async requestPermissions(): Promise<boolean> {
         // Check if user has explicitly disabled location in the app
         if (domainStore.locationExplicitlyDisabled) {
@@ -25,8 +41,8 @@ class LocationService {
     }
 
     async startTracking() {
-        // First stop any existing tracking to ensure clean state
-        this.stopTracking();
+        // Replace subscription only — do not clear selected location (persisted / last known).
+        this.stopTracking(false);
 
         const locationSubscriptionOptions = {
             accuracy: locationSubscription.accuracy,
@@ -46,17 +62,20 @@ class LocationService {
             this.subscription = await expoLocation.watchPositionAsync(
                 locationSubscriptionOptions,
                 async (location) => {
-                    const email = domainStore.user?.email;
-                    if (!email) return;
-
-                    const nearestKnownLocationProps = await api.location.getNearestStore(email, location) as LocationType;
-                    if (!nearestKnownLocationProps) return;
-                    if (nearestKnownLocationProps.id !== domainStore.selectedKnownLocationId) {
-                        domainStore.setNearestKnownLocation(nearestKnownLocationProps);
-                        domainStore.setSelectedKnownLocationId(nearestKnownLocationProps.id ?? null);
-                    }
+                    await this.applyNearestKnownFromExpoLocation(location);
                 }
             );
+
+            // watchPositionAsync may not fire until movement or the time interval elapses; resolve nearest store now
+            // so ShoppingList loads use location ordering immediately.
+            try {
+                const current = await expoLocation.getCurrentPositionAsync({
+                    accuracy: locationSubscription.accuracy,
+                });
+                await this.applyNearestKnownFromExpoLocation(current);
+            } catch (error) {
+                console.error('Unable to get immediate position for nearest store:', error);
+            }
 
         } catch (error) {
             console.error('unable to start location tracking:', error);
@@ -65,13 +84,15 @@ class LocationService {
         }
     }
 
-    stopTracking() {
+    stopTracking(clearSelection = true) {
         if (this.subscription) {
             this.subscription.remove();
             this.subscription = null;
         }
-        domainStore.setNearestKnownLocation(null);
-        domainStore.setSelectedKnownLocationId(null);
+        if (clearSelection) {
+            domainStore.setNearestKnownLocation(null);
+            domainStore.setSelectedKnownLocationId(null);
+        }
     }
 }
 

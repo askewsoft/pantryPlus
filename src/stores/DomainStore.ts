@@ -276,11 +276,5 @@ onAction(domainStore, (call) => {
     }
 }, true);
 
-onAction(domainStore, (call) => {
-    if (call.name === 'loadLists') {
-        uiStore.setListsLoaded(true);
-    }
-}, true);
-
 export const DomainStoreContext = createContext<DomainStoreType | null>(null);
 export const DomainStoreContextProvider = DomainStoreContext.Provider;

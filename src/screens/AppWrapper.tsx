@@ -65,15 +65,19 @@ const AppWrapper = () => {
   };
 
   useEffect(() => {
-    if (domainStore.locationEnabled) {
+    const shouldTrack = domainStore.locationEnabled && !!domainStore.user?.email;
+    if (shouldTrack) {
       locationService.startTracking();
+    } else if (!domainStore.locationEnabled) {
+      locationService.stopTracking();
+    } else {
+      // Location enabled but user not ready yet (e.g. still authenticating)
+      locationService.stopTracking(false);
     }
     return () => {
-      if (!domainStore.locationEnabled) {
-        locationService.stopTracking();
-      }
-    }
-  }, [domainStore.locationEnabled]);
+      locationService.stopTracking(false);
+    };
+  }, [domainStore.locationEnabled, domainStore.user?.email]);
 
   return (
     <SafeAreaView style={styles.container}>
