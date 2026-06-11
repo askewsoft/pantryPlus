@@ -1,0 +1,4 @@
+# CNG: ios/ and android/ are generated during EAS Build (see .gitignore).
+# Local fingerprint runs without them; EAS runs after prebuild. Ignore both sides.
+ios/**/*
+android/**/*
