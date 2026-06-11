@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, NativeSyntheticEvent } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, NativeSyntheticEvent, Alert } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import ContextMenu, { ContextMenuOnPressNativeEvent } from 'react-native-context-menu-view';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -49,6 +49,34 @@ const ListContextMenu = observer(({
       actionConfig.handler();
     }
   };
+
+  const showOwnerOnlyTip = () => {
+    Alert.alert(
+      'List Options Unavailable',
+      'Only the list owner can share, rename, or delete this list.',
+    );
+  };
+
+  if (!userIsListOwner) {
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity
+          style={styles.menuButton}
+          activeOpacity={0.7}
+          onPress={showOwnerOnlyTip}
+          accessibilityLabel="List Menu"
+          accessibilityHint="Only the list owner can manage this list"
+          accessibilityRole="button"
+        >
+          <MaterialIcons
+            name="more-horiz"
+            size={iconSize.rowIconSize}
+            color={colors.disabledButtonColor}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

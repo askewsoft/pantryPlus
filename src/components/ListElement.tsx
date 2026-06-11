@@ -111,14 +111,12 @@ const ListElement = ({id, navigation}: {id: string, navigation: any}) => {
         </View>
       </Pressable>
       <View style={styles.buttonContainer}>
-        {userIsListOwner && (
-          <ListContextMenu
-            onShare={openShareModal}
-            onRename={onRenameList}
-            onDelete={onRemoveList}
-            userIsListOwner={userIsListOwner}
-          />
-        )}
+        <ListContextMenu
+          onShare={openShareModal}
+          onRename={onRenameList}
+          onDelete={onRemoveList}
+          userIsListOwner={userIsListOwner}
+        />
       </View>
     </View>
   );
