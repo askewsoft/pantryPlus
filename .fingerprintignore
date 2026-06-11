@@ -1,4 +1,12 @@
 # CNG: ios/ and android/ are generated during EAS Build (see .gitignore).
-# Local fingerprint runs without them; EAS runs after prebuild. Ignore both sides.
 ios/**/*
 android/**/*
+
+# These packages get codegen artifacts written into them during EAS `pod install`,
+# producing different dir hashes on EAS vs. local. Package *versions* are still
+# fingerprinted via the autolinking config, so upgrades still bump the runtime version.
+node_modules/@react-native-async-storage/async-storage/**/*
+node_modules/react-native-reanimated/**/*
+node_modules/react-native-safe-area-context/**/*
+node_modules/react-native-screens/**/*
+node_modules/react-native-worklets/**/*
