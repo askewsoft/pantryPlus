@@ -20,8 +20,10 @@ import AppWrapper from '@/screens/AppWrapper';
 import { authTheme } from '@/consts/authTheme';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { updateService } from '@/services/UpdateService';
+import { configureAuthenticatorAutofill } from '@/config/authAutofill';
 
 Amplify.configure(amplifyConfig);
+configureAuthenticatorAutofill();
 
 // Add startup logging
 console.log('App starting with config:', {

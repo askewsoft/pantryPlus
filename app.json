@@ -36,9 +36,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.askewsoft.pantryplus",
       "associatedDomains": [
-        "applinks:pantryplus.askewsoft.com",
-        "applinks:api.askewsoft.com",
-        "applinks:askewsoft.com"
+        "webcredentials:askewsoft.com"
       ],
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to use your location to automatically sort the items in your shopping lists.",
