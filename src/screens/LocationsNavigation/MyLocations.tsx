@@ -20,13 +20,12 @@ const MyLocations = ({navigation, route}: {navigation: any, route: any}) => {
   const returnToList = route.params?.returnToList;
 
   useEffect(() => {
-    navigation.addListener('focus', () => {
-      if (uiStore.recentLocationsNeedRefresh) {
-        domainStore.loadRecentLocations();
-        uiStore.setRecentLocationsNeedRefresh(false);
-      }
+    const unsubscribe = navigation.addListener('focus', () => {
+      domainStore.loadRecentLocations();
+      uiStore.setRecentLocationsNeedRefresh(false);
     });
-  }, []);
+    return unsubscribe;
+  }, [navigation]);
 
   const renderLocationElement = (navigation: any) => {
     return ({ item: location }: { item: LocationType }) => {
@@ -53,7 +52,7 @@ const MyLocations = ({navigation, route}: {navigation: any, route: any}) => {
           {domainStore.nearestKnownLocation && (
             <LocationElement id={domainStore.nearestKnownLocation.id} navigation={navigation} returnToList={returnToList}/>
           )}
-          <Text style={styles.title}>Locations of past purchases</Text>
+          <Text style={styles.title}>Known locations</Text>
           <DraggableFlatList
             style={styles.draggableFlatListStyle}
             data={toJS(domainStore.locations)}

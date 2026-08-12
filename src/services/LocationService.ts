@@ -15,9 +15,18 @@ class LocationService {
         try {
             const nearestKnownLocationProps = await api.location.getNearestStore(email, location) as LocationType | undefined;
             if (!nearestKnownLocationProps) return;
-            if (nearestKnownLocationProps.id !== domainStore.selectedKnownLocationId) {
+
+            const nearestId = nearestKnownLocationProps.id;
+            if (nearestId !== domainStore.nearestKnownLocation?.id) {
                 domainStore.setNearestKnownLocation(nearestKnownLocationProps);
-                domainStore.setSelectedKnownLocationId(nearestKnownLocationProps.id ?? null);
+            }
+
+            // Only auto-select when following GPS; manual picks stay sticky until cleared
+            if (
+                domainStore.locationSelectionFollowsGps &&
+                nearestId !== domainStore.selectedKnownLocationId
+            ) {
+                domainStore.setSelectedKnownLocationId(nearestId ?? null);
             }
         } catch (error) {
             console.error('Failed to resolve nearest store from position:', error);
@@ -91,7 +100,7 @@ class LocationService {
         }
         if (clearSelection) {
             domainStore.setNearestKnownLocation(null);
-            domainStore.setSelectedKnownLocationId(null);
+            domainStore.selectKnownLocation(null);
         }
     }
 }

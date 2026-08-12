@@ -15,5 +15,5 @@ export const tooltipNotes = {
   [Tooltip.locationName]: 'This is the name of the location you are shopping at.',
   [Tooltip.latitude]: 'This is the latitude of the location',
   [Tooltip.longitude]: 'This is the longitude of the location',
-  [Tooltip.lastPurchaseDate]: 'This is the date of the last purchase at the location',
+  [Tooltip.lastPurchaseDate]: 'Date of the last purchase at this location, if any. Locations you or a group mate created may appear before any purchase.',
 };

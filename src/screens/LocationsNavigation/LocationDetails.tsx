@@ -34,7 +34,7 @@ const LocationDetails = () => {
         <View style={styles.propertyContainer}>
           <InfoButton tooltipId={Tooltip.lastPurchaseDate} />
           <Text style={styles.label}>Last Bought</Text>
-          <Text style={styles.value} numberOfLines={1} ellipsizeMode='tail'>{formatAsDate(location?.lastPurchaseDate!)}</Text>
+          <Text style={styles.value} numberOfLines={1} ellipsizeMode='tail'>{location?.lastPurchaseDate ? formatAsDate(location.lastPurchaseDate) : '—'}</Text>
         </View>
       </View>
     </ErrorBoundary>

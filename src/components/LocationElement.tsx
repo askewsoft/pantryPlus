@@ -56,9 +56,9 @@ const LocationElement = ({id, navigation, returnToList}: {id: string, navigation
 
   const onSelectLocation = () => {
     // If this location is already selected, deselect it (set to null)
-    // Otherwise, select this location
+    // Otherwise, select this location and stop GPS from overwriting the pick
     const newSelectedId = domainStore.selectedKnownLocationId === id ? null : id;
-    domainStore.setSelectedKnownLocationId(newSelectedId);
+    domainStore.selectKnownLocation(newSelectedId);
     if (returnToList && newSelectedId) {
       navigation.navigate('Lists', { screen: 'ShoppingList' });
     }
@@ -85,7 +85,11 @@ const LocationElement = ({id, navigation, returnToList}: {id: string, navigation
         <MaterialIcons name="store" size={iconSize.rowIconSize} color={colors.lightBrandColor} />
         <View style={styles.locationDetails}>
           <Text style={styles.title}>{location?.name ?? ''}</Text>
-          <Text style={styles.lastPurchaseDate}>most recent: {formatAsDate(location?.lastPurchaseDate!)}</Text>
+          <Text style={styles.lastPurchaseDate}>
+            {location?.lastPurchaseDate
+              ? `most recent: ${formatAsDate(location.lastPurchaseDate)}`
+              : 'no purchases yet'}
+          </Text>
         </View>
         <MaterialIcons.Button name={iconName} size={iconSize.rowIconSize} color={iconColor} style={styles.iconRight} onPress={onSelectLocation}/>
       </Pressable>
