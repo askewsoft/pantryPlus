@@ -41,6 +41,8 @@ const DomainStoreModel = t
         locationExplicitlyDisabled: t.optional(t.boolean, false),
         nearestKnownLocation: t.maybeNull(LocationModel),
         selectedKnownLocationId: t.maybeNull(t.string),
+        /** When true, GPS nearest-store updates also set selectedKnownLocationId. Manual pick sets this false. */
+        locationSelectionFollowsGps: t.optional(t.boolean, true),
     })
     .views(self => ({
         get groupsOwnedByUser() {
@@ -70,6 +72,7 @@ const DomainStoreModel = t
             self.locations.spliceWithArray(0, self.locations.length, []);
             self.nearestKnownLocation = null;
             self.selectedKnownLocationId = null;
+            self.locationSelectionFollowsGps = true;
         },
         setLocationEnabled: (locationEnabled: boolean) => {
             self.locationEnabled = locationEnabled;
@@ -235,15 +238,26 @@ const DomainStoreModel = t
                 latitude: currentLatLongAlt.coords.latitude,
                 longitude: currentLatLongAlt.coords.longitude,
             };
-            yield api.location.createLocation({ location, xAuthUser });
-            const newLocation = LocationModel.create(location);
-            self.locations.push(newLocation);
+            const resolved: LocationType = yield api.location.createLocation({ location, xAuthUser });
+            const newLocation = LocationModel.create({
+                id: resolved.id,
+                name: resolved.name,
+                latitude: resolved.latitude,
+                longitude: resolved.longitude,
+            });
+            const existingIndex = self.locations.findIndex(l => l.id === newLocation.id);
+            if (existingIndex >= 0) {
+                self.locations[existingIndex] = newLocation;
+            } else {
+                self.locations.push(newLocation);
+            }
+            uiStore.setRecentLocationsNeedRefresh(true);
         }),
         loadRecentLocations: flow(function* () {
             uiStore.setLocationsLoaded(false);
             const locationsData = yield api.shopper.getRecentUserLocations({ user: self.user!, lookbackDays: uiStore.purchaseHistoryLookbackDays });
             const locations = locationsData.map(
-                (location: LocationType) => {
+                (location: { id: string; name: string; latitude: number; longitude: number; lastPurchaseDate?: string }) => {
                     const { id, name, latitude, longitude, lastPurchaseDate } = location;
                     return LocationModel.create({ id, name, latitude, longitude, lastPurchaseDate });
                 }
@@ -256,7 +270,14 @@ const DomainStoreModel = t
         },
         setSelectedKnownLocationId(selectedKnownLocationId: string | null) {
             self.selectedKnownLocationId = selectedKnownLocationId;
-        }
+        },
+        setLocationSelectionFollowsGps(locationSelectionFollowsGps: boolean) {
+            self.locationSelectionFollowsGps = locationSelectionFollowsGps;
+        },
+        selectKnownLocation(locationId: string | null) {
+            self.selectedKnownLocationId = locationId;
+            self.locationSelectionFollowsGps = locationId === null;
+        },
     }));
 
 type DomainStoreType = Instance<typeof DomainStoreModel>;

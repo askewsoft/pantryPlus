@@ -4,13 +4,45 @@ import * as expoLocation from 'expo-location';
 import { Alert } from 'react-native';
 import { locationSubscription } from '@/config/locationSubscription';
 
-const createLocation = async ({ location, xAuthUser }: { location: Location, xAuthUser: string }) => {
+/** Must match API LOCATION_FIND_OR_CREATE_RADIUS_METERS */
+const FIND_OR_CREATE_RADIUS_METERS = 50;
+
+function asLocation(value: unknown): Location | undefined {
+    if (!value || typeof value !== 'object') return undefined;
+    const candidate = value as Partial<Location>;
+    if (typeof candidate.id !== 'string' || typeof candidate.name !== 'string') return undefined;
+    if (typeof candidate.latitude !== 'number' || typeof candidate.longitude !== 'number') return undefined;
+    return candidate as Location;
+}
+
+const createLocation = async ({ location, xAuthUser }: { location: Location, xAuthUser: string }): Promise<Location> => {
     const configuration = await getApiConfiguration();
     const locationsApi = new LocationsApi(configuration);
     try {
-        await locationsApi.createLocation(xAuthUser, location);
+        // Runtime body is Location (201 create / 200 reuse). Client typings may still say void
+        // until regenerated from swagger that schemas both success responses as Location.
+        const response = await locationsApi.createLocation(xAuthUser, location);
+        const fromBody = asLocation(response.data);
+        if (fromBody) {
+            return fromBody;
+        }
+
+        // Fallback if the response body was empty/untyped: resolve via nearby find-or-create radius
+        const nearby = await getNearbyLocations({
+            xAuthUser,
+            locationArea: {
+                latitude: location.latitude,
+                longitude: location.longitude,
+                radius: FIND_OR_CREATE_RADIUS_METERS,
+            },
+        });
+        if (nearby.length > 0) {
+            return nearby[0];
+        }
+        return location;
     } catch (error) {
         console.error(`Failed to createLocation in DB: ${error}`);
+        throw error;
     }
 }
 
@@ -25,14 +57,6 @@ const updateLocationName = async ({ location, xAuthUser }: { location: Location,
     }
 }
 
-// const removeLocation = async ({ locationId, xAuthUser }: { locationId: string, xAuthUser: string }) => {
-//     try {
-//         await locationsApi.deleteLocation(xAuthUser, locationId);
-//     } catch (error) {
-//         console.error(`Failed to removeList in DB: ${error}`);
-//     }
-// }
-
 const getNearbyLocations = async ({ xAuthUser, locationArea }: { xAuthUser: string, locationArea: LocationArea }): Promise<Location[]> => {
     const configuration = await getApiConfiguration();
     const locationsApi = new LocationsApi(configuration);
@@ -46,8 +70,6 @@ const getNearbyLocations = async ({ xAuthUser, locationArea }: { xAuthUser: stri
 }
 
 const getCurrentLocation = async (): Promise<expoLocation.LocationObject | undefined> => {
-    const configuration = await getApiConfiguration();
-    const locationsApi = new LocationsApi(configuration);
     const { status } = await expoLocation.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
         Alert.alert('Location permission not granted');
@@ -58,8 +80,6 @@ const getCurrentLocation = async (): Promise<expoLocation.LocationObject | undef
 }
 
 const getNearestStore = async (xAuthUser: string, locationObject?: expoLocation.LocationObject): Promise<Location | undefined> => {
-    const configuration = await getApiConfiguration();
-    const locationsApi = new LocationsApi(configuration);
     let userLocation = locationObject;
     if (!userLocation) {
         userLocation = await getCurrentLocation();

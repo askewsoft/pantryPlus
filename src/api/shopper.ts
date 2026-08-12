@@ -3,7 +3,7 @@ import {
     Shopper,
     List,
     Group,
-    Location,
+    RecentLocation,
 } from 'pantryplus-api-client/v2';
 
 import { getApiConfiguration } from '@/services/SessionService';
@@ -105,7 +105,7 @@ const getUserInvites = async ({ user }: { user: Shopper }): Promise<Array<Group>
     }
 };
 
-const getRecentUserLocations = async ({ user, lookbackDays }: { user: Shopper, lookbackDays: number }): Promise<Array<Location>> => {
+const getRecentUserLocations = async ({ user, lookbackDays }: { user: Shopper, lookbackDays: number }): Promise<Array<RecentLocation>> => {
     const configuration = await getApiConfiguration();
     const shopperApi = new ShoppersApi(configuration);
     const xAuthUser = user.email!;
