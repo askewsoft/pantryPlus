@@ -1,86 +1,88 @@
-# Maestro Tests for PantryPlus
+# Maestro Tests for pantryPlus
 
-This directory contains automated UI tests using Maestro for the PantryPlus app.
+UI flows for the Expo / React Native app using [Maestro](https://maestro.dev/).
 
 ## Setup
 
-1. **Install Maestro CLI** (if not already installed):
+1. Install the CLI:
+
    ```bash
    brew install maestro
-   ```
-
-2. **Verify installation**:
-   ```bash
    maestro --version
    ```
 
-## Directory Structure
+2. Run a **dev or preview build** of the app on a simulator/device (Maestro drives the installed app, not Metro alone).
+
+3. Use a Cognito test account you are willing to mutate; some flows create lists/categories.
+
+## Directory layout
 
 ```
 tests/
-├── README.md                           # This file
-├── grocery-list-navigation.yaml        # Test: Navigate to Grocery list
-└── [future test files...]
+├── auth/           # login.yaml, logout.yaml
+├── lists/          # create-list.yaml, add-list-category.yaml
+├── groups/         # (reserved; suite currently disabled in runner)
+├── locations/      # (reserved; suite currently disabled in runner)
+├── settings/       # (reserved)
+├── cleanup/        # cleanup-test-data.yaml
+└── README.md
 
-screenshots/
-├── current/                            # Screenshots from current test runs
-└── baseline/                           # Approved/reference screenshots
+scripts/
+├── maestro-tests.sh
+└── test-helpers/   # auth, list, location, group, cleanup, screenshots
 ```
 
-## Running Tests
+Screenshots are written under gitignored screenshot dirs (`current` vs `baseline`) by the runner.
 
-### Using the Helper Script
+## Running tests
 
-The easiest way to run tests is using the helper script:
-
-
-## Screenshot Workflow
-
-1. **Run tests** to generate current screenshots
-2. **Review screenshots** in `screenshots/current/`
-3. **Compare with baseline** using Kaleidoscope or similar tool
-4. **Promote approved screenshots** to baseline
-5. **Reject defective screenshots** by not promoting them
-
-### Using Kaleidoscope for Comparison
+From the repo root:
 
 ```bash
-# Open Kaleidoscope to compare folders
-ksdiff screenshots/baseline screenshots/current
+# Default: current screenshots
+npm run maestro
+
+# Explicit current / baseline dirs + full suite
+npm run maestro:current
+npm run maestro:baseline
+
+# Or call the script directly
+./scripts/maestro-tests.sh --help
+./scripts/maestro-tests.sh --screenshots current auth
+./scripts/maestro-tests.sh --screenshots current lists
+./scripts/maestro-tests.sh test tests/lists/create-list.yaml
 ```
 
-## Test Files
+**Enabled suites today:** auth, lists (and cleanup helpers). Location and group suites exist in helpers but are commented out in `run_all_tests` inside `scripts/maestro-tests.sh`.
 
-### Creating New Tests
+## Screenshot workflow
 
-1. Create a new `.yaml` file in the `tests/` directory
-2. Follow the Maestro syntax and structure
-3. Use descriptive names for test files
-4. Include appropriate assertions and screenshots
-5. Document the test purpose in comments
+1. Run with `--screenshots current` (or `npm run maestro:current`).
+2. Review images under the current screenshot directory.
+3. Compare to baseline (e.g. Kaleidoscope: `ksdiff` baseline vs current folders).
+4. Promote approved shots with a baseline run / copy into the baseline dir when you intentionally accept UI changes.
 
-### Example Test Structure
+## Adding a flow
+
+1. Add a `.yaml` under the right `tests/<area>/` folder.
+2. Prefer stable `testID`s on interactive elements when text is brittle.
+3. Wire the file into the matching helper under `scripts/test-helpers/` if it should run in a suite.
+4. Keep destructive tests paired with cleanup where possible (`tests/cleanup/`).
+
+### Minimal example
 
 ```yaml
 appId: pantryplus
-name: Test Name
-tags:
-  - category1
-  - category2
-
+name: Create list
 ---
 - launchApp
-- assertVisible: "Expected Text"
-- tapOn: "Button Text"
-- takeScreenshot: "screenshot-name"
+- tapOn: "…"
+- assertVisible: "…"
+- takeScreenshot: "create-list"
 ```
 
-### Recording Tests
-
-You can record tests interactively:
+Record interactively if helpful:
 
 ```bash
-maestro record tests/new-test.yaml
+maestro record tests/lists/new-flow.yaml
 ```
-
-This will open the app and let you perform actions that will be recorded as test steps.

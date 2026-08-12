@@ -67,6 +67,12 @@ The Podfile **`fmt`** workaround for newer Xcode / Clang lives in **`plugins/wit
 We recommend that you use [nvm](https://nvm.sh) to manage different versions of node.js.
 You can find the version of node used for this project in the `.nvmrc` file.
 
+Copy env defaults and fill in Cognito / API values (see [Environment Variables & Secrets](docs/ENV_AND_SECRETS.md)):
+
+```sh
+cp env.example .env
+```
+
 The app can be built for a variety of contexts. Builds can be **local** or **cloud-based**.
 
 These can take a while to complete. You must have the iOS Simulator already running (**Xcode → Open Developer Tool → Simulator**), or use a connected device.
@@ -172,7 +178,13 @@ npm run update:prod "Add new category management features"
 
 
 ## Documentation
+- [App Dev Conventions](docs/APP_DEV_CONVENTIONS.md) — stack (MST, Amplify, React Navigation, Expo) and `src/` layout
+- [Auth, Session & API Calls](docs/AUTH_AND_SESSION.md) — Cognito bootstrap, Bearer / `xAuthUser` / `xAuthLocation`, client UUIDs
+- [Environment Variables & Secrets](docs/ENV_AND_SECRETS.md) — local `.env`, EAS environments (`env.example`)
+- [Sync & Persist](docs/SYNC_AND_PERSIST.md) — mst-persist, list polling, online-first assumptions
+- [Groups, Sharing & Locations](docs/GROUPS_SHARING_AND_LOCATION.md) — cohorts, list `groupId`, location-scoped categories
 - [Debugging Update Issues](docs/DEBUGGING_EAS_UPDATES.md)
+- [Maestro Tests](tests/README.md)
 
 
 ## Helper Scripts

@@ -21,8 +21,14 @@ npx ts-node scripts/get-token.ts <username> <password>
 Then use the token in a curl command like the following (this is just an example, not to be used verbatim):
 
 ```sh
-curl -v "https://api.askewsoft.com/v1/shoppers" -H "Authorization: Bearer <copy auth token here>" -H "Content-Type: application/json" -d '{"id": "FB0A3A06-6222-41A7-8E80-9DA1ABD9C4AB", "nickname": "Tester", "email": "tester@my-domain-name.com"}'
+curl -v "https://api.askewsoft.com/v2/shoppers" \
+  -H "Authorization: Bearer <copy auth token here>" \
+  -H "Content-Type: application/json" \
+  -H "x-auth-user: tester@my-domain-name.com" \
+  -d '{"id": "FB0A3A06-6222-41A7-8E80-9DA1ABD9C4AB", "nickname": "Tester", "email": "tester@my-domain-name.com"}'
 ```
+
+See [Auth, Session & API Calls](../docs/AUTH_AND_SESSION.md) and [Environment Variables & Secrets](../docs/ENV_AND_SECRETS.md).
 
 ## version management
 
@@ -62,17 +68,14 @@ npm run expoupdate prod "Add new category features"
 - **command** — one of the designated channels from `./eas.json` (i.e., `prod` or `preview`)
 - **message** — summary of the changes included in this build/update for display to end users
 
-## visual testing
+## Maestro UI tests
 
-React Native Owl is used for visual regression testing to ensure UI changes don't break the app's appearance. See [Owl Visual Testing Guide](docs/OWL_VISUAL_TESTING.md) for complete setup and usage instructions
+End-to-end / screenshot flows use Maestro. See **[../tests/README.md](../tests/README.md)**.
 
 ```sh
-# Interactive visual testing (recommended)
-npm run owl
-
-# Or direct command
-node scripts/owl-test.js
+npm run maestro
+npm run maestro:current
+npm run maestro:baseline
 ```
 
-### Adding TestIDs
-To make your components testable, add `testID` attributes to data-driven elements. See [TestID Implementation Guide](docs/TESTID_GUIDE.md) for detailed recommendations.
+Prefer stable `testID`s on interactive elements when adding or updating flows.
