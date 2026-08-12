@@ -1,5 +1,6 @@
-import { t } from 'mobx-state-tree';
+import { flow, t } from 'mobx-state-tree';
 
+import { api } from '@/api';
 
 export const LocationModel = t.model('LocationModel', {
     id: t.identifier,
@@ -15,4 +16,16 @@ export const LocationModel = t.model('LocationModel', {
             longitude: self.longitude
         };
     }
+})).actions(self => ({
+    setName: flow(function* ({ name, xAuthUser }: { name: string; xAuthUser: string }) {
+        yield api.location.updateLocationName({
+            locationId: self.id,
+            name,
+            xAuthUser,
+        });
+        self.name = name;
+    }),
+    applyName(name: string) {
+        self.name = name;
+    },
 }));

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Linking, Alert, Platform } from 'react-native';
 import { observer } from 'mobx-react-lite';
 
 import { domainStore } from '@/stores/DomainStore';
@@ -13,33 +13,64 @@ import { Tooltip } from '@/consts/Tooltip';
 import { formatAsDate } from '@/stores/utils/dateFormatter';
 
 const LocationDetails = () => {
-  const location = domainStore.locations.find(location => location.id === uiStore.selectedLocation);
+  const location = domainStore.locations.find(location => location.id === uiStore.selectedLocation)
+    ?? (domainStore.nearestKnownLocation?.id === uiStore.selectedLocation
+      ? domainStore.nearestKnownLocation
+      : undefined);
+
+  const openInMaps = async () => {
+    if (location?.latitude == null || location?.longitude == null) {
+      Alert.alert('Location unavailable', 'This location has no coordinates to show on a map.');
+      return;
+    }
+    const { latitude, longitude, name } = location;
+    const label = encodeURIComponent(name);
+    const appleMapsUrl = `http://maps.apple.com/?ll=${latitude},${longitude}&q=${label}`;
+    const geoUrl = `geo:${latitude},${longitude}?q=${latitude},${longitude}(${label})`;
+    const url = Platform.OS === 'ios' ? appleMapsUrl : geoUrl;
+    try {
+      const canOpen = await Linking.canOpenURL(url);
+      if (!canOpen && Platform.OS === 'android') {
+        await Linking.openURL(appleMapsUrl);
+        return;
+      }
+      await Linking.openURL(url);
+    } catch (error) {
+      console.error(`Failed to open maps: ${error}`);
+      Alert.alert('Could not open Maps', 'Please try again.');
+    }
+  };
+
   return (
     <ErrorBoundary>
       <View style={styles.container}>
         <View style={styles.propertyContainer}>
           <InfoButton tooltipId={Tooltip.locationName} />
           <Text style={styles.label}>Name</Text>
-          {/* TODO: implement edit toggle to TextInput */}
-          <Text style={styles.value} numberOfLines={1} ellipsizeMode='tail'>{location?.name}</Text>
+          <Text style={styles.value} numberOfLines={1} ellipsizeMode="tail">
+            {location?.name}
+          </Text>
         </View>
         <View style={styles.propertyContainer}>
           <InfoButton tooltipId={Tooltip.latitude} />
           <Text style={styles.label}>Lat / Long</Text>
-          {/* TODO: implement edit toggle to Modal for picking map location? */}
-          <Text style={styles.value} numberOfLines={1} ellipsizeMode='tail'>
-            {location?.latitude?.toFixed(5)} / {location?.longitude?.toFixed(5)}
-          </Text>
+          <Pressable style={styles.value} onPress={openInMaps}>
+            <Text style={[styles.valueText, styles.mapLink]} numberOfLines={1} ellipsizeMode="tail">
+              {location?.latitude?.toFixed(5)} / {location?.longitude?.toFixed(5)}
+            </Text>
+          </Pressable>
         </View>
         <View style={styles.propertyContainer}>
           <InfoButton tooltipId={Tooltip.lastPurchaseDate} />
           <Text style={styles.label}>Last Bought</Text>
-          <Text style={styles.value} numberOfLines={1} ellipsizeMode='tail'>{location?.lastPurchaseDate ? formatAsDate(location.lastPurchaseDate) : '—'}</Text>
+          <Text style={styles.value} numberOfLines={1} ellipsizeMode="tail">
+            {location?.lastPurchaseDate ? formatAsDate(location.lastPurchaseDate) : '—'}
+          </Text>
         </View>
       </View>
     </ErrorBoundary>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -77,7 +108,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.inactiveButtonColor,
     borderRadius: 5,
-  }
+  },
+  valueText: {
+    fontSize: fonts.badgeTextSize,
+    color: colors.brandColor,
+  },
+  mapLink: {
+    textDecorationLine: 'underline',
+  },
 });
 
 export default observer(LocationDetails);

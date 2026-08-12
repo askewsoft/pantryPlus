@@ -46,14 +46,14 @@ const createLocation = async ({ location, xAuthUser }: { location: Location, xAu
     }
 }
 
-const updateLocationName = async ({ location, xAuthUser }: { location: Location, xAuthUser: string }) => {
+const updateLocationName = async ({ locationId, name, xAuthUser }: { locationId: string, name: string, xAuthUser: string }) => {
     const configuration = await getApiConfiguration();
     const locationsApi = new LocationsApi(configuration);
-    const { id, name } = location;
     try {
-        await locationsApi.updateLocation(xAuthUser, id, { name });
+        await locationsApi.updateLocation(xAuthUser, locationId, { name });
     } catch (error) {
         console.error(`Failed to updateLocation in DB: ${error}`);
+        throw error;
     }
 }
 

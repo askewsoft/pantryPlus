@@ -253,8 +253,11 @@ const DomainStoreModel = t
             }
             uiStore.setRecentLocationsNeedRefresh(true);
         }),
-        loadRecentLocations: flow(function* () {
-            uiStore.setLocationsLoaded(false);
+        loadRecentLocations: flow(function* (options?: { showLoading?: boolean }) {
+            const showLoading = options?.showLoading !== false;
+            if (showLoading) {
+                uiStore.setLocationsLoaded(false);
+            }
             const locationsData = yield api.shopper.getRecentUserLocations({ user: self.user!, lookbackDays: uiStore.purchaseHistoryLookbackDays });
             const locations = locationsData.map(
                 (location: { id: string; name: string; latitude: number; longitude: number; lastPurchaseDate?: string | null }) => {
@@ -284,6 +287,22 @@ const DomainStoreModel = t
             self.selectedKnownLocationId = locationId;
             self.locationSelectionFollowsGps = locationId === null;
         },
+        updateLocationName: flow(function* ({ locationId, name }: { locationId: string; name: string }) {
+            const xAuthUser = self.user?.email;
+            if (!xAuthUser) throw new Error('User is not authenticated');
+
+            const listed = self.locations.find(l => l.id === locationId);
+            const nearest =
+                self.nearestKnownLocation?.id === locationId ? self.nearestKnownLocation : null;
+            const target = listed ?? nearest;
+            if (!target) return;
+
+            yield target.setName({ name, xAuthUser });
+            // nearestKnownLocation is a separate MST node; keep names in sync without a second API call
+            if (listed && nearest && listed !== nearest) {
+                nearest.applyName(name);
+            }
+        }),
     }));
 
 type DomainStoreType = Instance<typeof DomainStoreModel>;

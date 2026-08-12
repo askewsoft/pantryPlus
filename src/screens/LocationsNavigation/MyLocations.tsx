@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { View, RefreshControl, Button, Text, StyleSheet } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { toJS } from 'mobx';
@@ -18,11 +18,17 @@ import BottomActionButton from '@/components/Buttons/BottomActionButton';
 
 const MyLocations = ({navigation, route}: {navigation: any, route: any}) => {
   const returnToList = route.params?.returnToList;
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      domainStore.loadRecentLocations();
+      const isFirstLoad = !uiStore.locationsLoaded;
+      const needsRefresh = isFirstLoad || uiStore.recentLocationsNeedRefresh;
       uiStore.setRecentLocationsNeedRefresh(false);
+      if (!needsRefresh) return;
+      // Avoid RefreshControl when data is already on screen — toggling it on focus
+      // (e.g. ShoppingList → MyLocations) leaves a stuck content inset on iOS.
+      domainStore.loadRecentLocations({ showLoading: isFirstLoad });
     });
     return unsubscribe;
   }, [navigation]);
@@ -36,9 +42,12 @@ const MyLocations = ({navigation, route}: {navigation: any, route: any}) => {
   }
 
   const onRefresh = async () => {
-    uiStore.setLocationsLoaded(false);
-    await domainStore.loadRecentLocations();
-    uiStore.setLocationsLoaded(true);
+    setRefreshing(true);
+    try {
+      await domainStore.loadRecentLocations({ showLoading: false });
+    } finally {
+      setRefreshing(false);
+    }
   }
 
   const onPressAddLocation = () => {
@@ -55,10 +64,11 @@ const MyLocations = ({navigation, route}: {navigation: any, route: any}) => {
           <Text style={styles.title}>Known locations</Text>
           <DraggableFlatList
             style={styles.draggableFlatListStyle}
+            contentContainerStyle={styles.listContentContainer}
             data={toJS(domainStore.locations)}
             renderItem={renderLocationElement(navigation)}
             keyExtractor={location => location.id}
-            refreshControl={<RefreshControl refreshing={!uiStore.locationsLoaded} onRefresh={onRefresh} />}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           />
           {domainStore.locations?.length === 0 && (
             <Button title="Reload Locations" onPress={() => domainStore.loadRecentLocations()} />
@@ -84,7 +94,9 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    alignItems: 'center',
+  },
+  listContentContainer: {
+    paddingBottom: 0,
   },
   draggableFlatListStyle: {
     height: '93%',
@@ -93,6 +105,7 @@ const styles = StyleSheet.create({
     fontSize: fonts.infoTextSize,
     color: colors.lightBrandColor,
     marginTop: 5,
+    textAlign: 'center',
   },
 });
 

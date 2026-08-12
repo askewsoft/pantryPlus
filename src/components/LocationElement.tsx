@@ -10,6 +10,7 @@ import fonts from '@/consts/fonts';
 import colors from '@/consts/colors';
 import { iconSize } from '@/consts/iconButtons';
 import { formatAsDate } from '@/stores/utils/dateFormatter';
+import LocationContextMenu from './ContextMenus/LocationContextMenu';
 
 type MaterialIconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
@@ -34,25 +35,34 @@ const LocationElement = ({id, navigation, returnToList}: {id: string, navigation
   const [iconColor, setIconColor] = useState(colors.brandColor);
 
   const onSubmit = async () => {
-    const { id: locationId } = location!;
-    const xAuthUser = domainStore.user!.email;
-    if (editedTitle.trim().toLowerCase() !== location!.name.trim().toLowerCase()) {
-      // TODO: enable updates to the location name, etc
-      // await location?.updateLocation({ name: editedTitle, locationId, xAuthUser });
-      Alert.alert('editedTitle', editedTitle);
+    const trimmed = editedTitle.trim();
+    if (trimmed.length === 0) {
+      setEditedTitle(location!.name);
+      setIsEditing(false);
+      return;
     }
-    setIsEditing(false)
-  }
+    if (trimmed.toLowerCase() !== location!.name.trim().toLowerCase()) {
+      try {
+        await domainStore.updateLocationName({ locationId: location!.id, name: trimmed });
+      } catch (error) {
+        console.error(`Failed to update location name: ${error}`);
+        Alert.alert('Could not rename location', 'Please try again.');
+        setEditedTitle(location!.name);
+      }
+    }
+    setIsEditing(false);
+  };
 
-  const prepareToEditName = () => {
+  const onRenameLocation = () => {
     setEditedTitle(location?.name ?? '');
     setIsEditing(true);
-  }
+  };
 
   const handlePress = ({ id }: { id: string }) => {
+    if (isEditing) return;
     uiStore.setSelectedLocation(id);
     navigation.navigate('LocationDetails');
-  }
+  };
 
   const onSelectLocation = () => {
     // If this location is already selected, deselect it (set to null)
@@ -62,7 +72,7 @@ const LocationElement = ({id, navigation, returnToList}: {id: string, navigation
     if (returnToList && newSelectedId) {
       navigation.navigate('Lists', { screen: 'ShoppingList' });
     }
-  }
+  };
 
   useEffect(() => {
     if (id === domainStore.selectedKnownLocationId) {
@@ -78,29 +88,59 @@ const LocationElement = ({id, navigation, returnToList}: {id: string, navigation
 
   return (
     <View style={styles.locationElement}>
-      <Pressable style={styles.titleContainer}
+      <Pressable
+        style={styles.titleContainer}
         onPress={() => handlePress({ id })}
-        onLongPress={prepareToEditName}
+        disabled={isEditing}
       >
         <MaterialIcons name="store" size={iconSize.rowIconSize} color={colors.lightBrandColor} />
         <View style={styles.locationDetails}>
-          <Text style={styles.title}>{location?.name ?? ''}</Text>
+          {isEditing ? (
+            <TextInput
+              style={[styles.title, styles.titleInput]}
+              value={editedTitle}
+              onSubmitEditing={onSubmit}
+              onChangeText={setEditedTitle}
+              autoFocus={true}
+              inputMode="text"
+              lineBreakStrategyIOS="none"
+              clearButtonMode="while-editing"
+              enablesReturnKeyAutomatically={true}
+              keyboardAppearance="light"
+              returnKeyType="done"
+              blurOnSubmit={true}
+            />
+          ) : (
+            <Text style={styles.title}>{location?.name ?? ''}</Text>
+          )}
           <Text style={styles.lastPurchaseDate}>
             {location?.lastPurchaseDate
               ? `most recent: ${formatAsDate(location.lastPurchaseDate)}`
               : 'no purchases yet'}
           </Text>
         </View>
-        <MaterialIcons.Button name={iconName} size={iconSize.rowIconSize} color={iconColor} style={styles.iconRight} onPress={onSelectLocation}/>
       </Pressable>
+      <View style={styles.buttonContainer}>
+        <LocationContextMenu onRename={onRenameLocation} />
+        <Pressable
+          style={styles.selectLocationButton}
+          onPress={onSelectLocation}
+          accessibilityLabel={isCurrentLocation ? 'Deselect location' : 'Select location'}
+          accessibilityRole="button"
+        >
+          <MaterialIcons name={iconName} size={iconSize.rowIconSize} color={iconColor} />
+        </Pressable>
+      </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   locationElement: {
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: colors.itemBackground,
     borderRadius: 5,
     padding: 5,
@@ -109,23 +149,35 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     display: 'flex',
+    flex: 1,
     flexDirection: 'row',
-    width: '100%',
+    alignItems: 'center',
+    paddingLeft: 5,
   },
   locationDetails: {
     flex: 1,
   },
-  iconRight: {
-    justifyContent: 'flex-end',
+  buttonContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  selectLocationButton: {
     padding: 10,
-    backgroundColor: colors.itemBackground,
-    borderRadius: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     fontSize: fonts.rowTextSize,
     fontWeight: 'bold',
     color: colors.lightBrandColor,
     marginLeft: 10,
+  },
+  titleInput: {
+    backgroundColor: colors.brandColor,
+    color: colors.white,
+    paddingRight: 5,
+    borderRadius: 4,
   },
   lastPurchaseDate: {
     fontSize: fonts.badgeTextSize,
