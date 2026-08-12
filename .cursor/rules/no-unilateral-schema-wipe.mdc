@@ -1,0 +1,28 @@
+---
+description: Never wipe or apply PantryPlus DB schema without explicit user confirmation
+alwaysApply: true
+---
+
+# Database schema: no unilateral wipe or apply
+
+Applies to the API repo (`pantryPlusApiTs`) whenever this workspace touches schema.
+
+## Never do these unless the user explicitly asks
+
+- Run, execute, or pipe `pantryPlusApiTs/schema/dropAll.sql` (or any equivalent full schema wipe).
+- Drop, truncate, or recreate the local or remote database to “fix” schema drift.
+- Re-run `pantryPlusApiTs/schema/setup.sql` against a non-empty database as an upgrade path.
+- Run `npm run migrate` in `pantryPlusApiTs` (or otherwise apply migrations) without asking first.
+
+## Always ask first
+
+Before any destructive or environment-mutating DDL, **stop and get explicit confirmation**. Writing a migration file is not permission to apply it.
+
+## Normal agent workflow
+
+1. Update `setup.sql` **and** add `schema/migrations/NNN_*.sql` in the same change (setup = new DBs; migration = existing DBs). Never require both for one install.
+2. Leave applying SQL to the user (`npm run migrate` on existing DBs, or DataGrip / another DB IDE).
+
+## If schema appears wrong locally
+
+Do **not** wipe and recreate. Report the issue and ask how to proceed.
