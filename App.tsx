@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Amplify } from "aws-amplify";
 import { Authenticator, ThemeProvider } from '@aws-amplify/ui-react-native';
 import React from 'react';
@@ -92,24 +93,26 @@ const App = () => {
 
   return (
     <ErrorBoundary>
-      <GestureHandlerRootView>
-        <UIStoreContextProvider value={uiStore}>
-          <ThemeProvider theme={authTheme}>
-            <Authenticator.Provider>
-              <Authenticator initialState={uiStore.signInOrUp as IAuthenticatorProps['initialState']}>
-                <DomainStoreContextProvider value={domainStore}>
-                  <UserContext>
-                    {uiStore.lastViewedSection === 'IntroScreen' ?
-                      <IntroScreen /> :
-                      <AppWrapper />
-                    }
-                  </UserContext>
-                </DomainStoreContextProvider>
-              </Authenticator>
-            </Authenticator.Provider>
-          </ThemeProvider>
-        </UIStoreContextProvider>
-      </GestureHandlerRootView>
+      <SafeAreaProvider>
+        <GestureHandlerRootView>
+          <UIStoreContextProvider value={uiStore}>
+            <ThemeProvider theme={authTheme}>
+              <Authenticator.Provider>
+                <Authenticator initialState={uiStore.signInOrUp as IAuthenticatorProps['initialState']}>
+                  <DomainStoreContextProvider value={domainStore}>
+                    <UserContext>
+                      {uiStore.lastViewedSection === 'IntroScreen' ?
+                        <IntroScreen /> :
+                        <AppWrapper />
+                      }
+                    </UserContext>
+                  </DomainStoreContextProvider>
+                </Authenticator>
+              </Authenticator.Provider>
+            </ThemeProvider>
+          </UIStoreContextProvider>
+        </GestureHandlerRootView>
+      </SafeAreaProvider>
     </ErrorBoundary>
   );
 };

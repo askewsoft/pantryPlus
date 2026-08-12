@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, Platform, KeyboardAvoidingView, SafeAreaView } from 'react-native';
+import { StyleSheet, Platform, KeyboardAvoidingView, AppState, AppStateStatus } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { observer } from 'mobx-react';
 import { NavigationContainer, EventListenerCallback } from '@react-navigation/native';
 import { createDrawerNavigator, DrawerNavigationOptions } from '@react-navigation/drawer';
@@ -79,8 +80,22 @@ const AppWrapper = () => {
     };
   }, [domainStore.locationEnabled, domainStore.user?.email]);
 
+  // Refresh known locations when returning to foreground so cohort-created stores appear promptly
+  useEffect(() => {
+    if (!domainStore.user) return;
+
+    const onAppStateChange = (nextState: AppStateStatus) => {
+      if (nextState === 'active' && domainStore.user) {
+        domainStore.loadRecentLocations();
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', onAppStateChange);
+    return () => subscription.remove();
+  }, [domainStore.user?.id]);
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right', 'bottom']}>
       <StatusBar style="light" />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
