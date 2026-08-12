@@ -6,7 +6,8 @@ export const LocationModel = t.model('LocationModel', {
     name: t.string,
     latitude: t.maybe(t.number),
     longitude: t.maybe(t.number),
-    lastPurchaseDate: t.maybe(t.string)
+    // API may send null when there is no purchase history
+    lastPurchaseDate: t.maybeNull(t.string)
 }).views(self => ({
     geoLocation() {
         return {

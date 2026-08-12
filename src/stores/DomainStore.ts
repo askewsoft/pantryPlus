@@ -257,9 +257,15 @@ const DomainStoreModel = t
             uiStore.setLocationsLoaded(false);
             const locationsData = yield api.shopper.getRecentUserLocations({ user: self.user!, lookbackDays: uiStore.purchaseHistoryLookbackDays });
             const locations = locationsData.map(
-                (location: { id: string; name: string; latitude: number; longitude: number; lastPurchaseDate?: string }) => {
+                (location: { id: string; name: string; latitude: number; longitude: number; lastPurchaseDate?: string | null }) => {
                     const { id, name, latitude, longitude, lastPurchaseDate } = location;
-                    return LocationModel.create({ id, name, latitude, longitude, lastPurchaseDate });
+                    return LocationModel.create({
+                        id,
+                        name,
+                        latitude,
+                        longitude,
+                        lastPurchaseDate: lastPurchaseDate ?? null,
+                    });
                 }
             );
             self.locations.replace(locations);
