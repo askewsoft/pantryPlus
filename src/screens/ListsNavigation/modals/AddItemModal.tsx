@@ -7,6 +7,7 @@ import { uiStore } from '@/stores/UIStore';
 import { domainStore } from '@/stores/DomainStore';
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
+import { api } from '@/api';
 
 const AddItemModal = () => {
   const [itemName, setItemName] = useState('');
@@ -51,24 +52,20 @@ const AddItemModal = () => {
     }
   }, [uiStore.addItemModalVisible, uiStore.editingItemName, uiStore.editingItemCategoryId]);
 
-  const handleAddItem = () => {
+  const handleAddItem = async () => {
     const trimmedName = itemName.trim();
     if (trimmedName !== '' && currentList) {
       const user = domainStore.user;
       const xAuthUser = user?.email!;
 
-      if (uiStore.editingItemName) {
-        // We're editing an existing item - handle category change if needed
+      if (uiStore.editingItemId) {
+        // Editing an existing item — category change reuses the same ITEM id (no clone)
         if (uiStore.editingItemCategoryId !== selectedCategoryId) {
-          handleCategoryChange();
+          await handleCategoryChange();
         }
-        // If the name changed, we need to handle that separately
-        if (trimmedName !== uiStore.editingItemName) {
-          // TODO: Handle name change - this would require updating the item in place
-          // For now, we'll just use the category change logic
-        }
+        // Name change is Phase 2 (rename/fork); casing-only can wait for that path
       } else {
-        // Adding a new item
+        // Adding a new item via find-or-create
         if (selectedCategoryId && selectedCategoryId !== '') {
           // Add item to specific category
           const category = currentList.categories.find(c => c.id === selectedCategoryId);
@@ -87,91 +84,78 @@ const AddItemModal = () => {
       setItemName('');
       // Clear editing name (but preserve category for "Next" button)
       uiStore.setEditingItemName(null);
+      uiStore.setEditingItemId(null);
       // Note: editingItemCategoryId is only cleared in handleDone()
     }
   };
 
-  const handleCategoryChange = () => {
-    if (!currentList || !uiStore.editingItemName) return;
+  /**
+   * Move an existing item between categories (or to/from uncategorized) without minting a new ITEM.
+   */
+  const handleCategoryChange = async () => {
+    if (!currentList || !uiStore.editingItemId) return;
 
     const user = domainStore.user;
     const xAuthUser = user?.email!;
+    const itemId = uiStore.editingItemId;
     const originalCategoryId = uiStore.editingItemCategoryId;
     const newCategoryId = selectedCategoryId;
 
-    // Only proceed if category actually changed
     if (originalCategoryId === newCategoryId) return;
 
-    // NOTE: When an Item is moved to a different category, that relationship needs to be
-    // persisted to the database via the API. Currently, this implementation removes the item
-    // from the original location and creates a new item in the new location, which results
-    // in API calls to createItem() and associateCategoryItem()/associateListItem().
-    //
-    // Future consideration: Prevent duplicate Items by first looking for similarly named
-    // Items when adding to a List, but this depends on how the data model unfolds in the database.
-
-    // Find the item in the original category or list
-    let itemToMove = null;
+    // Locate the item in local state
+    let itemSnapshot: { id: string; name: string; upc?: string } | null = null;
     if (originalCategoryId) {
       const originalCategory = currentList.categories.find(c => c.id === originalCategoryId);
-      itemToMove = originalCategory?.items.find(i => i.name === uiStore.editingItemName);
-      if (itemToMove && originalCategory) {
-        // Remove from original category
-        originalCategory.removeItem({
-          itemId: itemToMove.id,
-          xAuthUser,
-          onItemRemoved: () => currentList.loadUnpurchasedItemsCount({ xAuthUser })
-        });
+      const found = originalCategory?.items.find(i => i.id === itemId);
+      if (found && originalCategory) {
+        itemSnapshot = { id: found.id, name: found.name, upc: found.upc };
+        await api.category.unlinkCategoryItem({ categoryId: originalCategoryId, itemId, xAuthUser });
+        await originalCategory.removeItem({ itemId, xAuthUser });
       }
     } else {
-      // Item was in the list without category
-      itemToMove = currentList.items.find(i => i.name === uiStore.editingItemName);
-      if (itemToMove) {
-        // Remove from list
-        currentList.removeItem({ itemId: itemToMove.id, xAuthUser });
+      const found = currentList.items.find(i => i.id === itemId);
+      if (found) {
+        itemSnapshot = { id: found.id, name: found.name, upc: found.upc };
+        currentList.detachLocalItem(itemId);
       }
     }
 
-    // Add to new category or list
-    if (itemToMove) {
-      if (newCategoryId && newCategoryId !== '') {
-        const newCategory = currentList.categories.find(c => c.id === newCategoryId);
-        newCategory?.addItem({
-          item: { name: uiStore.editingItemName!, upc: itemToMove.upc || '' },
-          xAuthUser,
-          onItemAdded: () => currentList.loadUnpurchasedItemsCount({ xAuthUser })
-        });
-      } else {
-        currentList.addItem({ item: { name: uiStore.editingItemName!, upc: itemToMove.upc || '' }, xAuthUser });
-      }
+    if (!itemSnapshot) return;
+
+    if (newCategoryId && newCategoryId !== '') {
+      await api.category.associateCategoryItem({ categoryId: newCategoryId, itemId, xAuthUser });
+      const newCategory = currentList.categories.find(c => c.id === newCategoryId);
+      newCategory?.attachLocalItem(itemSnapshot);
+    } else {
+      // Uncategorized: ensure list membership locally (server already has LIST_ITEM_RELATION)
+      currentList.attachLocalItem(itemSnapshot);
     }
+
+    currentList.loadUnpurchasedItemsCount({ xAuthUser });
   };
 
-  const handleNext = () => {
-    // Add the current item if there's text
+  const handleNext = async () => {
     if (itemName.trim() !== '') {
-      handleAddItem();
+      await handleAddItem();
     }
-    // Modal stays open for next item, input is already cleared by handleAddItem
   };
 
-  const handleDone = () => {
-    // Dismiss keyboard first
+  const handleDone = async () => {
     Keyboard.dismiss();
 
-    // Add the current item if there's text
+    const wasEditing = Boolean(uiStore.editingItemId);
+    const categoryChanged = uiStore.editingItemCategoryId !== selectedCategoryId;
+
     if (itemName.trim() !== '') {
-      handleAddItem();
+      await handleAddItem();
+    } else if (wasEditing && categoryChanged) {
+      await handleCategoryChange();
     }
 
-    // If we're editing an item and the category has changed, save the changes
-    if (uiStore.editingItemName && uiStore.editingItemCategoryId !== selectedCategoryId) {
-      handleCategoryChange();
-    }
-
-    // Close modal and clean up
     uiStore.setAddItemModalVisible(false);
     uiStore.setEditingItemName(null);
+    uiStore.setEditingItemId(null);
     uiStore.setEditingItemCategoryId(null);
     setItemName('');
     setSelectedCategoryId(null);
@@ -205,7 +189,7 @@ const AddItemModal = () => {
       >
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>
-            {uiStore.editingItemName ? 'Edit Item' : 'Add Item'}
+            {uiStore.editingItemId ? 'Edit Item' : 'Add Item'}
           </Text>
 
           <View style={styles.dropdownContainer}>
@@ -320,7 +304,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '80%',
-    // marginTop: 10,
   }
 });
 

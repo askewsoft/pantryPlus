@@ -17,8 +17,8 @@ type ItemProps = {
   indent: number;
 }
 
-const Item = ({ 
-  item, 
+const Item = ({
+  item,
   listId,
   categoryId,
   indent,
@@ -34,6 +34,7 @@ const Item = ({
 
   const onAssignToCategory = () => {
     uiStore.setAddItemToCategoryID(categoryId ?? null);
+    uiStore.setEditingItemId(item.id);
     uiStore.setEditingItemName(item.name);
     uiStore.setEditingItemCategoryId(categoryId ?? null);
     uiStore.setAddItemModalVisible(true);
@@ -43,7 +44,7 @@ const Item = ({
     const newIsChecked = !item.isChecked;
     isCheckedRef.current = newIsChecked;
     setIsChecked(newIsChecked);
- 
+
     if (newIsChecked) {
       const timeoutId = setTimeout(() => {
         // Only process if the item is still checked after the timeout
@@ -65,7 +66,7 @@ const Item = ({
   useEffect(() => {
     // Update ref when item.isChecked changes
     isCheckedRef.current = item.isChecked;
-    
+
     if (timeoutId && !item.isChecked) {
       clearTimeout(timeoutId);
       setTimeoutId(null);
