@@ -19,6 +19,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
     addItemToCategoryID: t.maybeNull(t.string),
     addItemToListID: t.maybeNull(t.string),
     editingItemName: t.maybeNull(t.string),
+    editingItemId: t.maybeNull(t.string),
     editingItemCategoryId: t.maybeNull(t.string),
     addListModalVisible: false,
     addLocationModalVisible: false,
@@ -62,6 +63,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
         self.addItemToCategoryID = null;
         self.addItemToListID = null;
         self.editingItemName = null;
+        self.editingItemId = null;
         self.editingItemCategoryId = null;
         self.addListModalVisible = false;
         self.addLocationModalVisible = false;
@@ -143,6 +145,9 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setEditingItemName(name: string | null) {
         self.editingItemName = cast(name);
+    },
+    setEditingItemId(itemId: string | null) {
+        self.editingItemId = cast(itemId);
     },
     setEditingItemCategoryId(categoryId: string | null) {
         self.editingItemCategoryId = cast(categoryId);
@@ -240,6 +245,7 @@ persist('pantryPlusUI', uiStore, {
         'addItemToListID',
         'addLocationModalVisible',
         'editingItemName',
+        'editingItemId',
         'editingItemCategoryId',
         'groupsLoaded',
         'listsLoaded',

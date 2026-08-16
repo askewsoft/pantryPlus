@@ -47,9 +47,21 @@ const removeCategoryItem = async ({ categoryId, itemId, xAuthUser }: { categoryI
     }
 }
 
+/** Unlink from category only; item remains on the shopping list. */
+const unlinkCategoryItem = async ({ categoryId, itemId, xAuthUser }: { categoryId: string, itemId: string, xAuthUser: string }): Promise<void> => {
+    const configuration = await getApiConfiguration();
+    const categoriesApi = new CategoriesApi(configuration);
+    try {
+        await categoriesApi.unlinkItemFromCategory(xAuthUser, categoryId, itemId);
+    } catch (error) {
+        console.error(`Error unlinking category item: ${error}`);
+    }
+}
+
 export default {
     updateCategory,
     associateCategoryItem,
     loadCategoryItems,
     removeCategoryItem,
+    unlinkCategoryItem,
 };

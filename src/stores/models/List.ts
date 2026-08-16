@@ -283,11 +283,22 @@ export const ListModel = t.model('ListModel', {
     }),
     addItem: flow(function*({ item, xAuthUser }: { item: Pick<ItemType, 'name' | 'upc'>, xAuthUser: string }): Generator<any, any, any> {
         try {
-            const newItemId = randomUUID();
-            const newItem = ItemModel.create({ id: newItemId, name: item.name, upc: item.upc });
-            yield newItem.saveItem(xAuthUser);
-            yield api.list.associateListItem({ listId: self.id, itemId: newItemId, xAuthUser });
-            self.items.push(newItem);
+            // Candidate only: find-or-create may return an existing ITEM whose id differs from
+            // this UUID. Always use saved.id below — never treat candidateId as the real identity.
+            const candidateId = randomUUID();
+            const saved: Item | null = yield api.item.createItem({
+                item: { id: candidateId, name: item.name, upc: item.upc ?? '' },
+                xAuthUser,
+            });
+            if (!saved) {
+                throw new Error('find-or-create item returned no result');
+            }
+            const alreadyOnList = self.items.some(i => i.id === saved.id);
+            if (!alreadyOnList) {
+                const newItem = ItemModel.create({ id: saved.id, name: saved.name, upc: saved.upc });
+                yield api.list.associateListItem({ listId: self.id, itemId: saved.id, xAuthUser });
+                self.items.push(newItem);
+            }
             // Update the count after adding an item
             const count = yield api.list.getListItemsCount({ listId: self.id, xAuthUser });
             self.unpurchasedItemsCount = count;
@@ -311,6 +322,19 @@ export const ListModel = t.model('ListModel', {
             console.error(`Error removing item from list: ${error}`);
         }
     }),
+    /** Local-only: drop an uncategorized item from the list array without an API delete. */
+    detachLocalItem(itemId: string) {
+        const index = self.items.findIndex(i => i.id === itemId);
+        if (index >= 0) {
+            self.items.splice(index, 1);
+        }
+    },
+    /** Local-only: append an uncategorized item already known to be on the list server-side. */
+    attachLocalItem(item: { id: string; name: string; upc?: string }) {
+        if (!self.items.some(i => i.id === item.id)) {
+            self.items.push(ItemModel.create({ id: item.id, name: item.name, upc: item.upc }));
+        }
+    },
     purchaseItem: flow(function*({ itemId, xAuthUser, xAuthLocation }: { itemId: string, xAuthUser: string, xAuthLocation: string }): Generator<any, any, any> {
         try {
             yield api.list.purchaseItem({ listId: self.id, itemId, xAuthUser, xAuthLocation });

@@ -1,5 +1,6 @@
 import { t, flow } from 'mobx-state-tree';
 import { api } from '@/api';
+import { Item } from 'pantryplus-api-client/v2';
 
 export const ItemModel = t.model('ItemModel', {
     id: t.identifier,
@@ -15,11 +16,19 @@ export const ItemModel = t.model('ItemModel', {
             console.error(`Error setting item name for itemId: ${self.id} to name: ${name} with error: ${error}`);
         }
     }),
-    saveItem: flow(function*(xAuthUser: string): Generator<any, any, any> {
+    /**
+     * Find-or-create on the server. Returns the canonical item (id may differ from self.id).
+     */
+    saveItem: flow(function*(xAuthUser: string): Generator<any, Item | null, any> {
         try {
-            yield api.item.createItem({ item: { name: self.name, upc: self.upc ?? '', id: self.id }, xAuthUser });
+            const saved: Item | null = yield api.item.createItem({
+                item: { name: self.name, upc: self.upc ?? '', id: self.id },
+                xAuthUser,
+            });
+            return saved;
         } catch (error) {
             console.error(`Error creating item with name: ${self.name} and upc: ${self.upc} with error: ${error}`);
+            return null;
         }
     }),
     setIsChecked: (isChecked: boolean) => {

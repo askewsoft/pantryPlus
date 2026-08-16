@@ -25,11 +25,22 @@ export const CategoryModel = t.model('CategoryModel', {
     }),
     addItem: flow(function*({ item, xAuthUser, onItemAdded }: { item: Pick<ItemType, 'name' | 'upc'>, xAuthUser: string, onItemAdded?: () => void }): Generator<any, any, any> {
         try {
-            const newItemId = randomUUID();
-            const newItem = ItemModel.create({ id: newItemId, name: item.name, upc: item.upc });
-            yield newItem.saveItem(xAuthUser);
-            yield api.category.associateCategoryItem({ categoryId: self.id, itemId: newItemId, xAuthUser });
-            self.items.push(newItem);
+            // Candidate only: find-or-create may return an existing ITEM whose id differs from
+            // this UUID. Always use saved.id below — never treat candidateId as the real identity.
+            const candidateId = randomUUID();
+            const saved: Item | null = yield api.item.createItem({
+                item: { id: candidateId, name: item.name, upc: item.upc ?? '' },
+                xAuthUser,
+            });
+            if (!saved) {
+                throw new Error('find-or-create item returned no result');
+            }
+            const alreadyInCategory = self.items.some(i => i.id === saved.id);
+            if (!alreadyInCategory) {
+                yield api.category.associateCategoryItem({ categoryId: self.id, itemId: saved.id, xAuthUser });
+                const newItem = ItemModel.create({ id: saved.id, name: saved.name, upc: saved.upc });
+                self.items.push(newItem);
+            }
 
             // Notify parent that an item was added so it can update its count
             if (onItemAdded) {
@@ -48,6 +59,12 @@ export const CategoryModel = t.model('CategoryModel', {
             console.error(`Error adding item to category: ${error}`);
         }
     }),
+    /** Local-only: append an item already associated via API. */
+    attachLocalItem(item: { id: string; name: string; upc?: string }) {
+        if (!self.items.some(i => i.id === item.id)) {
+            self.items.push(ItemModel.create({ id: item.id, name: item.name, upc: item.upc }));
+        }
+    },
     removeItem: flow(function*({ itemId, xAuthUser, onItemRemoved }: { itemId: string, xAuthUser: string, onItemRemoved?: () => void }): Generator<any, any, any> {
         try {
             // we intentionally do not call the API, we do not want to remove the item from the category
