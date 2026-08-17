@@ -6,6 +6,33 @@ export type TypeaheadEntry = {
   upc?: string;
 };
 
+/** Minimal list shape for resolving which category an item belongs to. */
+export type TypeaheadListLookup = {
+  categories: Array<{ id: string; items: Array<{ id: string }> }>;
+  items: Array<{ id: string }>;
+};
+
+/**
+ * Find category id for an item on the given lists (first match wins).
+ * Returns '' for uncategorized, undefined if not found on any list.
+ */
+export function findCategoryIdForItem(
+  itemId: string,
+  lists: TypeaheadListLookup[],
+): string | undefined {
+  for (const list of lists) {
+    for (const category of list.categories) {
+      if (category.items.some(i => i.id === itemId)) {
+        return category.id;
+      }
+    }
+    if (list.items.some(i => i.id === itemId)) {
+      return '';
+    }
+  }
+  return undefined;
+}
+
 /** Dedupe by normalized name; first occurrence wins (preserves display casing). */
 export function dedupeTypeaheadCorpus(items: TypeaheadEntry[]): TypeaheadEntry[] {
   const byNorm = new Map<string, TypeaheadEntry>();

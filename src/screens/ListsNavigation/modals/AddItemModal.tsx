@@ -23,6 +23,7 @@ import { api } from '@/api';
 import { displayItemName } from '@/utils/itemName';
 import {
   dedupeTypeaheadCorpus,
+  findCategoryIdForItem,
   searchTypeaheadCorpus,
   TypeaheadEntry,
 } from '@/utils/itemTypeahead';
@@ -60,6 +61,18 @@ const AddItemModal = () => {
     if (!isAdding || categoryOpen) return [];
     return searchTypeaheadCorpus(typeaheadCorpus, itemName);
   }, [typeaheadCorpus, itemName, isAdding, categoryOpen]);
+
+  /** Lists to search for an item's category: current list first, then rest of household. */
+  const householdListsForCategoryLookup = useMemo(() => {
+    if (!currentList) return [];
+    const cohortId = currentList.groupId ?? null;
+    const others = domainStore.lists.filter(list => {
+      if (list.id === currentList.id) return false;
+      if (cohortId) return list.groupId === cohortId;
+      return list.groupId == null && list.ownerId === currentList.ownerId;
+    });
+    return [currentList, ...others];
+  }, [currentList, domainStore.lists.length, currentList?.groupId]);
 
   const loadTypeaheadCorpus = useCallback(async () => {
     const user = domainStore.user;
@@ -102,6 +115,10 @@ const AddItemModal = () => {
   const handleSelectSuggestion = (entry: TypeaheadEntry) => {
     setItemName(entry.name);
     setSelectedSuggestion(entry);
+    const categoryId = findCategoryIdForItem(entry.id, householdListsForCategoryLookup);
+    if (categoryId !== undefined) {
+      setSelectedCategoryId(categoryId);
+    }
     textInputRef.current?.focus();
   };
 
