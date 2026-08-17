@@ -1,5 +1,17 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
-import { Button, Modal, Text, TextInput, View, StyleSheet, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import {
+  Button,
+  Modal,
+  Text,
+  TextInput,
+  View,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  Pressable,
+  FlatList,
+} from 'react-native';
 import { observer } from 'mobx-react';
 import DropDownPicker from 'react-native-dropdown-picker';
 
@@ -9,20 +21,28 @@ import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { api } from '@/api';
 import { displayItemName } from '@/utils/itemName';
+import {
+  dedupeTypeaheadCorpus,
+  searchTypeaheadCorpus,
+  TypeaheadEntry,
+} from '@/utils/itemTypeahead';
+
+const TYPEAHEAD_LOOKBACK_DAYS = 365;
 
 const AddItemModal = () => {
   const [itemName, setItemName] = useState('');
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [typeaheadCorpus, setTypeaheadCorpus] = useState<TypeaheadEntry[]>([]);
+  const [selectedSuggestion, setSelectedSuggestion] = useState<TypeaheadEntry | null>(null);
   const textInputRef = useRef<TextInput>(null);
 
   const listId = uiStore.selectedShoppingList;
   const currentList = domainStore.lists.find((list) => list.id === listId);
+  const isAdding = !uiStore.editingItemId;
 
-  // Get category items directly from the DomainStore - always up to date
   const categoryItems = useMemo(() => {
     if (currentList) {
-      // Get fresh categories from the DomainStore, sorted alphabetically by name
       const sortedCategories = [...currentList.categories].sort((a, b) =>
         a.name.localeCompare(b.name)
       );
@@ -30,28 +50,71 @@ const AddItemModal = () => {
         label: category.name,
         value: category.id
       }));
-      // Add "No Category" option at the top
       categories.unshift({ label: 'No Category', value: '' });
       return categories;
-    } else {
-      // Set default "No Category" option even if no list is found
-      return [{ label: 'No Category', value: '' }];
     }
+    return [{ label: 'No Category', value: '' }];
   }, [currentList, currentList?.categories.length, uiStore.addItemModalVisible]);
 
-  // Populate form when modal opens for editing or adding to a category
+  const suggestions = useMemo(() => {
+    if (!isAdding || categoryOpen) return [];
+    return searchTypeaheadCorpus(typeaheadCorpus, itemName);
+  }, [typeaheadCorpus, itemName, isAdding, categoryOpen]);
+
+  const loadTypeaheadCorpus = useCallback(async () => {
+    const user = domainStore.user;
+    if (!user || !currentList) return;
+    const items = await api.shopper.getPurchasedItems({
+      user,
+      lookBackDays: TYPEAHEAD_LOOKBACK_DAYS,
+      cohortId: currentList.groupId ?? null,
+    });
+    setTypeaheadCorpus(dedupeTypeaheadCorpus(items));
+  }, [currentList]);
+
   useEffect(() => {
     if (uiStore.addItemModalVisible) {
       if (uiStore.editingItemName) {
         setItemName(uiStore.editingItemName);
         setSelectedCategoryId(uiStore.editingItemCategoryId);
       } else {
-        // Clear form for new item, but preserve category if set
         setItemName('');
         setSelectedCategoryId(uiStore.editingItemCategoryId);
       }
+      setSelectedSuggestion(null);
+      if (!uiStore.editingItemId) {
+        loadTypeaheadCorpus();
+      }
     }
-  }, [uiStore.addItemModalVisible, uiStore.editingItemName, uiStore.editingItemCategoryId]);
+  }, [
+    uiStore.addItemModalVisible,
+    uiStore.editingItemName,
+    uiStore.editingItemCategoryId,
+    uiStore.editingItemId,
+    loadTypeaheadCorpus,
+  ]);
+
+  const handleNameChange = (text: string) => {
+    setItemName(text);
+    setSelectedSuggestion(null);
+  };
+
+  const handleSelectSuggestion = (entry: TypeaheadEntry) => {
+    setItemName(entry.name);
+    setSelectedSuggestion(entry);
+    textInputRef.current?.focus();
+  };
+
+  const buildAddItemPayload = (trimmedName: string) => {
+    const payload: { name: string; upc: string; id?: string } = {
+      name: trimmedName,
+      upc: selectedSuggestion?.upc ?? '',
+    };
+    if (selectedSuggestion && displayItemName(selectedSuggestion.name) === displayItemName(trimmedName)) {
+      payload.id = selectedSuggestion.id;
+    }
+    return payload;
+  };
 
   const handleAddItem = async () => {
     const trimmedName = itemName.trim();
@@ -68,27 +131,23 @@ const AddItemModal = () => {
           await handleCategoryChange();
         }
       } else {
-        // Adding a new item via find-or-create
+        const itemPayload = buildAddItemPayload(trimmedName);
         if (selectedCategoryId && selectedCategoryId !== '') {
-          // Add item to specific category
           const category = currentList.categories.find(c => c.id === selectedCategoryId);
           category?.addItem({
-            item: { name: trimmedName, upc: '' },
+            item: itemPayload,
             xAuthUser,
             onItemAdded: () => currentList.loadUnpurchasedItemsCount({ xAuthUser })
           });
         } else {
-          // Add item to list without category
-          currentList.addItem({ item: { name: trimmedName, upc: '' }, xAuthUser });
+          currentList.addItem({ item: itemPayload, xAuthUser });
         }
       }
 
-      // Clear the input for next item
       setItemName('');
-      // Clear editing name (but preserve category for "Next" button)
+      setSelectedSuggestion(null);
       uiStore.setEditingItemName(null);
       uiStore.setEditingItemId(null);
-      // Note: editingItemCategoryId is only cleared in handleDone()
     }
   };
 
@@ -106,9 +165,6 @@ const AddItemModal = () => {
     uiStore.setEditingItemName(saved.name);
   };
 
-  /**
-   * Move an existing item between categories (or to/from uncategorized) without minting a new ITEM.
-   */
   const handleCategoryChange = async () => {
     if (!currentList || !uiStore.editingItemId) return;
 
@@ -120,7 +176,6 @@ const AddItemModal = () => {
 
     if (originalCategoryId === newCategoryId) return;
 
-    // Locate the item in local state
     let itemSnapshot: { id: string; name: string; upc?: string } | null = null;
     if (originalCategoryId) {
       const originalCategory = currentList.categories.find(c => c.id === originalCategoryId);
@@ -145,7 +200,6 @@ const AddItemModal = () => {
       const newCategory = currentList.categories.find(c => c.id === newCategoryId);
       newCategory?.attachLocalItem(itemSnapshot);
     } else {
-      // Uncategorized: ensure list membership locally (server already has LIST_ITEM_RELATION)
       currentList.attachLocalItem(itemSnapshot);
     }
 
@@ -176,16 +230,15 @@ const AddItemModal = () => {
     uiStore.setEditingItemCategoryId(null);
     setItemName('');
     setSelectedCategoryId(null);
+    setSelectedSuggestion(null);
   };
 
-  // Effect to handle dropdown open/close
   useEffect(() => {
     if (categoryOpen) {
       Keyboard.dismiss();
     }
   }, [categoryOpen]);
 
-  // Effect to handle category selection
   useEffect(() => {
     if (selectedCategoryId !== null) {
       setTimeout(() => {
@@ -234,7 +287,7 @@ const AddItemModal = () => {
             ref={textInputRef}
             style={styles.input}
             value={itemName}
-            onChangeText={setItemName}
+            onChangeText={handleNameChange}
             autoFocus={true}
             autoCapitalize="none"
             autoCorrect={false}
@@ -249,6 +302,23 @@ const AddItemModal = () => {
             returnKeyType="none"
             blurOnSubmit={false}
           />
+
+          {suggestions.length > 0 && (
+            <FlatList
+              style={styles.suggestionsList}
+              keyboardShouldPersistTaps="handled"
+              data={suggestions}
+              keyExtractor={(entry) => entry.id}
+              renderItem={({ item: entry }) => (
+                <Pressable
+                  style={styles.suggestionRow}
+                  onPress={() => handleSelectSuggestion(entry)}
+                >
+                  <Text style={styles.suggestionText}>{entry.name}</Text>
+                </Pressable>
+              )}
+            />
+          )}
 
           <View style={styles.buttonContainer}>
             <Button
@@ -291,9 +361,27 @@ const styles = StyleSheet.create({
     height: 40,
     minWidth: "80%",
     backgroundColor: colors.white,
-    marginBottom: 15,
+    marginBottom: 8,
     padding: 10,
     textAlign: 'center',
+    fontSize: fonts.rowTextSize,
+  },
+  suggestionsList: {
+    width: '80%',
+    maxHeight: 160,
+    backgroundColor: colors.white,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: colors.lightBrandColor,
+  },
+  suggestionRow: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.lightBrandColor,
+  },
+  suggestionText: {
+    color: colors.brandColor,
     fontSize: fonts.rowTextSize,
   },
   dropdownContainer: {

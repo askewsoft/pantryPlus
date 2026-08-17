@@ -311,11 +311,11 @@ export const ListModel = t.model('ListModel', {
             console.error(`Error syncing list items: ${error}`);
         }
     }),
-    addItem: flow(function*({ item, xAuthUser }: { item: Pick<ItemType, 'name' | 'upc'>, xAuthUser: string }): Generator<any, any, any> {
+    addItem: flow(function*({ item, xAuthUser }: { item: Pick<ItemType, 'name' | 'upc'> & { id?: string }, xAuthUser: string }): Generator<any, any, any> {
         try {
             // Candidate only: find-or-create may return an existing ITEM whose id differs from
             // this UUID. Always use saved.id below — never treat candidateId as the real identity.
-            const candidateId = randomUUID();
+            const candidateId = item.id ?? randomUUID();
             const saved: Item | null = yield api.item.createItem({
                 item: { id: candidateId, name: item.name, upc: item.upc ?? '' },
                 xAuthUser,

@@ -23,11 +23,11 @@ export const CategoryModel = t.model('CategoryModel', {
             console.error(`Error setting name: ${error}`);
         }
     }),
-    addItem: flow(function*({ item, xAuthUser, onItemAdded }: { item: Pick<ItemType, 'name' | 'upc'>, xAuthUser: string, onItemAdded?: () => void }): Generator<any, any, any> {
+    addItem: flow(function*({ item, xAuthUser, onItemAdded }: { item: Pick<ItemType, 'name' | 'upc'> & { id?: string }, xAuthUser: string, onItemAdded?: () => void }): Generator<any, any, any> {
         try {
             // Candidate only: find-or-create may return an existing ITEM whose id differs from
             // this UUID. Always use saved.id below — never treat candidateId as the real identity.
-            const candidateId = randomUUID();
+            const candidateId = item.id ?? randomUUID();
             const saved: Item | null = yield api.item.createItem({
                 item: { id: candidateId, name: item.name, upc: item.upc ?? '' },
                 xAuthUser,

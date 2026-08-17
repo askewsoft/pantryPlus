@@ -4,6 +4,7 @@ import {
     List,
     Group,
     RecentLocation,
+    Item,
 } from 'pantryplus-api-client/v2';
 
 import { getApiConfiguration } from '@/services/SessionService';
@@ -105,6 +106,28 @@ const getUserInvites = async ({ user }: { user: Shopper }): Promise<Array<Group>
     }
 };
 
+const getPurchasedItems = async ({
+    user,
+    lookBackDays = 365,
+    cohortId,
+}: {
+    user: Shopper;
+    lookBackDays?: number;
+    cohortId?: string | null;
+}): Promise<Array<Item>> => {
+    const configuration = await getApiConfiguration();
+    const shopperApi = new ShoppersApi(configuration);
+    const xAuthUser = user.email!;
+    const shopperId = user.id!;
+    try {
+        const response = await shopperApi.getPurchasedItems(xAuthUser, shopperId, lookBackDays, cohortId ?? undefined);
+        return response.data;
+    } catch (error) {
+        console.error('Unable to get purchased items:', error);
+        return [];
+    }
+};
+
 const getRecentUserLocations = async ({ user, lookbackDays }: { user: Shopper, lookbackDays: number }): Promise<Array<RecentLocation>> => {
     const configuration = await getApiConfiguration();
     const shopperApi = new ShoppersApi(configuration);
@@ -156,6 +179,7 @@ export default {
     getUserLists,
     getUserGroups,
     getUserInvites,
+    getPurchasedItems,
     getRecentUserLocations,
     acceptInvite,
     declineInvite,
