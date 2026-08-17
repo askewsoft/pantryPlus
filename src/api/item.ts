@@ -13,13 +13,27 @@ const createItem = async ({ item, xAuthUser }: { item: Item, xAuthUser: string }
     }
 }
 
-const updateItem = async ({ item, xAuthUser }: { item: Item, xAuthUser: string }) => {
+const updateItem = async ({
+    item,
+    listId,
+    xAuthUser,
+}: {
+    item: Item;
+    listId: string;
+    xAuthUser: string;
+}): Promise<Item | null> => {
     const configuration = await getApiConfiguration();
     const itemsApi = new ItemsApi(configuration);
     try {
-        await itemsApi.updateItem(xAuthUser, item.id, item);
+        const response = await itemsApi.updateItem(xAuthUser, item.id, {
+            name: item.name,
+            upc: item.upc,
+            listId,
+        });
+        return response.data ?? null;
     } catch (error) {
         console.error(`Error updating item: ${error}`);
+        return null;
     }
 }
 

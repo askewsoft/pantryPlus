@@ -8,7 +8,7 @@ import { domainStore } from '@/stores/DomainStore';
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { api } from '@/api';
-import { isCaseOnlyNameChange } from '@/utils/itemName';
+import { displayItemName } from '@/utils/itemName';
 
 const AddItemModal = () => {
   const [itemName, setItemName] = useState('');
@@ -60,10 +60,10 @@ const AddItemModal = () => {
       const xAuthUser = user?.email!;
 
       if (uiStore.editingItemId) {
-        if (isCaseOnlyNameChange(uiStore.editingItemName ?? '', trimmedName)) {
-          await handleCasingChange(trimmedName);
+        const originalName = uiStore.editingItemName ?? '';
+        if (displayItemName(trimmedName) !== displayItemName(originalName)) {
+          await handleRename(trimmedName);
         }
-        // Semantic rename (non-case-only) is #163
         if (uiStore.editingItemCategoryId !== selectedCategoryId) {
           await handleCategoryChange();
         }
@@ -92,23 +92,18 @@ const AddItemModal = () => {
     }
   };
 
-  const findEditingItem = () => {
-    if (!currentList || !uiStore.editingItemId) return undefined;
-    const itemId = uiStore.editingItemId;
-    if (uiStore.editingItemCategoryId) {
-      const category = currentList.categories.find(c => c.id === uiStore.editingItemCategoryId);
-      return category?.items.find(i => i.id === itemId);
-    }
-    return currentList.items.find(i => i.id === itemId);
-  };
-
-  /** Case-only display rename; identity (id / NAME_NORMALIZED) stays the same. */
-  const handleCasingChange = async (newName: string) => {
+  const handleRename = async (newName: string) => {
+    if (!currentList || !uiStore.editingItemId) return;
     const user = domainStore.user;
     const xAuthUser = user?.email!;
-    const item = findEditingItem();
-    if (!item) return;
-    await item.setName(newName, xAuthUser);
+    const saved = await currentList.renameItem({
+      itemId: uiStore.editingItemId,
+      name: newName,
+      xAuthUser,
+    });
+    if (!saved) return;
+    uiStore.setEditingItemId(saved.id);
+    uiStore.setEditingItemName(saved.name);
   };
 
   /**

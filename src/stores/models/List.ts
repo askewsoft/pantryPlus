@@ -12,6 +12,36 @@ export type ItemType = Instance<typeof ItemModel>;
 export type CategoryType = Instance<typeof CategoryModel>;
 export type ListType = Instance<typeof ListModel>;
 
+/** Local-only item swap after rename (same id = casing/in-place; new id = find/fork). */
+function applyLocalItemReplace(
+    list: Pick<ListType, 'categories' | 'items'>,
+    fromId: string,
+    toItem: { id: string; name: string; upc?: string },
+) {
+    if (fromId === toItem.id) {
+        list.categories.forEach(category => {
+            const item = category.items.find(i => i.id === fromId);
+            item?.applyName(toItem.name);
+        });
+        const uncategorized = list.items.find(i => i.id === fromId);
+        uncategorized?.applyName(toItem.name);
+        return;
+    }
+    list.categories.forEach(category => {
+        if (category.items.some(i => i.id === fromId)) {
+            category.detachLocalItem(fromId);
+            category.attachLocalItem(toItem);
+        }
+    });
+    const uncategorizedIndex = list.items.findIndex(i => i.id === fromId);
+    if (uncategorizedIndex >= 0) {
+        list.items.splice(uncategorizedIndex, 1);
+        if (!list.items.some(i => i.id === toItem.id)) {
+            list.items.push(ItemModel.create({ id: toItem.id, name: toItem.name, upc: toItem.upc }));
+        }
+    }
+}
+
 export const ListModel = t.model('ListModel', {
     id: t.identifier,
     name: t.string,
@@ -335,6 +365,32 @@ export const ListModel = t.model('ListModel', {
             self.items.push(ItemModel.create({ id: item.id, name: item.name, upc: item.upc }));
         }
     },
+    /** Swap an item on this list after rename (same id = casing/in-place; new id = find/fork). */
+    replaceLocalItem(fromId: string, toItem: { id: string; name: string; upc?: string }) {
+        applyLocalItemReplace(self, fromId, toItem);
+    },
+    /** Rename the item on this list. Server may return a different id (find-existing or fork). */
+    renameItem: flow(function*({
+        itemId,
+        name,
+        xAuthUser,
+    }: {
+        itemId: string;
+        name: string;
+        xAuthUser: string;
+    }): Generator<any, Item | null, any> {
+        const current =
+            self.items.find(i => i.id === itemId) ??
+            self.categories.flatMap(category => category.items).find(i => i.id === itemId);
+        const saved: Item | null = yield api.item.updateItem({
+            item: { id: itemId, name, upc: current?.upc ?? '' },
+            listId: self.id,
+            xAuthUser,
+        });
+        if (!saved) return null;
+        applyLocalItemReplace(self, itemId, saved);
+        return saved;
+    }),
     purchaseItem: flow(function*({ itemId, xAuthUser, xAuthLocation }: { itemId: string, xAuthUser: string, xAuthLocation: string }): Generator<any, any, any> {
         try {
             yield api.list.purchaseItem({ listId: self.id, itemId, xAuthUser, xAuthLocation });

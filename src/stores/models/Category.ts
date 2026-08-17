@@ -65,6 +65,13 @@ export const CategoryModel = t.model('CategoryModel', {
             self.items.push(ItemModel.create({ id: item.id, name: item.name, upc: item.upc }));
         }
     },
+    /** Local-only: drop an item from this category array without an API call. */
+    detachLocalItem(itemId: string) {
+        const index = self.items.findIndex(i => i.id === itemId);
+        if (index >= 0) {
+            self.items.splice(index, 1);
+        }
+    },
     removeItem: flow(function*({ itemId, xAuthUser, onItemRemoved }: { itemId: string, xAuthUser: string, onItemRemoved?: () => void }): Generator<any, any, any> {
         try {
             // we intentionally do not call the API, we do not want to remove the item from the category
