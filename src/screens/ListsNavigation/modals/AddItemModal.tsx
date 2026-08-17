@@ -8,6 +8,7 @@ import { domainStore } from '@/stores/DomainStore';
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { api } from '@/api';
+import { isCaseOnlyNameChange } from '@/utils/itemName';
 
 const AddItemModal = () => {
   const [itemName, setItemName] = useState('');
@@ -59,11 +60,13 @@ const AddItemModal = () => {
       const xAuthUser = user?.email!;
 
       if (uiStore.editingItemId) {
-        // Editing an existing item — category change reuses the same ITEM id (no clone)
+        if (isCaseOnlyNameChange(uiStore.editingItemName ?? '', trimmedName)) {
+          await handleCasingChange(trimmedName);
+        }
+        // Semantic rename (non-case-only) is #163
         if (uiStore.editingItemCategoryId !== selectedCategoryId) {
           await handleCategoryChange();
         }
-        // Name change is Phase 2 (rename/fork); casing-only can wait for that path
       } else {
         // Adding a new item via find-or-create
         if (selectedCategoryId && selectedCategoryId !== '') {
@@ -87,6 +90,25 @@ const AddItemModal = () => {
       uiStore.setEditingItemId(null);
       // Note: editingItemCategoryId is only cleared in handleDone()
     }
+  };
+
+  const findEditingItem = () => {
+    if (!currentList || !uiStore.editingItemId) return undefined;
+    const itemId = uiStore.editingItemId;
+    if (uiStore.editingItemCategoryId) {
+      const category = currentList.categories.find(c => c.id === uiStore.editingItemCategoryId);
+      return category?.items.find(i => i.id === itemId);
+    }
+    return currentList.items.find(i => i.id === itemId);
+  };
+
+  /** Case-only display rename; identity (id / NAME_NORMALIZED) stays the same. */
+  const handleCasingChange = async (newName: string) => {
+    const user = domainStore.user;
+    const xAuthUser = user?.email!;
+    const item = findEditingItem();
+    if (!item) return;
+    await item.setName(newName, xAuthUser);
   };
 
   /**
@@ -219,6 +241,8 @@ const AddItemModal = () => {
             value={itemName}
             onChangeText={setItemName}
             autoFocus={true}
+            autoCapitalize="none"
+            autoCorrect={false}
             inputMode="text"
             lineBreakStrategyIOS="none"
             clearButtonMode="while-editing"
