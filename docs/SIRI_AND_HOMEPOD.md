@@ -170,15 +170,29 @@ Same intent code runs if the user speaks to Siri **on the iPhone**. HomePod only
 
 ## Setup checklist (HomePod)
 
-From [Apple’s voice recognition / Personal Requests guide](https://support.apple.com/en-us/108397):
+Copy-ready for release notes / help. From [Apple’s voice recognition / Personal Requests guide](https://support.apple.com/en-us/108397):
 
-- HomePod and iPhone on the **same Wi‑Fi**
-- **Recognize My Voice** on for that person
-- **Personal Requests / Personal Content** on for that HomePod
-- Find My **Share My Location**, **My Location** = **This Device**
-- Siri enabled, **Allow Siri When Locked**, language matches HomePod
-- Siri saved to iCloud
-- Pantry Plus signed in on that iPhone
+**On the iPhone that should handle Pantry Plus**
+
+- Install Pantry Plus and **sign in**
+- Open the app once so lists sync (Siri uses that cache)
+- Siri enabled, **Allow Siri When Locked**
+- Find My → **Share My Location**, **My Location** = **This Device**
+
+**On each HomePod**
+
+- Same **Wi‑Fi** as that iPhone
+- Home app → that person’s profile → **Recognize My Voice**
+- **Personal Requests** / **Personal Content** on for that HomePod
+- Siri language matches the iPhone
+
+**Example**
+
+> “Hey Siri, add milk to the Grocery list in Pantry Plus.”
+
+HomePod relays to the recognized person’s iPhone; Siri speaks the result on the HomePod.
+
+First use may prompt on the iPhone to allow Siri to use Pantry Plus. Guests without voice recognition cannot run this intent.
 
 ---
 

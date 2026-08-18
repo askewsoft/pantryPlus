@@ -114,6 +114,15 @@ struct AddItemToListIntent: AppIntent {
     } else {
       dialog = "Added \(saved.name) to \(resolvedList.name)"
     }
+
+    var donated = self
+    donated.list = resolvedList
+    donated.itemName = saved.name
+    donated.category = resolvedCategory
+    Task {
+      try? await donated.donate()
+    }
+
     return .result(dialog: IntentDialog(LocalizedStringResource(stringLiteral: dialog)))
   }
 
@@ -143,31 +152,21 @@ struct AddItemToListIntent: AppIntent {
 
   private func resolveItem(spokenName: String) async throws -> ResolvedSpokenItem {
     let corpus = SharedIntentStore.loadTypeaheadCorpus()
-    if let exact = TypeaheadMatcher.matchExact(corpus, rawName: spokenName) {
-      return .catalog(exact)
-    }
-
-    let ranked = TypeaheadMatcher.search(corpus, rawQuery: spokenName, limit: 5)
-    if let top = ranked.first, top.score >= 200, ranked.count == 1 || top.score - (ranked.dropFirst().first?.score ?? 0) >= 50 {
-      return .catalog(top.entry)
-    }
-
-    let strong = ranked.filter { $0.score >= 100 }
-    if strong.count == 1 {
-      return .catalog(strong[0].entry)
-    }
-    if strong.count > 1 {
-      let entities = strong.prefix(5).map { ItemSuggestionEntity(entry: $0.entry) }
-      let chosen = try await $suggestedItem.requestDisambiguation(among: Array(entities), dialog: "Which item did you mean?")
+    switch TypeaheadMatcher.resolveSpokenItem(corpus, rawName: spokenName) {
+    case .catalog(let entry):
+      return .catalog(entry)
+    case .ambiguous(let entries):
+      let entities = entries.map { ItemSuggestionEntity(entry: $0) }
+      let chosen = try await $suggestedItem.requestDisambiguation(among: entities, dialog: "Which item did you mean?")
       if let entry = corpus.first(where: { $0.id == chosen.id }) {
         return .catalog(entry)
       }
       return .catalog(
         IntentTypeaheadEntry(id: chosen.id, name: chosen.name, aliases: chosen.aliases, upc: chosen.upc)
       )
+    case .newItem:
+      return .newItem(name: spokenName)
     }
-
-    return .newItem(name: spokenName)
   }
 
   private func catalogCandidate(from resolved: ResolvedSpokenItem, spokenName: String) -> (id: String, name: String, upc: String?) {

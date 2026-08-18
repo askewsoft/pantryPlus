@@ -1,11 +1,13 @@
 # Siri App Intents — manual smoke test
 
-Manual test matrix for Phase 5b add/check intents ([#168](https://github.com/askewsoft/pantryPlus/issues/168)). Parent epic: [#93](https://github.com/askewsoft/pantryPlus/issues/93).
+Manual test matrix for Phase 5 add/check intents ([#168](https://github.com/askewsoft/pantryPlus/issues/168), [#169](https://github.com/askewsoft/pantryPlus/issues/169)). Parent epic: [#93](https://github.com/askewsoft/pantryPlus/issues/93).
 
 Related docs:
 
-- Architecture and HomePod routing: [SIRI_AND_HOMEPOD.md](./SIRI_AND_HOMEPOD.md)
+- Architecture, HomePod routing, and user setup: [SIRI_AND_HOMEPOD.md](./SIRI_AND_HOMEPOD.md)
 - Implementation plan: [plans/phase-5-siri-app-intents.md](./plans/phase-5-siri-app-intents.md)
+
+Logic tests (disambiguation + inform-and-skip, no Simulator): `npm run test:intents`.
 
 ## What you are verifying
 
@@ -145,7 +147,24 @@ After Shortcuts passes, try voice (lower priority):
 
 Voice is flakier than Shortcuts forms. **Shortcuts success is sufficient for #168.**
 
-For HomePod and Personal Requests setup, see [SIRI_AND_HOMEPOD.md](./SIRI_AND_HOMEPOD.md).
+---
+
+## Device matrix (#169)
+
+Run after a **native** rebuild (App Intents are not OTA). Open Pantry Plus once while signed in so lists sync.
+
+| Surface | What to try | Pass |
+| --- | --- | --- |
+| **Simulator Shortcuts** | Tests 1–4 above | Add / duplicate inform / check on / check off |
+| **iPhone Shortcuts** | Same as Simulator | Same dialogs; list picker includes recently used list first |
+| **iPhone Siri** | “Add milk to the Grocery list in Pantry Plus”; “Is milk on the Grocery list in Pantry Plus?” | Item added or yes/no with category |
+| **Siri disambiguation** | Two lists, omit the list name; or two similar item names (“almond milk” vs “oat milk”) | Siri asks which list / which item |
+| **Signed out** | Sign out, run add or check | “Open Pantry Plus to sign in.” |
+| **HomePod Mini** | Personal Requests on, same Wi‑Fi, Recognize My Voice; then the add/check phrases | Spoken result on HomePod; list updated on the routed iPhone |
+
+HomePod setup: [SIRI_AND_HOMEPOD.md](./SIRI_AND_HOMEPOD.md#setup-checklist-homepod).
+
+**Not claimed done until you run it:** iPhone Siri voice and HomePod Mini. Simulator Shortcuts covers the intent logic.
 
 ---
 

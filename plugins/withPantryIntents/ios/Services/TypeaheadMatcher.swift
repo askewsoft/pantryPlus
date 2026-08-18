@@ -41,6 +41,57 @@ enum TypeaheadMatcher {
     }
   }
 
+  enum SpokenItemResolution: Equatable {
+    case catalog(IntentTypeaheadEntry)
+    case ambiguous([IntentTypeaheadEntry])
+    case newItem
+  }
+
+  /// Mirrors Add Item typeahead: exact → unique strong match → disambiguate → new item.
+  static func resolveSpokenItem(
+    _ corpus: [IntentTypeaheadEntry],
+    rawName: String,
+    limit: Int = 5
+  ) -> SpokenItemResolution {
+    if let exact = matchExact(corpus, rawName: rawName) {
+      return .catalog(exact)
+    }
+
+    let ranked = search(corpus, rawQuery: rawName, limit: limit)
+    if let top = ranked.first, top.score >= 200,
+       ranked.count == 1 || top.score - (ranked.dropFirst().first?.score ?? 0) >= 50 {
+      return .catalog(top.entry)
+    }
+
+    let strong = ranked.filter { $0.score >= 100 }
+    if strong.count == 1 {
+      return .catalog(strong[0].entry)
+    }
+    if strong.count > 1 {
+      return .ambiguous(strong.prefix(5).map(\.entry))
+    }
+    return .newItem
+  }
+
+  /// Roster match used for duplicate / on-list checks. Exact first, then a unique strong fuzzy hit.
+  static func matchRoster(_ roster: [IntentRosterItem], rawName: String) -> IntentRosterItem? {
+    let corpus = entries(from: roster)
+    if let exact = matchExact(corpus, rawName: rawName),
+       let hit = roster.first(where: { $0.id == exact.id }) {
+      return hit
+    }
+
+    let ranked = search(corpus, rawQuery: rawName, limit: 3)
+    if let top = ranked.first, top.score >= 100,
+       let hit = roster.first(where: { $0.id == top.entry.id }) {
+      let second = ranked.dropFirst().first?.score ?? 0
+      if ranked.count == 1 || top.score - second >= 50 {
+        return hit
+      }
+    }
+    return nil
+  }
+
   static func householdLists(
     current: IntentListSnapshot,
     all: [IntentListSnapshot]
@@ -58,9 +109,13 @@ enum TypeaheadMatcher {
   }
 
   /// First household match wins. `""` means uncategorized; `nil` means not found.
-  static func findCategoryId(itemId: String, currentList: IntentListSnapshot) -> String? {
-    let lists = householdLists(current: currentList, all: SharedIntentStore.loadLists())
-    let rosters = SharedIntentStore.loadCache().rosters
+  static func findCategoryId(
+    itemId: String,
+    currentList: IntentListSnapshot,
+    allLists: [IntentListSnapshot],
+    rosters: [String: [IntentRosterItem]]
+  ) -> String? {
+    let lists = householdLists(current: currentList, all: allLists)
     for list in lists {
       if let hit = (rosters[list.id] ?? []).first(where: {
         $0.id.compare(itemId, options: .caseInsensitive) == .orderedSame

@@ -16,6 +16,7 @@
     "version:patch": "./scripts/version.sh patch",
     "version:minor": "./scripts/version.sh minor",
     "killport": "sudo kill -9 $(sudo lsof -t -i :8081) # Do this if the Metro Bundler fails to start",
+    "test:intents": "swift test --package-path plugins/withPantryIntents",
     "gettoken": "npx ts-node scripts/get-token.ts",
     "expoupdate": "node scripts/update.js",
     "maestro": "./scripts/maestro-tests.sh --screenshots current",

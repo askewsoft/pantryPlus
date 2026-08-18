@@ -37,11 +37,13 @@ enum IntentModuleStore {
     }
     try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
     try data.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+    NotificationCenter.default.post(name: Notification.Name("com.askewsoft.pantryplus.intents.cacheDidChange"), object: nil)
   }
 
   static func clearCache() {
     guard let url = cacheURL() else { return }
     try? FileManager.default.removeItem(at: url)
+    NotificationCenter.default.post(name: Notification.Name("com.askewsoft.pantryplus.intents.cacheDidChange"), object: nil)
   }
 
   private static func cacheURL() -> URL? {

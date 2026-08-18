@@ -1,47 +1,6 @@
 import Foundation
 import Security
 
-struct IntentSession: Codable {
-  let accessToken: String
-  let email: String
-  let apiBaseUrl: String
-  let shopperId: String?
-}
-
-struct IntentCategorySnapshot: Codable {
-  let id: String
-  let name: String
-}
-
-struct IntentListSnapshot: Codable {
-  let id: String
-  let name: String
-  let groupId: String?
-  let ownerId: String?
-  let categories: [IntentCategorySnapshot]
-}
-
-struct IntentRosterItem: Codable {
-  let id: String
-  let name: String
-  let categoryId: String?
-  let categoryName: String?
-}
-
-struct IntentTypeaheadEntry: Codable {
-  let id: String
-  let name: String
-  let aliases: [String]
-  let upc: String?
-}
-
-struct IntentCache: Codable {
-  var lists: [IntentListSnapshot]
-  var rosters: [String: [IntentRosterItem]]
-  var typeaheadCorpus: [IntentTypeaheadEntry]
-  var lastUsedListId: String?
-}
-
 enum SharedIntentStore {
   private static let decoder: JSONDecoder = {
     let decoder = JSONDecoder()
@@ -84,17 +43,20 @@ enum SharedIntentStore {
     guard let url = cacheURL(), let data = try? encoder.encode(cache) else { return }
     try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
     try? data.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+    NotificationCenter.default.post(name: PantryIntentsNotifications.cacheDidChange, object: nil)
   }
 
   static func saveCache(jsonData: Data) {
     guard let url = cacheURL() else { return }
     try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
     try? jsonData.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+    NotificationCenter.default.post(name: PantryIntentsNotifications.cacheDidChange, object: nil)
   }
 
   static func clearCache() {
     guard let url = cacheURL() else { return }
     try? FileManager.default.removeItem(at: url)
+    NotificationCenter.default.post(name: PantryIntentsNotifications.cacheDidChange, object: nil)
   }
 
   static func loadLists() -> [IntentListSnapshot] {
@@ -188,5 +150,17 @@ enum SharedIntentStore {
   private static func deleteKeychain() {
     SecItemDelete(baseKeychainQuery(includeAccessGroup: true) as CFDictionary)
     SecItemDelete(baseKeychainQuery(includeAccessGroup: false) as CFDictionary)
+  }
+}
+
+extension TypeaheadMatcher {
+  /// First household match wins. `""` means uncategorized; `nil` means not found.
+  static func findCategoryId(itemId: String, currentList: IntentListSnapshot) -> String? {
+    findCategoryId(
+      itemId: itemId,
+      currentList: currentList,
+      allLists: SharedIntentStore.loadLists(),
+      rosters: SharedIntentStore.loadCache().rosters
+    )
   }
 }

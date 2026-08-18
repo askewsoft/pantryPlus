@@ -1,4 +1,5 @@
 import AppIntents
+import CoreSpotlight
 import Foundation
 
 struct ShoppingListEntity: AppEntity, Identifiable {
@@ -21,5 +22,16 @@ struct ShoppingListEntity: AppEntity, Identifiable {
 
   var displayRepresentation: DisplayRepresentation {
     DisplayRepresentation(title: LocalizedStringResource(stringLiteral: name))
+  }
+}
+
+@available(iOS 18.0, *)
+extension ShoppingListEntity: IndexedEntity {
+  var attributeSet: CSSearchableItemAttributeSet {
+    let attributes = defaultAttributeSet
+    attributes.displayName = name
+    attributes.title = name
+    attributes.kind = "Shopping List"
+    return attributes
   }
 }

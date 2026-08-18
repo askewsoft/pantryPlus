@@ -1,11 +1,5 @@
 import Foundation
 
-struct CatalogItem: Codable {
-  let id: String
-  let name: String
-  let upc: String?
-}
-
 enum PantryApiError: Error {
   case needsAuthentication
   case invalidURL

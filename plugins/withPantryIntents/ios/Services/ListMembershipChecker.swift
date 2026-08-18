@@ -28,22 +28,13 @@ enum ListMembershipChecker {
   }
 
   static func bySpokenName(_ rawName: String, listId: String) -> ListMembership {
-    let roster = SharedIntentStore.loadRoster(listId: listId)
-    let corpus = TypeaheadMatcher.entries(from: roster)
-    if let exact = TypeaheadMatcher.matchExact(corpus, rawName: rawName),
-       let hit = roster.first(where: { $0.id == exact.id }) {
+    bySpokenName(rawName, roster: SharedIntentStore.loadRoster(listId: listId))
+  }
+
+  static func bySpokenName(_ rawName: String, roster: [IntentRosterItem]) -> ListMembership {
+    if let hit = TypeaheadMatcher.matchRoster(roster, rawName: rawName) {
       return ListMembership(onList: true, item: hit)
     }
-
-    let ranked = TypeaheadMatcher.search(corpus, rawQuery: rawName, limit: 3)
-    if let top = ranked.first, top.score >= 100,
-       let hit = roster.first(where: { $0.id == top.entry.id }) {
-      let second = ranked.dropFirst().first?.score ?? 0
-      if ranked.count == 1 || top.score - second >= 50 {
-        return ListMembership(onList: true, item: hit)
-      }
-    }
-
     return ListMembership(onList: false, item: nil)
   }
 
