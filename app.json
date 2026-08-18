@@ -29,7 +29,8 @@
       ],
       "expo-asset",
       "expo-font",
-      "./plugins/withFmtPodfile.js"
+      "./plugins/withFmtPodfile.js",
+      "./plugins/withPantryIntents/withPantryIntents.js"
     ],
     "ios": {
       "appleTeamId": "QCCN3A2ZNS",
@@ -38,8 +39,18 @@
       "associatedDomains": [
         "webcredentials:askewsoft.com"
       ],
+      "entitlements": {
+        "com.apple.security.application-groups": [
+          "group.com.askewsoft.pantryplus"
+        ],
+        "keychain-access-groups": [
+          "$(AppIdentifierPrefix)$(CFBundleIdentifier)",
+          "$(AppIdentifierPrefix)group.com.askewsoft.pantryplus"
+        ]
+      },
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to use your location to automatically sort the items in your shopping lists.",
+        "NSSiriUsageDescription": "Pantry Plus uses Siri to add items to your shopping lists and check whether an item is already on a list.",
         "ITSAppUsesNonExemptEncryption": false
       }
     },

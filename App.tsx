@@ -21,6 +21,7 @@ import AppWrapper from '@/screens/AppWrapper';
 import { authTheme } from '@/consts/authTheme';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { updateService } from '@/services/UpdateService';
+import { startIntentSessionListeners } from '@/services/intentSync';
 import { configureAuthenticatorAutofill } from '@/config/authAutofill';
 
 Amplify.configure(amplifyConfig);
@@ -86,6 +87,8 @@ const App = () => {
 
     prepareApp();
   }, []);
+
+  useEffect(() => startIntentSessionListeners(), []);
 
   if (!isReady) {
     return null; // This will keep the splash screen visible

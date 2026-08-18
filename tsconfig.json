@@ -5,13 +5,15 @@
     "noImplicitReturns": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "pantry-intents": ["modules/pantry-intents/index.ts"]
     },
     "esModuleInterop": true
   },
   "include": [
     "App.tsx",
     "src/**/*",
+    "modules/pantry-intents/**/*",
     "scripts/**/*"
   ],
   "exclude": [
