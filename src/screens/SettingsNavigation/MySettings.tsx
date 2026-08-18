@@ -8,6 +8,7 @@ import { domainStore } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { updateService } from '@/services/UpdateService';
+import { clearIntentSessionAndCache } from '@/services/intentSync';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
@@ -16,6 +17,7 @@ import { iconSize } from '@/consts/iconButtons';
 const MySettings = ({ navigation }: StackPropsMySettings) => {
   const { signOut } = useAuthenticator();
   const logout = () => {
+    void clearIntentSessionAndCache();
     domainStore.initialize();
     uiStore.initialize();
     signOut();
@@ -65,8 +67,8 @@ const MySettings = ({ navigation }: StackPropsMySettings) => {
           />
           <Text style={styles.buttonText}>Check for Updates</Text>
         </Pressable>
-        <Pressable 
-          style={styles.buttonContainer} 
+        <Pressable
+          style={styles.buttonContainer}
           onPress={logout}
           accessibilityLabel="Log Out"
           accessibilityHint="Signs out of the current user account"

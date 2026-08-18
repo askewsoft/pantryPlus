@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 
 import { domainStore } from '@/stores/DomainStore';
 import appConfig from '@/config/app';
+import { refreshTypeaheadCorpusForSiri, syncIntentSessionFromAmplify } from '@/services/intentSync';
 
 const UserContext = ({children}: {children: React.ReactNode}) => {
   useEffect(() => {
@@ -11,16 +12,19 @@ const UserContext = ({children}: {children: React.ReactNode}) => {
         if (appConfig.debug) {
           console.log('Starting user initialization...');
         }
-        
+
         await domainStore.initUser();
         if (appConfig.debug) {
           console.log('User initialized successfully');
         }
 
+        await syncIntentSessionFromAmplify();
+
         await domainStore.loadLists();
         if (appConfig.debug) {
           console.log('Lists loaded successfully');
         }
+        await refreshTypeaheadCorpusForSiri();
 
         await domainStore.loadGroups();
         if (appConfig.debug) {

@@ -28,6 +28,7 @@ import {
   searchTypeaheadCorpus,
   TypeaheadEntry,
 } from '@/utils/itemTypeahead';
+import { setIntentTypeaheadCorpus } from '@/services/intentSync';
 
 const TYPEAHEAD_LOOKBACK_DAYS = 365;
 
@@ -88,7 +89,9 @@ const AddItemModal = () => {
         category.items.map(item => ({ id: item.id, name: item.name })),
       ),
     ]);
-    setTypeaheadCorpus(buildTypeaheadCorpus(items, preferredNames));
+    const corpus = buildTypeaheadCorpus(items, preferredNames);
+    setTypeaheadCorpus(corpus);
+    setIntentTypeaheadCorpus(corpus);
   }, [currentList, householdListsForCategoryLookup]);
 
   useEffect(() => {
