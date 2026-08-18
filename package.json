@@ -51,7 +51,7 @@
     "mobx-state-tree": "^6.0.1",
     "mst-persist": "^0.1.4",
     "pantry-intents": "file:modules/pantry-intents",
-    "pantryplus-api-client": "github:askewsoft/pantryPlusApiClient#v1.6.0",
+    "pantryplus-api-client": "github:askewsoft/pantryPlusApiClient#v1.7.0",
     "react": "19.2.0",
     "react-native": "0.83.6",
     "react-native-context-menu-view": "^1.19.0",

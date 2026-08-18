@@ -48,6 +48,7 @@ async function flushIntentCache() {
       id: list.id,
       name: list.name,
       groupId: list.groupId ?? null,
+      ownerId: list.ownerId,
       categories: list.categories.map((category) => ({
         id: category.id,
         name: category.name,
@@ -151,10 +152,12 @@ export async function syncIntentSessionFromAmplify() {
     }
     if (!email) return;
 
+    const { domainStore } = require('@/stores/DomainStore') as typeof import('@/stores/DomainStore');
     await syncIntentSession({
       accessToken,
       email,
       apiBaseUrl: appConfig.apiUrl,
+      shopperId: domainStore.user?.id,
     });
   } catch (error) {
     console.error('Failed to sync Siri intent session:', error);

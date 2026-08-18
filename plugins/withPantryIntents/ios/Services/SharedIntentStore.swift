@@ -5,6 +5,7 @@ struct IntentSession: Codable {
   let accessToken: String
   let email: String
   let apiBaseUrl: String
+  let shopperId: String?
 }
 
 struct IntentCategorySnapshot: Codable {
@@ -16,6 +17,7 @@ struct IntentListSnapshot: Codable {
   let id: String
   let name: String
   let groupId: String?
+  let ownerId: String?
   let categories: [IntentCategorySnapshot]
 }
 
@@ -109,6 +111,27 @@ enum SharedIntentStore {
 
   static func loadTypeaheadCorpus() -> [IntentTypeaheadEntry] {
     loadCache().typeaheadCorpus
+  }
+
+  static func replaceRoster(listId: String, items: [IntentRosterItem]) {
+    var cache = loadCache()
+    cache.rosters[listId] = items
+    saveCache(cache)
+  }
+
+  static func upsertRosterItem(listId: String, item: IntentRosterItem) {
+    var cache = loadCache()
+    var roster = cache.rosters[listId] ?? []
+    roster.removeAll { $0.id.compare(item.id, options: .caseInsensitive) == .orderedSame }
+    roster.append(item)
+    cache.rosters[listId] = roster
+    saveCache(cache)
+  }
+
+  static func replaceTypeaheadCorpus(_ corpus: [IntentTypeaheadEntry]) {
+    var cache = loadCache()
+    cache.typeaheadCorpus = corpus
+    saveCache(cache)
   }
 
   private static func cacheURL() -> URL? {

@@ -10,18 +10,8 @@ struct ItemSuggestionEntityQuery: EntityStringQuery {
   }
 
   func entities(matching string: String) async throws -> [ItemSuggestionEntity] {
-    let query = string.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-    let corpus = SharedIntentStore.loadTypeaheadCorpus()
-    guard !query.isEmpty else {
-      return Array(corpus.prefix(8)).map(ItemSuggestionEntity.init(entry:))
-    }
-    return corpus
-      .filter { entry in
-        entry.name.lowercased().contains(query)
-          || entry.aliases.contains { $0.lowercased().contains(query) }
-      }
-      .prefix(8)
-      .map(ItemSuggestionEntity.init(entry:))
+    TypeaheadMatcher.search(SharedIntentStore.loadTypeaheadCorpus(), rawQuery: string, limit: 8)
+      .map { ItemSuggestionEntity(entry: $0.entry) }
   }
 
   func suggestedEntities() async throws -> [ItemSuggestionEntity] {

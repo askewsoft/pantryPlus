@@ -6,6 +6,7 @@ export type IntentSessionPayload = {
   accessToken: string;
   email: string;
   apiBaseUrl: string;
+  shopperId?: string;
 };
 
 export type IntentCategorySnapshot = {
@@ -17,6 +18,7 @@ export type IntentListSnapshot = {
   id: string;
   name: string;
   groupId: string | null;
+  ownerId: string | null;
   categories: IntentCategorySnapshot[];
 };
 
@@ -42,7 +44,7 @@ export type IntentCachePayload = {
 };
 
 type PantryIntentsNativeModule = {
-  syncIntentSession(accessToken: string, email: string, apiBaseUrl: string): Promise<void>;
+  syncIntentSession(accessToken: string, email: string, apiBaseUrl: string, shopperId: string): Promise<void>;
   clearIntentSession(): Promise<void>;
   syncIntentCache(json: string): Promise<void>;
 };
@@ -51,7 +53,12 @@ const native = requireOptionalNativeModule<PantryIntentsNativeModule>('PantryInt
 
 export async function syncIntentSession(session: IntentSessionPayload): Promise<void> {
   if (!native) return;
-  await native.syncIntentSession(session.accessToken, session.email, session.apiBaseUrl);
+  await native.syncIntentSession(
+    session.accessToken,
+    session.email,
+    session.apiBaseUrl,
+    session.shopperId ?? '',
+  );
 }
 
 export async function clearIntentSession(): Promise<void> {

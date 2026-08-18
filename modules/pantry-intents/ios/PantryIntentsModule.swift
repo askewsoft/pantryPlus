@@ -4,11 +4,12 @@ public class PantryIntentsModule: Module {
   public func definition() -> ModuleDefinition {
     Name("PantryIntents")
 
-    AsyncFunction("syncIntentSession") { (accessToken: String, email: String, apiBaseUrl: String) in
+    AsyncFunction("syncIntentSession") { (accessToken: String, email: String, apiBaseUrl: String, shopperId: String) in
       try IntentModuleStore.saveSession(
         accessToken: accessToken,
         email: email,
-        apiBaseUrl: apiBaseUrl
+        apiBaseUrl: apiBaseUrl,
+        shopperId: shopperId
       )
     }
 

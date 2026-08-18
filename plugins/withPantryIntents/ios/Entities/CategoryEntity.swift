@@ -2,6 +2,7 @@ import AppIntents
 import Foundation
 
 struct CategoryEntity: AppEntity, Identifiable {
+  static let uncategorizedId = "uncategorized"
   static var typeDisplayRepresentation: TypeDisplayRepresentation = TypeDisplayRepresentation(name: "Category")
   static var defaultQuery = CategoryEntityQuery()
 
@@ -13,6 +14,10 @@ struct CategoryEntity: AppEntity, Identifiable {
     self.id = id
     self.name = name
     self.listId = listId
+  }
+
+  static func uncategorized(listId: String) -> CategoryEntity {
+    CategoryEntity(id: uncategorizedId, name: "No Category", listId: listId)
   }
 
   var displayRepresentation: DisplayRepresentation {

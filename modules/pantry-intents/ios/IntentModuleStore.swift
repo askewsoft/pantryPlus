@@ -10,12 +10,15 @@ enum PantryIntentsModuleConfig {
 }
 
 enum IntentModuleStore {
-  static func saveSession(accessToken: String, email: String, apiBaseUrl: String) throws {
-    let payload: [String: String] = [
+  static func saveSession(accessToken: String, email: String, apiBaseUrl: String, shopperId: String) throws {
+    var payload: [String: String] = [
       "accessToken": accessToken,
       "email": email,
       "apiBaseUrl": apiBaseUrl,
     ]
+    if !shopperId.isEmpty {
+      payload["shopperId"] = shopperId
+    }
     let data = try JSONSerialization.data(withJSONObject: payload, options: [.sortedKeys])
     writeKeychain(data)
   }
