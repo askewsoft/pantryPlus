@@ -189,6 +189,7 @@ From [Apple’s voice recognition / Personal Requests guide](https://support.app
 | [`plugins/withPantryIntents/`](../plugins/withPantryIntents/) | Swift intents, entities, `PantryApiClient`, `SharedIntentStore` |
 | [`modules/pantry-intents/`](../modules/pantry-intents/) | Expo module: RN → App Group session/cache |
 | [`src/services/intentSync.ts`](../src/services/intentSync.ts) | When RN refreshes auth and list/typeahead snapshots |
+| [`SIRI_INTENTS_SMOKE_TEST.md`](./SIRI_INTENTS_SMOKE_TEST.md) | Manual Shortcuts smoke test runbook |
 
 ---
 

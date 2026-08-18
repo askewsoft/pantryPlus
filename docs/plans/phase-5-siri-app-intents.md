@@ -244,6 +244,8 @@ Register via config plugin; add `NSSiriUsageDescription` to [`app.json`](../../a
 
 ## Testing
 
+Step-by-step Shortcuts runbook: [SIRI_INTENTS_SMOKE_TEST.md](../SIRI_INTENTS_SMOKE_TEST.md).
+
 1. **Shortcuts app** on device — fastest iteration.
 2. **Siri voice** on physical device.
 3. **`AppIntentsTestCase`** — disambiguation branches with mocked cache + API.
