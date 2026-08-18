@@ -22,8 +22,9 @@ import fonts from '@/consts/fonts';
 import { api } from '@/api';
 import { displayItemName } from '@/utils/itemName';
 import {
-  dedupeTypeaheadCorpus,
+  buildTypeaheadCorpus,
   findCategoryIdForItem,
+  matchTypeaheadEntry,
   searchTypeaheadCorpus,
   TypeaheadEntry,
 } from '@/utils/itemTypeahead';
@@ -57,12 +58,6 @@ const AddItemModal = () => {
     return [{ label: 'No Category', value: '' }];
   }, [currentList, currentList?.categories.length, uiStore.addItemModalVisible]);
 
-  const suggestions = useMemo(() => {
-    if (!isAdding || categoryOpen) return [];
-    return searchTypeaheadCorpus(typeaheadCorpus, itemName);
-  }, [typeaheadCorpus, itemName, isAdding, categoryOpen]);
-
-  /** Lists to search for an item's category: current list first, then rest of household. */
   const householdListsForCategoryLookup = useMemo(() => {
     if (!currentList) return [];
     const cohortId = currentList.groupId ?? null;
@@ -74,6 +69,11 @@ const AddItemModal = () => {
     return [currentList, ...others];
   }, [currentList, domainStore.lists.length, currentList?.groupId]);
 
+  const suggestions = useMemo(() => {
+    if (!isAdding || categoryOpen) return [];
+    return searchTypeaheadCorpus(typeaheadCorpus, itemName);
+  }, [typeaheadCorpus, itemName, isAdding, categoryOpen]);
+
   const loadTypeaheadCorpus = useCallback(async () => {
     const user = domainStore.user;
     if (!user || !currentList) return;
@@ -82,8 +82,14 @@ const AddItemModal = () => {
       lookBackDays: TYPEAHEAD_LOOKBACK_DAYS,
       cohortId: currentList.groupId ?? null,
     });
-    setTypeaheadCorpus(dedupeTypeaheadCorpus(items));
-  }, [currentList]);
+    const preferredNames = householdListsForCategoryLookup.flatMap(list => [
+      ...list.items.map(item => ({ id: item.id, name: item.name })),
+      ...list.categories.flatMap(category =>
+        category.items.map(item => ({ id: item.id, name: item.name })),
+      ),
+    ]);
+    setTypeaheadCorpus(buildTypeaheadCorpus(items, preferredNames));
+  }, [currentList, householdListsForCategoryLookup]);
 
   useEffect(() => {
     if (uiStore.addItemModalVisible) {
@@ -122,15 +128,16 @@ const AddItemModal = () => {
     textInputRef.current?.focus();
   };
 
-  const buildAddItemPayload = (trimmedName: string) => {
-    const payload: { name: string; upc: string; id?: string } = {
-      name: trimmedName,
-      upc: selectedSuggestion?.upc ?? '',
+  const resolveAddPayload = (trimmedName: string) => {
+    const matched =
+      (selectedSuggestion && displayItemName(selectedSuggestion.name) === displayItemName(trimmedName)
+        ? selectedSuggestion
+        : undefined) ?? matchTypeaheadEntry(typeaheadCorpus, trimmedName);
+    return {
+      name: matched?.name ?? trimmedName,
+      upc: matched?.upc ?? '',
+      id: matched?.id,
     };
-    if (selectedSuggestion && displayItemName(selectedSuggestion.name) === displayItemName(trimmedName)) {
-      payload.id = selectedSuggestion.id;
-    }
-    return payload;
   };
 
   const handleAddItem = async () => {
@@ -148,7 +155,7 @@ const AddItemModal = () => {
           await handleCategoryChange();
         }
       } else {
-        const itemPayload = buildAddItemPayload(trimmedName);
+        const itemPayload = resolveAddPayload(trimmedName);
         if (selectedCategoryId && selectedCategoryId !== '') {
           const category = currentList.categories.find(c => c.id === selectedCategoryId);
           category?.addItem({
@@ -325,13 +332,16 @@ const AddItemModal = () => {
               style={styles.suggestionsList}
               keyboardShouldPersistTaps="handled"
               data={suggestions}
-              keyExtractor={(entry) => entry.id}
-              renderItem={({ item: entry }) => (
+              keyExtractor={(ranked) => ranked.entry.id}
+              renderItem={({ item: ranked }) => (
                 <Pressable
                   style={styles.suggestionRow}
-                  onPress={() => handleSelectSuggestion(entry)}
+                  onPress={() => handleSelectSuggestion(ranked.entry)}
                 >
-                  <Text style={styles.suggestionText}>{entry.name}</Text>
+                  <Text style={styles.suggestionText}>{ranked.entry.name}</Text>
+                  {ranked.matchedAlias ? (
+                    <Text style={styles.suggestionAlias}>{ranked.matchedAlias}</Text>
+                  ) : null}
                 </Pressable>
               )}
             />
@@ -400,6 +410,11 @@ const styles = StyleSheet.create({
   suggestionText: {
     color: colors.brandColor,
     fontSize: fonts.rowTextSize,
+  },
+  suggestionAlias: {
+    color: colors.lightBrandColor,
+    fontSize: fonts.infoTextSize,
+    marginTop: 2,
   },
   dropdownContainer: {
     width: "80%",
