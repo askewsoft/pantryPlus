@@ -1,0 +1,7 @@
+{
+  "name": "pantry-intents",
+  "version": "0.1.0",
+  "description": "Native App Intents cache and session bridge for Pantry Plus",
+  "main": "index.ts",
+  "private": true
+}
