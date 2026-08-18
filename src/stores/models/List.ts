@@ -7,6 +7,7 @@ import { api } from '@/api';
 import { CategoryModel } from './Category';
 import { ItemModel } from './Item';
 import { uiStore } from '@/stores/UIStore';
+import { scheduleIntentCacheSync } from '@/services/intentSync';
 
 export type ItemType = Instance<typeof ItemModel>;
 export type CategoryType = Instance<typeof CategoryModel>;
@@ -58,6 +59,7 @@ export const ListModel = t.model('ListModel', {
             yield api.list.updateList({ list: { id: self.id, name, groupId: groupId ?? undefined, ordinal: self.ordinal }, xAuthUser });
             self.name = name;
             self.groupId = groupId;
+            scheduleIntentCacheSync();
         } catch (error) {
             console.error(`Error updating list: ${error}`);
         }
@@ -70,6 +72,7 @@ export const ListModel = t.model('ListModel', {
         try {
             yield api.list.addListCategory({ listId, category: { id: newCategoryId, name, ordinal, listId }, xAuthUser, xAuthLocation });
             self.categories.push(newCategory);
+            scheduleIntentCacheSync();
 
             // Set the default open state for the new category if provided
             if (defaultOpen !== undefined) {
@@ -114,6 +117,7 @@ export const ListModel = t.model('ListModel', {
             if (index !== undefined && index >= 0) {
                 self.categories!.splice(index, 1);
             }
+            scheduleIntentCacheSync();
         } catch (error) {
             console.error(`Error removing category from list: ${error}`);
         }
@@ -151,6 +155,7 @@ export const ListModel = t.model('ListModel', {
                     uiStore.setOpenCategory(category.id, uiStore.allFoldersOpen);
                 }
             });
+            scheduleIntentCacheSync();
         } catch (error) {
             console.error(`Error loading categories: ${error}`);
         }
@@ -233,6 +238,7 @@ export const ListModel = t.model('ListModel', {
                     }
                 }
             }
+            scheduleIntentCacheSync();
         } catch (error) {
             console.error(`Error syncing categories: ${error}`);
         }
@@ -254,6 +260,7 @@ export const ListModel = t.model('ListModel', {
             if (self.id) {
                 self.items.clear();
                 self.items.replace(items);
+                scheduleIntentCacheSync();
             }
         } catch (error) {
             console.error(`Error loading items: ${error}`);
@@ -307,6 +314,7 @@ export const ListModel = t.model('ListModel', {
                     }
                 }
             });
+            scheduleIntentCacheSync();
         } catch (error) {
             console.error(`Error syncing list items: ${error}`);
         }
@@ -332,6 +340,7 @@ export const ListModel = t.model('ListModel', {
             // Update the count after adding an item
             const count = yield api.list.getListItemsCount({ listId: self.id, xAuthUser });
             self.unpurchasedItemsCount = count;
+            scheduleIntentCacheSync();
         } catch (error) {
             console.error(`Error adding item to list: ${error}`);
         }
@@ -348,6 +357,7 @@ export const ListModel = t.model('ListModel', {
             // Update the count after removing an item
             const count = yield api.list.getListItemsCount({ listId: self.id, xAuthUser });
             self.unpurchasedItemsCount = count;
+            scheduleIntentCacheSync();
         } catch (error) {
             console.error(`Error removing item from list: ${error}`);
         }
@@ -357,17 +367,20 @@ export const ListModel = t.model('ListModel', {
         const index = self.items.findIndex(i => i.id === itemId);
         if (index >= 0) {
             self.items.splice(index, 1);
+            scheduleIntentCacheSync();
         }
     },
     /** Local-only: append an uncategorized item already known to be on the list server-side. */
     attachLocalItem(item: { id: string; name: string; upc?: string }) {
         if (!self.items.some(i => i.id === item.id)) {
             self.items.push(ItemModel.create({ id: item.id, name: item.name, upc: item.upc }));
+            scheduleIntentCacheSync();
         }
     },
     /** Swap an item on this list after rename (same id = casing/in-place; new id = find/fork). */
     replaceLocalItem(fromId: string, toItem: { id: string; name: string; upc?: string }) {
         applyLocalItemReplace(self, fromId, toItem);
+        scheduleIntentCacheSync();
     },
     /** Rename the item on this list. Server may return a different id (find-existing or fork). */
     renameItem: flow(function*({
@@ -389,6 +402,7 @@ export const ListModel = t.model('ListModel', {
         });
         if (!saved) return null;
         applyLocalItemReplace(self, itemId, saved);
+        scheduleIntentCacheSync();
         return saved;
     }),
     purchaseItem: flow(function*({ itemId, xAuthUser, xAuthLocation }: { itemId: string, xAuthUser: string, xAuthLocation: string }): Generator<any, any, any> {
@@ -397,6 +411,7 @@ export const ListModel = t.model('ListModel', {
             // Update the count after purchasing an item
             const count = yield api.list.getListItemsCount({ listId: self.id, xAuthUser });
             self.unpurchasedItemsCount = count;
+            scheduleIntentCacheSync();
         } catch (error) {
             console.error(`Error purchasing item: ${error}`);
         }
@@ -405,6 +420,7 @@ export const ListModel = t.model('ListModel', {
         try {
             yield api.list.associateListItem({ listId: self.id, itemId: item.id, xAuthUser });
             self.items.push(item);
+            scheduleIntentCacheSync();
         } catch (error) {
             console.error(`Error associating item to list: ${error}`);
         }

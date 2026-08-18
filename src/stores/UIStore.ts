@@ -6,6 +6,7 @@ import { persist } from 'mst-persist';
 import { Tooltip } from '@/consts/Tooltip';
 import { AppTabsMstEnum, AppTabsMstType, AppSubTabsMstEnum, AppSubTabsMstType } from '@/types/NavMSTTypes';
 import syncConstants from '@/consts/sync';
+import { scheduleIntentCacheSync } from '@/services/intentSync';
 
 const OpenCategory = t.model('OpenCategory', {
     id: t.identifier,
@@ -115,6 +116,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setSelectedShoppingList(selectedShoppingList: string | null) {
         self.selectedShoppingList = cast(selectedShoppingList);
+        scheduleIntentCacheSync();
     },
     setSelectedLocation(selectedLocation: string | null) {
         self.selectedLocation = cast(selectedLocation);

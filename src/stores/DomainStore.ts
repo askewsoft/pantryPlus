@@ -8,6 +8,7 @@ import { List } from 'pantryplus-api-client/v2';
 
 import { api } from '@/api';
 import { uiStore } from './UIStore';
+import { scheduleIntentCacheSync } from '@/services/intentSync';
 
 import { UserModel } from './models/User';
 import { ListModel } from './models/List';
@@ -100,11 +101,13 @@ const DomainStoreModel = t
             yield api.list.createList({ list, xAuthUser });
             const newList: ListType = ListModel.create(list);
             self.lists.push(newList);
+            scheduleIntentCacheSync();
         }),
         removeList: flow(function* (listId: string) {
             const xAuthUser = self.user?.email!;
             yield api.list.removeList({ listId, xAuthUser });
             self.lists.splice(self.lists.findIndex(l => l.id === listId), 1);
+            scheduleIntentCacheSync();
         }),
         loadLists: flow(function* () {
             const listsData = yield api.shopper.getUserLists({ user: self.user! });
@@ -155,6 +158,7 @@ const DomainStoreModel = t
             }
 
             uiStore.setListsLoaded(true);
+            scheduleIntentCacheSync();
 
             // Update lists in the API whose ordinals changed
             if (listsToUpdate.length > 0) {

@@ -5,6 +5,7 @@ import { api } from '@/api';
 import { ItemModel } from './Item';
 import { Item } from 'pantryplus-api-client/v2';
 import { uiStore } from '@/stores/UIStore';
+import { scheduleIntentCacheSync } from '@/services/intentSync';
 
 export type ItemType = Instance<typeof ItemModel>;
 
@@ -19,6 +20,7 @@ export const CategoryModel = t.model('CategoryModel', {
         try {
             yield api.category.updateCategory({ categoryId: id, name, ordinal, xAuthLocation, xAuthUser });
             self.name = name;
+            scheduleIntentCacheSync();
         } catch (error) {
             console.error(`Error setting name: ${error}`);
         }
@@ -42,6 +44,8 @@ export const CategoryModel = t.model('CategoryModel', {
                 self.items.push(newItem);
             }
 
+            scheduleIntentCacheSync();
+
             // Notify parent that an item was added so it can update its count
             if (onItemAdded) {
                 onItemAdded();
@@ -63,6 +67,7 @@ export const CategoryModel = t.model('CategoryModel', {
     attachLocalItem(item: { id: string; name: string; upc?: string }) {
         if (!self.items.some(i => i.id === item.id)) {
             self.items.push(ItemModel.create({ id: item.id, name: item.name, upc: item.upc }));
+            scheduleIntentCacheSync();
         }
     },
     /** Local-only: drop an item from this category array without an API call. */
@@ -70,6 +75,7 @@ export const CategoryModel = t.model('CategoryModel', {
         const index = self.items.findIndex(i => i.id === itemId);
         if (index >= 0) {
             self.items.splice(index, 1);
+            scheduleIntentCacheSync();
         }
     },
     removeItem: flow(function*({ itemId, xAuthUser, onItemRemoved }: { itemId: string, xAuthUser: string, onItemRemoved?: () => void }): Generator<any, any, any> {
@@ -80,6 +86,8 @@ export const CategoryModel = t.model('CategoryModel', {
             if (index !== undefined && index >= 0) {
                 self.items!.splice(index, 1);
             }
+
+            scheduleIntentCacheSync();
 
             // Notify parent that an item was removed so it can update its count
             if (onItemRemoved) {
@@ -97,6 +105,8 @@ export const CategoryModel = t.model('CategoryModel', {
             if (index !== undefined && index >= 0) {
                 self.items!.splice(index, 1);
             }
+
+            scheduleIntentCacheSync();
 
             // Notify parent that an item was removed so it can update its count
             if (onItemRemoved) {
@@ -123,6 +133,7 @@ export const CategoryModel = t.model('CategoryModel', {
             );
             self.items.clear();
             newItems.forEach((item: ItemType) => self.items.push(item));
+            scheduleIntentCacheSync();
         } catch (error) {
             // Only log if category is still alive (avoid errors for dead nodes)
             if (isAlive(self)) {
@@ -185,6 +196,7 @@ export const CategoryModel = t.model('CategoryModel', {
                     }
                 }
             });
+            scheduleIntentCacheSync();
         } catch (error) {
             // Only log if category is still alive (avoid errors for dead nodes)
             if (isAlive(self)) {
