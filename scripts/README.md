@@ -46,9 +46,12 @@ npm run version:major  # Increment major version (1.4.0 → 2.0.0)
 - Calculate new version based on semantic versioning rules
 - Update both `package.json` and `app.json` files
 - **Automatically run `npm install` to sync `package-lock.json`**
+- **Automatically run `npm run prebuild`** so the generated `ios/` project (gitignored) gets the new `CFBundleShortVersionString`
 - Provide clear feedback about what was updated
 
 **Important:** The `npm install` step ensures `package-lock.json` is always in sync with `package.json`, preventing fingerprint mismatches between EAS builds and updates.
+
+Settings → About reads the native iOS version, not `package.json`. Prebuild is required because `npm run ios` reuses an existing `ios/` folder. After a version bump, run `npm run ios` to install the rebuilt app on the simulator.
 
 ## expo update
 

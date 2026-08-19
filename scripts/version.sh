@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Version management script
-# Updates both package.json and app.json with semantic versioning
+# Updates package.json, app.json, and regenerates native iOS files so the
+# About screen (CFBundleShortVersionString) matches the new version.
 
 set -e  # Exit on any error
 
@@ -91,5 +92,13 @@ echo "📦 Running npm install to sync package-lock.json..."
 npm install
 echo "✅ package-lock.json synchronized"
 
+# Bake the new version into the generated native project (gitignored ios/).
+# npm run ios reuses ios/ when it already exists, so About would keep showing
+# the previous CFBundleShortVersionString without this step.
+echo "🔨 Regenerating native iOS project so the app version is baked in..."
+npm run prebuild
+echo "✅ Native iOS project updated to version $NEW_VERSION"
+
 echo "🎉 Version updated successfully to $NEW_VERSION"
-echo "Files updated: package.json, app.json, package-lock.json"
+echo "Files updated: package.json, app.json, package-lock.json, ios/"
+echo "Next: npm run ios  (to install the rebuilt app on the simulator)"

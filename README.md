@@ -124,6 +124,7 @@ These helper scripts will update both the `package.json` and the `app.json`
     # breaking / native changes that need a store build
     npm run version:major
     ```
+    The version scripts also run `prebuild` so the generated iOS project matches. Then `npm run ios` if you want the simulator About screen to show the new version.
 1. Github Tag & Release
 1. Decide on [Native Publish](#native-publish) or [OTA Update](#ota-updates)
 
