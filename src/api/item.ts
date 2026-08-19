@@ -1,4 +1,4 @@
-import { ItemsApi, Item, ItemAlias } from 'pantryplus-api-client/v2';
+import { ItemsApi, Item, ItemAlias } from 'pantryplus-api-client/v3';
 import { getApiConfiguration } from '@/services/SessionService';
 
 const createItem = async ({ item, xAuthUser }: { item: Item, xAuthUser: string }): Promise<Item | null> => {

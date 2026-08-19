@@ -1,5 +1,5 @@
 import { fetchAuthSession } from 'aws-amplify/auth';
-import { Configuration } from 'pantryplus-api-client/v2';
+import { Configuration } from 'pantryplus-api-client/v3';
 import appConfig from '@/config/app';
 
 export const getApiConfiguration = async (): Promise<Configuration | undefined> => {

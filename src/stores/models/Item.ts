@@ -1,6 +1,6 @@
 import { t, flow } from 'mobx-state-tree';
 import { api } from '@/api';
-import { Item } from 'pantryplus-api-client/v2';
+import { Item } from 'pantryplus-api-client/v3';
 
 export const ItemModel = t.model('ItemModel', {
     id: t.identifier,

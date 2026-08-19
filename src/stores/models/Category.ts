@@ -3,7 +3,7 @@ import { randomUUID } from 'expo-crypto';
 
 import { api } from '@/api';
 import { ItemModel } from './Item';
-import { Item } from 'pantryplus-api-client/v2';
+import { Item } from 'pantryplus-api-client/v3';
 import { uiStore } from '@/stores/UIStore';
 import { scheduleIntentCacheSync } from '@/services/intentSync';
 

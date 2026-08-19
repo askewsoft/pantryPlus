@@ -5,7 +5,7 @@ import {
     Group,
     RecentLocation,
     Item,
-} from 'pantryplus-api-client/v2';
+} from 'pantryplus-api-client/v3';
 
 import { getApiConfiguration } from '@/services/SessionService';
 import { fetchUserAttributes } from 'aws-amplify/auth';

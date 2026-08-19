@@ -1,4 +1,4 @@
-import { ListsApi, Category, List, Item, ReorderCategoriesAtLocationRequest } from 'pantryplus-api-client/v2';
+import { ListsApi, Category, List, Item, ReorderCategoriesAtLocationRequest } from 'pantryplus-api-client/v3';
 import { getApiConfiguration } from '@/services/SessionService';
 
 const createList = async ({ list, xAuthUser }: { list: List, xAuthUser: string }) => {

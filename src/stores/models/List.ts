@@ -1,6 +1,6 @@
 import { t, Instance, flow } from 'mobx-state-tree';
 import { randomUUID } from 'expo-crypto';
-import { Category, Item } from 'pantryplus-api-client/v2';
+import { Category, Item } from 'pantryplus-api-client/v3';
 
 import { api } from '@/api';
 
