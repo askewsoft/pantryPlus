@@ -45,8 +45,11 @@ const AppWrapper = () => {
       backgroundColor: colors.detailsBackground,
       width: 200,
     },
-    drawerContentStyle: {
-      paddingTop: 25
+    // App shell already applies safe-area inset; do not also add insets.top
+    // or the first drawer items sit well below the top of the panel.
+    drawerContentContainerStyle: {
+      paddingTop: 8,
+      paddingBottom: 12,
     },
   };
 
