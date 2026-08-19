@@ -8,7 +8,7 @@ These are read at runtime via `process.env.EXPO_PUBLIC_*`. Missing Cognito/API v
 
 | Variable | Used by | Purpose |
 | --- | --- | --- |
-| `EXPO_PUBLIC_API_URL` | `src/config/app.ts` | API host **without** `/v2` (app appends `/v2`) |
+| `EXPO_PUBLIC_API_URL` | `src/config/app.ts` | API host **without** `/v3` (current app appends `/v3`). Store 1.5.4 still calls `/v2`. |
 | `EXPO_PUBLIC_USER_POOL_ID` | `src/config/cognito.ts` | Cognito user pool |
 | `EXPO_PUBLIC_APP_CLIENT_ID` | `src/config/cognito.ts` | Cognito app client |
 | `EXPO_PUBLIC_REGION` | `src/config/cognito.ts` | AWS region for the pool |

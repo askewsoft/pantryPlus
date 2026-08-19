@@ -38,7 +38,7 @@ src/
 
 ### `api` & `services`
 
-- **`src/api/`** — Domain-oriented wrappers around the generated `pantryplus-api-client/v2` client (`list`, `item`, `category`, `group`, `location`, `shopper`). Screens and stores call `api.*`; they do not instantiate OpenAPI clients directly.
+- **`src/api/`** — Domain-oriented wrappers around the generated `pantryplus-api-client/v3` client (`list`, `item`, `category`, `group`, `location`, `shopper`). Screens and stores call `api.*`; they do not instantiate OpenAPI clients directly.
 - **`src/api/index.ts`** — Aggregates domain modules into a single `api` export.
 - **`src/services/`** — Runtime helpers that are not CRUD:
   - `SessionService` — builds authenticated API `Configuration` from the Amplify session token

@@ -42,7 +42,7 @@ Every generated client call gets a **Bearer access token** from Amplify (`Sessio
 | `xAuthUser` | `domainStore.user.email` | Nearly all CRUD (shopper, list, group, item, location) |
 | `xAuthLocation` | `domainStore.selectedKnownLocationId` (or `''`) | Category load/reorder/rename, item purchase, and other location-scoped ops |
 
-`appConfig.apiUrl` already includes the `/v2` suffix (`EXPO_PUBLIC_API_URL` + `/v2`). Prefer `pantryplus-api-client/v2` types only.
+`appConfig.apiUrl` already includes the `/v3` suffix (`EXPO_PUBLIC_API_URL` + `/v3`). Prefer `pantryplus-api-client/v3` types only. Store 1.5.4 keeps calling `/v2`.
 
 ### Operations that need `xAuthLocation`
 
@@ -76,7 +76,7 @@ Optimistic local MST updates usually follow (or accompany) the API write. When a
 The app depends on a tagged GitHub package:
 
 ```json
-"pantryplus-api-client": "github:askewsoft/pantryPlusApiClient#v1.2.1"
+"pantryplus-api-client": "github:askewsoft/pantryPlusApiClient#v2.0.0"
 ```
 
 After API (OpenAPI) changes:
