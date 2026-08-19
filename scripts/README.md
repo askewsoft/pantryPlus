@@ -38,6 +38,7 @@ Use these scripts to update version numbers in both `package.json` and `app.json
 # Convenient npm scripts (recommended)
 npm run version:patch  # Increment patch version (1.4.0 → 1.4.1)
 npm run version:minor  # Increment minor version (1.4.0 → 1.5.0)
+npm run version:major  # Increment major version (1.4.0 → 2.0.0)
 ```
 
 **What these scripts do:**

@@ -118,6 +118,11 @@ These helper scripts will update both the `package.json` and the `app.json`
 
     # minor feature enhancements
     npm run version:minor
+
+    # OR
+
+    # breaking / native changes that need a store build
+    npm run version:major
     ```
 1. Github Tag & Release
 1. Decide on [Native Publish](#native-publish) or [OTA Update](#ota-updates)
@@ -210,6 +215,10 @@ See **[./scripts/README.md](./scripts/README.md)** for more detail
     # OR
 
     npm run version:minor # (e.g., 1.4.0 → 1.5.0)
+
+    # OR
+
+    npm run version:major # (e.g., 1.4.0 → 2.0.0)
 
 # AUTOMATED TESTS
 
