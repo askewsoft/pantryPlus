@@ -115,7 +115,7 @@ struct AddItemToListIntent: AppIntent {
       dialog = "Added \(saved.name) to \(resolvedList.name)"
     }
 
-    var donated = self
+    let donated = self
     donated.list = resolvedList
     donated.itemName = saved.name
     donated.category = resolvedCategory
