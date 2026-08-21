@@ -350,16 +350,22 @@ export const ListModel = t.model('ListModel', {
             // Mark item as recently removed to prevent it from reappearing during sync
             uiStore.markItemAsRecentlyRemoved(itemId);
             yield api.list.removeListItem({ listId: self.id, itemId, xAuthUser });
-            const index = self.items?.findIndex(i => i.id === itemId);
-            if (index !== undefined && index >= 0) {
-                self.items!.splice(index, 1);
+            // Local only: hide from uncategorized + every category folder.
+            // Server keeps ITEM_CATEGORY_RELATION for auto-assign on re-add.
+            const uncategorizedIndex = self.items.findIndex(i => i.id === itemId);
+            if (uncategorizedIndex >= 0) {
+                self.items.splice(uncategorizedIndex, 1);
             }
-            // Update the count after removing an item
+            self.categories.forEach(category => {
+                category.detachLocalItem(itemId);
+            });
             const count = yield api.list.getListItemsCount({ listId: self.id, xAuthUser });
             self.unpurchasedItemsCount = count;
             scheduleIntentCacheSync();
         } catch (error) {
+            uiStore.clearRecentlyRemovedMark(itemId);
             console.error(`Error removing item from list: ${error}`);
+            throw error;
         }
     }),
     /** Local-only: drop an uncategorized item from the list array without an API delete. */
