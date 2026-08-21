@@ -144,30 +144,40 @@ enum TypeaheadMatcher {
       }
     }
 
-    var byId: [String: (names: [String], upc: String?)] = [:]
+    var byId: [String: (firstName: String, aliases: [String], upc: String?)] = [:]
     for item in items {
       let name = displayItemName(item.name)
       guard !name.isEmpty else { continue }
       if var existing = byId[item.id] {
-        if !existing.names.contains(where: { normalizeItemName($0) == normalizeItemName(name) }) {
-          existing.names.append(name)
+        let nameNorm = normalizeItemName(name)
+        if nameNorm != normalizeItemName(existing.firstName),
+           !existing.aliases.contains(where: { normalizeItemName($0) == nameNorm }) {
+          existing.aliases.append(name)
         }
         if existing.upc == nil || existing.upc?.isEmpty == true {
           existing.upc = item.upc
         }
         byId[item.id] = existing
       } else {
-        byId[item.id] = (names: [name], upc: item.upc)
+        byId[item.id] = (firstName: name, aliases: [], upc: item.upc)
       }
     }
 
     return byId.map { id, group in
-      let canonical = pickCanonicalName(group.names, preferred: preferredById[id])
+      let canonical = preferredById[id] ?? group.firstName
       let canonicalNorm = normalizeItemName(canonical)
+      var seen: Set<String> = [canonicalNorm]
+      var aliases: [String] = []
+      for name in [group.firstName] + group.aliases {
+        let norm = normalizeItemName(name)
+        if seen.contains(norm) { continue }
+        seen.insert(norm)
+        aliases.append(name)
+      }
       return IntentTypeaheadEntry(
         id: id,
         name: canonical,
-        aliases: group.names.filter { normalizeItemName($0) != canonicalNorm },
+        aliases: aliases,
         upc: group.upc
       )
     }
@@ -175,17 +185,6 @@ enum TypeaheadMatcher {
 
   private static func allSearchNames(_ entry: IntentTypeaheadEntry) -> [String] {
     [entry.name] + entry.aliases
-  }
-
-  private static func pickCanonicalName(_ names: [String], preferred: String?) -> String {
-    let preferredNorm = preferred.map { normalizeItemName($0) } ?? ""
-    if !preferredNorm.isEmpty, let match = names.first(where: { normalizeItemName($0) == preferredNorm }) {
-      return match
-    }
-    return names.sorted {
-      if $0.count != $1.count { return $0.count > $1.count }
-      return $0.localizedCompare($1) == .orderedAscending
-    }.first ?? ""
   }
 
   private static func rankEntry(_ entry: IntentTypeaheadEntry, query: String) -> RankedEntry {

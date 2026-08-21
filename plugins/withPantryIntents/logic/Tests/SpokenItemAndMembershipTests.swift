@@ -105,3 +105,39 @@ final class HouseholdCategoryHintTests: XCTestCase {
     XCTAssertEqual(household.map(\.id), ["g", "o"])
   }
 }
+
+final class TypeaheadCorpusCanonicalTests: XCTestCase {
+  func testFirstSeenNameIsTitleNotLongestAlias() {
+    let corpus = TypeaheadMatcher.buildCorpus(items: [
+      CatalogItem(id: "milk", name: "Milk", upc: nil),
+      CatalogItem(id: "milk", name: "1 milk", upc: nil),
+    ])
+    XCTAssertEqual(corpus.count, 1)
+    XCTAssertEqual(corpus[0].name, "Milk")
+    XCTAssertEqual(corpus[0].aliases, ["1 milk"])
+  }
+
+  func testPreferredListNameOverridesFirstSeen() {
+    let corpus = TypeaheadMatcher.buildCorpus(
+      items: [
+        CatalogItem(id: "milk", name: "Milk", upc: nil),
+        CatalogItem(id: "milk", name: "1 milk", upc: nil),
+      ],
+      preferredNames: [(id: "milk", name: "Whole Milk")]
+    )
+    XCTAssertEqual(corpus[0].name, "Whole Milk")
+    XCTAssertTrue(corpus[0].aliases.contains("Milk"))
+    XCTAssertTrue(corpus[0].aliases.contains("1 milk"))
+  }
+
+  func testOldPurchaseNameStillMatchesSearch() {
+    let corpus = TypeaheadMatcher.buildCorpus(items: [
+      CatalogItem(id: "milk", name: "Milk", upc: nil),
+      CatalogItem(id: "milk", name: "1 milk", upc: nil),
+    ])
+    let ranked = TypeaheadMatcher.search(corpus, rawQuery: "1 mil")
+    XCTAssertFalse(ranked.isEmpty)
+    XCTAssertEqual(ranked[0].entry.name, "Milk")
+    XCTAssertEqual(ranked[0].matchedAlias, "1 milk")
+  }
+}

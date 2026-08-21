@@ -2,7 +2,7 @@ import { displayItemName, normalizeItemName } from './itemName';
 
 export type TypeaheadEntry = {
   id: string;
-  /** Canonical display name (ITEM.NAME, or longest variant if unknown). */
+  /** Canonical display name: preferred list name, else first-seen live ITEM.NAME. */
   name: string;
   upc?: string;
   /** Alternate names from ITEM_ALIAS / purchase snapshots, excluding `name`. */
@@ -45,18 +45,11 @@ function allSearchNames(entry: TypeaheadEntry): string[] {
   return [entry.name, ...entry.aliases];
 }
 
-function pickCanonicalName(names: string[], preferred?: string): string {
-  const preferredNorm = preferred ? normalizeItemName(preferred) : '';
-  if (preferredNorm) {
-    const match = names.find(n => normalizeItemName(n) === preferredNorm);
-    if (match) return match;
-  }
-  return [...names].sort((a, b) => b.length - a.length || a.localeCompare(b))[0];
-}
-
 /**
- * Collapse corpus rows that share an ITEM id (canonical name + aliases)
- * into one suggestion. `preferredNames` are current list display names.
+ * Collapse corpus rows that share an ITEM id into one suggestion.
+ * First non-empty name per id is the title (API emits live ITEM.NAME first);
+ * later rows become search aliases. `preferredNames` override the title when
+ * the item is on a household list.
  */
 export function buildTypeaheadCorpus(
   items: Array<{ id: string; name: string; upc?: string }>,
@@ -70,17 +63,21 @@ export function buildTypeaheadCorpus(
     }
   }
 
-  const byId = new Map<string, { names: string[]; upc?: string }>();
+  const byId = new Map<string, { firstName: string; aliases: string[]; upc?: string }>();
   for (const item of items) {
     const name = displayItemName(item.name);
     if (!name) continue;
     const existing = byId.get(item.id);
     if (!existing) {
-      byId.set(item.id, { names: [name], upc: item.upc });
+      byId.set(item.id, { firstName: name, aliases: [], upc: item.upc });
       continue;
     }
-    if (!existing.names.some(n => normalizeItemName(n) === normalizeItemName(name))) {
-      existing.names.push(name);
+    const nameNorm = normalizeItemName(name);
+    if (
+      nameNorm !== normalizeItemName(existing.firstName) &&
+      !existing.aliases.some(n => normalizeItemName(n) === nameNorm)
+    ) {
+      existing.aliases.push(name);
     }
     if (!existing.upc && item.upc) {
       existing.upc = item.upc;
@@ -88,13 +85,21 @@ export function buildTypeaheadCorpus(
   }
 
   return Array.from(byId.entries()).map(([id, group]) => {
-    const canonical = pickCanonicalName(group.names, preferredById.get(id));
+    const canonical = preferredById.get(id) ?? group.firstName;
     const canonicalNorm = normalizeItemName(canonical);
+    const aliases: string[] = [];
+    const seen = new Set<string>([canonicalNorm]);
+    for (const name of [group.firstName, ...group.aliases]) {
+      const norm = normalizeItemName(name);
+      if (seen.has(norm)) continue;
+      seen.add(norm);
+      aliases.push(name);
+    }
     return {
       id,
       name: canonical,
       upc: group.upc,
-      aliases: group.names.filter(n => normalizeItemName(n) !== canonicalNorm),
+      aliases,
     };
   });
 }
