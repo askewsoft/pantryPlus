@@ -2,13 +2,9 @@ import AppIntents
 import Foundation
 
 struct PantryAppShortcuts: AppShortcutsProvider {
-  private static let discovery: Void = {
-    _ = PantryIntentsDiscovery.shared
-  }()
-
+  // Must use App Shortcuts *builder* syntax only (no `return`, arrays, or other statements).
+  // Side effects here break App Intents metadata export and fail EAS/Xcode builds.
   static var appShortcuts: [AppShortcut] {
-    _ = discovery
-    return [
     AppShortcut(
       intent: AddItemToListIntent(),
       phrases: [
@@ -19,7 +15,7 @@ struct PantryAppShortcuts: AppShortcutsProvider {
       ],
       shortTitle: "Add Item",
       systemImageName: "plus.circle"
-    ),
+    )
     AppShortcut(
       intent: IsItemOnListIntent(),
       phrases: [
@@ -30,7 +26,6 @@ struct PantryAppShortcuts: AppShortcutsProvider {
       ],
       shortTitle: "Check List",
       systemImageName: "checkmark.circle"
-    ),
-    ]
+    )
   }
 }

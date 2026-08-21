@@ -3,13 +3,18 @@ import CoreSpotlight
 import Foundation
 
 /// Keeps Siri / Shortcuts parameter pickers and Spotlight in sync with the App Group cache.
-/// Started from `PantryAppShortcuts` so it lives in the app target (not the Expo module).
+/// Started from `AppDelegate` via the config plugin (not from `AppShortcutsProvider` —
+/// that property must stay pure builder syntax for App Intents metadata export).
 ///
 /// `RelevantEntities` (WWDC 2026) currently documents `AppEntityContext` for media/workout
 /// suggestions (e.g. playlists during a run), not shopping lists. Last-used list relevance
 /// is `ListEntityQuery.suggestedEntities()` (last-used first) plus `updateAppShortcutParameters()`.
 enum PantryIntentsDiscovery {
   static let shared = PantryIntentsDiscoveryBootstrap()
+
+  static func start() {
+    _ = shared
+  }
 }
 
 final class PantryIntentsDiscoveryBootstrap {

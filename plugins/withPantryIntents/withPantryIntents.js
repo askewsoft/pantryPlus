@@ -5,12 +5,15 @@
 const fs = require('fs');
 const path = require('path');
 const {
+  withAppDelegate,
   withXcodeProject,
   withEntitlementsPlist,
   withInfoPlist,
   withPodfileProperties,
   IOSConfig,
 } = require('@expo/config-plugins');
+
+const DISCOVERY_START_MARKER = 'PantryIntentsDiscovery.start()';
 
 const PLUGIN_IOS_DIR = path.join(__dirname, 'ios');
 const APP_GROUP_ID = 'group.com.askewsoft.pantryplus';
@@ -88,6 +91,34 @@ function withPantryIntentsInfoPlist(config) {
   });
 }
 
+function withPantryIntentsAppDelegate(config) {
+  return withAppDelegate(config, (cfg) => {
+    if (cfg.modResults.language !== 'swift') {
+      return cfg;
+    }
+
+    let contents = cfg.modResults.contents;
+    if (contents.includes(DISCOVERY_START_MARKER)) {
+      return cfg;
+    }
+
+    const needle =
+      'launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil\n  ) -> Bool {\n';
+    if (!contents.includes(needle)) {
+      throw new Error(
+        'withPantryIntents: could not find AppDelegate didFinishLaunchingWithOptions to inject PantryIntentsDiscovery.start()'
+      );
+    }
+
+    contents = contents.replace(
+      needle,
+      `${needle}    ${DISCOVERY_START_MARKER}\n\n`
+    );
+    cfg.modResults.contents = contents;
+    return cfg;
+  });
+}
+
 function withPantryIntentsSwiftSources(config) {
   return withXcodeProject(config, (cfg) => {
     const project = cfg.modResults;
@@ -160,6 +191,7 @@ function withPantryIntents(config) {
   config = withPantryIntentsEntitlements(config);
   config = withPantryIntentsDeploymentTarget(config);
   config = withPantryIntentsSwiftSources(config);
+  config = withPantryIntentsAppDelegate(config);
   return config;
 }
 

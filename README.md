@@ -110,6 +110,7 @@ These are compiled using the EAS (i.e., Expo Application Services) build service
 
 1. Always first update version numbers using semantic versioning
 These helper scripts will update both the `package.json` and the `app.json`
+
     ```sh
     # bug fixes
     npm run version:patch
