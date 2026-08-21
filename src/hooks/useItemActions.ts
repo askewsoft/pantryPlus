@@ -28,15 +28,10 @@ export const useItemActions = ({
   }, [categoryId, currCategory, currList, itemId]);
 
   const onRemoveItem = useCallback(async () => {
-    if (categoryId) {
-      currCategory?.removeItem({
-        itemId,
-        xAuthUser,
-        onItemRemoved: () => currList?.loadUnpurchasedItemsCount({ xAuthUser })
-      });
-    }
+    // Membership-only API delete; local detach from every category on this list.
+    // Category catalog links stay on the server for auto-assign on re-add.
     await currList?.removeItem({ itemId, xAuthUser });
-  }, [categoryId, currCategory, currList, itemId, xAuthUser]);
+  }, [currList, itemId, xAuthUser]);
 
   const onUncategorizeItem = useCallback(async () => {
     if (categoryId) {
