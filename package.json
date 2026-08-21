@@ -18,7 +18,7 @@
     "version:major": "./scripts/version.sh major",
     "killport": "sudo kill -9 $(sudo lsof -t -i :8081) # Do this if the Metro Bundler fails to start",
     "test:intents": "swift test --package-path plugins/withPantryIntents",
-    "gettoken": "npx ts-node scripts/get-token.ts",
+    "gettoken": "npx ts-node --compiler-options '{\"module\":\"commonjs\"}' scripts/get-token.ts",
     "expoupdate": "node scripts/update.js",
     "maestro": "./scripts/maestro-tests.sh --screenshots current",
     "maestro:current": "./scripts/maestro-tests.sh --screenshots current all",
