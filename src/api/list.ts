@@ -98,6 +98,7 @@ const removeListItem = async ({ listId, itemId, xAuthUser }: { listId?: string, 
         await listsApi.removeItem(xAuthUser, listId, itemId);
     } catch (error) {
         console.error(`Failed to removeListItem in DB: ${error}`);
+        throw error;
     }
 }
 
