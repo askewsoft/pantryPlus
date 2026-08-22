@@ -4,7 +4,6 @@ export const SettingsStack = [
   'MySettings',
   'Profile',
   'Permissions',
-  'About',
 ] as const;
 
 export type SettingsStackParamList = {
@@ -14,4 +13,3 @@ export type SettingsStackParamList = {
 export type StackPropsMySettings = StackScreenProps<SettingsStackParamList, 'MySettings'>;
 export type StackPropsProfile = StackScreenProps<SettingsStackParamList, 'Profile'>;
 export type StackPropsPermissions = StackScreenProps<SettingsStackParamList, 'Permissions'>;
-export type StackPropsAbout = StackScreenProps<SettingsStackParamList, 'About'>;

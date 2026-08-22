@@ -10,13 +10,11 @@ import HamburgerButton from '@/components/Buttons/HamburgerButton';
 import MySettings from './MySettings';
 import Profile from './Profile';
 import Permissions from './Permissions';
-import About from './About';
 import { uiStore } from '@/stores/UIStore';
 
 const { Navigator, Screen } = createStackNavigator<SettingsStackParamList>();
 
 const SettingsNavigation = ({navigation}: {navigation: any}) => {
-  // Add a ref to track the previous route so we can detect when the user navigates to a non-default screen explicitly
   const prevRoute = useRef<string | null>(null);
 
   useEffect(() => {
@@ -29,7 +27,6 @@ const SettingsNavigation = ({navigation}: {navigation: any}) => {
     const routesLength = e.data.state.routes.length;
     const currentRoute = e.data.state.routes[routesLength - 1].name;
 
-    // If we're on MySettings and we had a previous route, this was an explicit navigation
     if (currentRoute === "MySettings" && prevRoute.current !== null) {
       uiStore.setLastViewedSubSection('');
     } else if (currentRoute !== "MySettings") {
@@ -55,7 +52,6 @@ const SettingsNavigation = ({navigation}: {navigation: any}) => {
       />
       <Screen name="Profile" component={Profile} options={{ title: 'Profile' }} />
       <Screen name="Permissions" component={Permissions} options={{ title: 'Permissions' }} />
-      <Screen name="About" component={About} options={{ title: 'About' }} />
     </Navigator>
   );
 }

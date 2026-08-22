@@ -4,6 +4,7 @@ import { AppTabs } from './AppNavTypes';
 import { ListsStack } from './ListNavTypes';
 import { GroupsStack } from './GroupNavTypes';
 import { SettingsStack } from './SettingsNavTypes';
+import { HelpStack } from './HelpNavTypes';
 import { LocationsStack } from './LocationNavTypes';
 
 const ListsStackMstEnum = t.enumeration('ListsStackMst', [...ListsStack]);
@@ -15,6 +16,9 @@ type GroupsStackMstType = Instance<typeof GroupsStackMstEnum>;
 const SettingsStackMstEnum = t.enumeration('SettingsStackMst', [...SettingsStack]);
 type SettingsStackMstType = Instance<typeof SettingsStackMstEnum>;
 
+const HelpStackMstEnum = t.enumeration('HelpStackMst', [...HelpStack]);
+type HelpStackMstType = Instance<typeof HelpStackMstEnum>;
+
 const LocationsStackMstEnum = t.enumeration('LocationsStackMst', [...LocationsStack]);
 type LocationsStackMstType = Instance<typeof LocationsStackMstEnum>;
 
@@ -22,5 +26,12 @@ type LocationsStackMstType = Instance<typeof LocationsStackMstEnum>;
 export const AppTabsMstEnum = t.enumeration('AppTabsMst', [...AppTabs, 'IntroScreen', 'WelcomeScreen']);
 export type AppTabsMstType = Instance<typeof AppTabsMstEnum>;
 
-export const AppSubTabsMstEnum = t.enumeration('AppSubTabsMst', [...ListsStack, ...GroupsStack, ...SettingsStack, ...LocationsStack, '']);
+export const AppSubTabsMstEnum = t.enumeration('AppSubTabsMst', [
+  ...ListsStack,
+  ...GroupsStack,
+  ...SettingsStack,
+  ...HelpStack,
+  ...LocationsStack,
+  '',
+]);
 export type AppSubTabsMstType = Instance<typeof AppSubTabsMstEnum>;

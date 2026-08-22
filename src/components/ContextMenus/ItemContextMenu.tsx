@@ -9,18 +9,18 @@ import { iconSize } from '@/consts/iconButtons';
 
 type ItemContextMenuProps = {
   onRemove: () => void;
-  onAssignToCategory: () => void;
+  onEdit: () => void;
 };
 
 const ItemContextMenu = observer(({
   onRemove,
-  onAssignToCategory,
+  onEdit,
 }: ItemContextMenuProps) => {
   const actionConfigs = [
     {
-      title: 'Assign Category',
-      systemIcon: 'folder',
-      handler: onAssignToCategory,
+      title: 'Edit Item',
+      systemIcon: 'square.and.pencil',
+      handler: onEdit,
     },
     {
       title: 'Remove Item',
@@ -50,7 +50,7 @@ const ItemContextMenu = observer(({
           style={styles.hamburgerButton}
           activeOpacity={0.7}
           accessibilityLabel="Item Menu"
-          accessibilityHint="Opens menu with options to assign category or remove item"
+          accessibilityHint="Opens menu with options to edit or remove item"
           accessibilityRole="button"
         >
           <MaterialIcons

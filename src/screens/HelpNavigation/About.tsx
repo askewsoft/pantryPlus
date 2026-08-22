@@ -1,12 +1,13 @@
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import { StackPropsAbout } from '@/types/SettingsNavTypes';
+
+import { StackPropsAbout } from '@/types/HelpNavTypes';
 import { updateService } from '@/services/UpdateService';
-import { styles as sharedStyles } from './styles';
+import { styles as sharedStyles } from '@/screens/SettingsNavigation/styles';
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 
-const About = ({ navigation }: StackPropsAbout) => {
+const About = (_props: StackPropsAbout) => {
   const aboutInfo = updateService.getAboutInfo();
 
   const formatValue = (value: any): string => {
@@ -21,13 +22,13 @@ const About = ({ navigation }: StackPropsAbout) => {
 
   const formatKey = (key: string): string => {
     return key
-      .replace(/([A-Z])/g, ' $1') // Add space before capital letters
-      .replace(/^./, str => str.toUpperCase()) // Capitalize first letter
-      .replace(/\b\w/g, l => l.toUpperCase()); // Capitalize first letter of each word
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, str => str.toUpperCase())
+      .replace(/\b\w/g, l => l.toUpperCase());
   };
 
   return (
-    <ScrollView contentContainerStyle={sharedStyles.container}>
+    <ScrollView contentContainerStyle={styles.scrollContent}>
       {Object.entries(aboutInfo)
         .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
         .map(([key, value]) => (
@@ -40,9 +41,17 @@ const About = ({ navigation }: StackPropsAbout) => {
         ))}
     </ScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
+  scrollContent: {
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+    paddingTop: 20,
+    paddingHorizontal: 10,
+    paddingBottom: 40,
+  },
   aboutLabel: {
     flex: 1,
     fontSize: fonts.messageTextSize,
@@ -60,7 +69,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.inactiveButtonColor,
     borderRadius: 5,
-  }
+  },
 });
 
 export default observer(About);

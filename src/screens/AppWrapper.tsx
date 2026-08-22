@@ -10,8 +10,10 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { AppTabs, AppTabsParamList } from '@/types/AppNavTypes';
 import ListsNavigation from './ListsNavigation';
 import SettingsNavigation from './SettingsNavigation';
+import HelpNavigation from './HelpNavigation';
 import GroupsNavigation from './GroupsNavigation';
 import LocationsNavigation from './LocationsNavigation';
+import AppDrawerContent from '@/components/AppDrawerContent';
 
 import { domainStore } from '@/stores/DomainStore';
 import { uiStore } from '@/stores/UIStore';
@@ -44,12 +46,6 @@ const AppWrapper = () => {
     drawerStyle: {
       backgroundColor: colors.detailsBackground,
       width: 200,
-    },
-    // App shell already applies safe-area inset; do not also add insets.top
-    // or the first drawer items sit well below the top of the panel.
-    drawerContentContainerStyle: {
-      paddingTop: 8,
-      paddingBottom: 12,
     },
   };
 
@@ -109,6 +105,7 @@ const AppWrapper = () => {
             initialRouteName={getInitialRouteName()}
             screenOptions={screenOptions}
             screenListeners={{ state: onScreenChange }}
+            drawerContent={(props) => <AppDrawerContent {...props} />}
           >
             <Screen
               name="Lists"
@@ -140,6 +137,14 @@ const AppWrapper = () => {
               options={{
                 title: 'Settings',
                 drawerIcon: getDrawerIcon('settings')
+              }}
+            />
+            <Screen
+              name="Help"
+              component={HelpNavigation}
+              options={{
+                title: 'Help',
+                drawerIcon: getDrawerIcon('help-outline')
               }}
             />
           </Navigator>

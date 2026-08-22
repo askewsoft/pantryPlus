@@ -1,48 +1,33 @@
 import { View, Pressable, Text, StyleSheet } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import { StackPropsMySettings } from '@/types/SettingsNavTypes';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-import { domainStore } from '@/stores/DomainStore';
+import { StackPropsMyHelp } from '@/types/HelpNavTypes';
 import ErrorBoundary from '@/components/ErrorBoundary';
-import { updateService } from '@/services/UpdateService';
 
 import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { iconSize } from '@/consts/iconButtons';
 
-const MySettings = ({ navigation }: StackPropsMySettings) => {
-  const checkForUpdates = async () => {
-    await updateService.manualUpdateCheck();
-  };
-
+const MyHelp = ({ navigation }: StackPropsMyHelp) => {
   return (
     <ErrorBoundary>
       <View style={styles.container}>
-        <Pressable style={styles.buttonContainer} onPress={() => navigation.navigate('Profile')}>
+        <Pressable style={styles.buttonContainer} onPress={() => navigation.navigate('SiriTips')}>
           <MaterialIcons
-            name="person"
+            name="mic"
             size={iconSize.rowIconSize}
             color={colors.lightBrandColor}
           />
-          <Text style={styles.buttonText}>Profile</Text>
-          <Text style={styles.loggedInText}>[{domainStore.user?.email}]</Text>
+          <Text style={styles.buttonText}>Siri Voice Tips</Text>
         </Pressable>
-        <Pressable style={styles.buttonContainer} onPress={() => navigation.navigate('Permissions')}>
+        <Pressable style={styles.buttonContainer} onPress={() => navigation.navigate('About')}>
           <MaterialIcons
-            name="security"
+            name="info"
             size={iconSize.rowIconSize}
             color={colors.lightBrandColor}
           />
-          <Text style={styles.buttonText}>Permissions</Text>
-        </Pressable>
-        <Pressable style={styles.buttonContainer} onPress={checkForUpdates}>
-          <MaterialIcons
-            name="system-update"
-            size={iconSize.rowIconSize}
-            color={colors.lightBrandColor}
-          />
-          <Text style={styles.buttonText}>Check for Updates</Text>
+          <Text style={styles.buttonText}>About</Text>
         </Pressable>
       </View>
     </ErrorBoundary>
@@ -57,12 +42,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     backgroundColor: colors.detailsBackground,
     paddingTop: 10,
-  },
-  loggedInText: {
-    fontSize: fonts.messageTextSize,
-    color: colors.lightBrandColor,
-    flexWrap: 'wrap',
-    marginLeft: 10,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -80,4 +59,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default observer(MySettings);
+export default observer(MyHelp);

@@ -33,13 +33,13 @@ const Item = ({
     categoryId,
   });
 
-  const onAssignToCategory = () => {
+  const openEditItemModal = () => {
     uiStore.setAddItemToCategoryID(categoryId ?? null);
     uiStore.setEditingItemId(item.id);
     uiStore.setEditingItemName(item.name);
     uiStore.setEditingItemCategoryId(categoryId ?? null);
     uiStore.setAddItemModalVisible(true);
-  }
+  };
 
   const onPress = () => {
     const newIsChecked = !item.isChecked;
@@ -90,7 +90,7 @@ const Item = ({
       </View>
       <ItemContextMenu
         onRemove={onRemoveItem}
-        onAssignToCategory={onAssignToCategory}
+        onEdit={openEditItemModal}
       />
     </View>
   );
