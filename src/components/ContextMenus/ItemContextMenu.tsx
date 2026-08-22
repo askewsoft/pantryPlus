@@ -66,6 +66,7 @@ const ItemContextMenu = observer(({
 
 const styles = StyleSheet.create({
   container: {
+    flexShrink: 0,
     marginRight: 8,
   },
   hamburgerButton: {
@@ -75,4 +76,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ItemContextMenu; 
+export default ItemContextMenu;

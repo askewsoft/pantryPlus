@@ -102,8 +102,8 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: fonts.modalTitleSize,
     fontWeight: 'bold',
-    marginBottom: 30,
-    marginTop: 60,
+    marginBottom: 20,
+    marginTop: 24,
     color: colors.white,
   },
   input: {

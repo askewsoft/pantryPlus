@@ -9,6 +9,7 @@ import colors from '@/consts/colors';
 import fonts from '@/consts/fonts';
 import { useItemActions } from '@/hooks/useItemActions';
 import { uiStore } from '@/stores/UIStore';
+import { displayItemName } from '@/utils/itemName';
 
 type ItemProps = {
   item: ItemType;
@@ -76,8 +77,16 @@ const Item = ({
   return (
     <View style={[styles.itemLine, { paddingLeft: indent }]}>
       <View style={styles.itemContainer}>
-        <CheckBoxButton isChecked={item.isChecked} onPress={onPress}/>
-        <Text style={styles.item}>{item.name}</Text>
+        <View style={styles.checkboxContainer}>
+          <CheckBoxButton isChecked={item.isChecked} onPress={onPress}/>
+        </View>
+        <Text
+          style={styles.item}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {displayItemName(item.name)}
+        </Text>
       </View>
       <ItemContextMenu
         onRemove={onRemoveItem}
@@ -91,17 +100,24 @@ const styles = StyleSheet.create({
   itemLine: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: colors.itemBackground,
     borderRadius: 5,
     marginHorizontal: 5,
     marginBottom: 5,
   },
   itemContainer: {
+    flex: 1,
+    minWidth: 0,
     flexDirection: 'row',
-    alignContent: 'flex-start',
     alignItems: 'center',
   },
+  checkboxContainer: {
+    flexShrink: 0,
+  },
   item: {
+    flex: 1,
+    flexShrink: 1,
     color: colors.brandColor,
     fontSize: fonts.rowTextSize,
   }

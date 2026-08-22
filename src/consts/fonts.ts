@@ -4,6 +4,6 @@ export default {
     messageTextSize: 16,
     rowTextSize: 18,
     missingRowsTextSize: 24,
-    modalTitleSize: 28,
+    modalTitleSize: 22,
     introTitleSize: 48,
 }
