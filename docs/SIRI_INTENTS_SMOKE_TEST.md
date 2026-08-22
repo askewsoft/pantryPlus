@@ -134,6 +134,8 @@ If **“Which category?”** appears, pick a category or **No Category**. That i
 | **Item missing in app but shortcut succeeded** | Pull to refresh or reopen the list; the intent writes via API but the UI cache may lag briefly. |
 | **Pantry Plus not in Shortcuts (Mac)** | Use Shortcuts **in the Simulator or on iPhone**, not Mac desktop Shortcuts. |
 | **Pantry Plus not in Shortcuts (Simulator)** | Open the app once after install; use **Add Action** and search **Pantry Plus**. |
+| **Siri: “I don’t see an app for that” / Search the App Store** | Missing `com.apple.developer.siri` entitlement (or provisioning profile without Siri). Enable **Siri** on the App ID, rebuild native (not OTA). Also check **Shortcuts → Pantry Plus** — actions should appear. If they appear in Shortcuts but not via Siri, open the app’s Shortcuts “i” page and turn **Siri** on, or say “Turn on Pantry Plus shortcuts.” |
+| **Siri offers to install Pantry Plus (already installed)** | Display name / phrasing mismatch, or same as above (shortcuts never registered). Prefer `CFBundleDisplayName` = **Pantry Plus**. |
 | **Category prompt on every new item** | Expected on categorized lists without a household category hint for that catalog item. |
 
 ---

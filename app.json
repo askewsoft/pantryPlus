@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "pantryPlus",
+    "name": "Pantry Plus",
     "description": "Easily organize and collaborate on shopping lists with your family.",
     "slug": "pantryplus",
     "owner": "askewsoft",
-    "version": "2.0.4",
+    "version": "2.0.5",
     "platforms": [
       "ios"
     ],
@@ -40,6 +40,7 @@
         "webcredentials:askewsoft.com"
       ],
       "entitlements": {
+        "com.apple.developer.siri": true,
         "com.apple.security.application-groups": [
           "group.com.askewsoft.pantryplus"
         ],
@@ -49,9 +50,20 @@
         ]
       },
       "infoPlist": {
+        "CFBundleDisplayName": "Pantry Plus",
         "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to use your location to automatically sort the items in your shopping lists.",
         "NSSiriUsageDescription": "Pantry Plus uses Siri to add items to your shopping lists and check whether an item is already on a list.",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "INAlternativeAppNames": [
+          {
+            "INAlternativeAppName": "pantryPlus",
+            "INAlternativeAppNamePronunciationHint": "pantry plus"
+          },
+          {
+            "INAlternativeAppName": "Pantry",
+            "INAlternativeAppNamePronunciationHint": "pantry"
+          }
+        ]
       }
     },
     "android": {

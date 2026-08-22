@@ -20,6 +20,17 @@ const APP_GROUP_ID = 'group.com.askewsoft.pantryplus';
 const DEPLOYMENT_TARGET = '16.0';
 const SIRI_USAGE =
   'Pantry Plus uses Siri to add items to your shopping lists and check whether an item is already on a list.';
+const DISPLAY_NAME = 'Pantry Plus';
+const ALTERNATIVE_APP_NAMES = [
+  {
+    INAlternativeAppName: 'pantryPlus',
+    INAlternativeAppNamePronunciationHint: 'pantry plus',
+  },
+  {
+    INAlternativeAppName: 'Pantry',
+    INAlternativeAppNamePronunciationHint: 'pantry',
+  },
+];
 
 function collectSwiftFiles(dir, relativeRoot = '') {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -70,6 +81,8 @@ function withPantryIntentsDeploymentTarget(config) {
 
 function withPantryIntentsEntitlements(config) {
   return withEntitlementsPlist(config, (cfg) => {
+    cfg.modResults['com.apple.developer.siri'] = true;
+
     const groups = cfg.modResults['com.apple.security.application-groups'];
     const nextGroups = new Set(Array.isArray(groups) ? groups : []);
     nextGroups.add(APP_GROUP_ID);
@@ -87,6 +100,8 @@ function withPantryIntentsEntitlements(config) {
 function withPantryIntentsInfoPlist(config) {
   return withInfoPlist(config, (cfg) => {
     cfg.modResults.NSSiriUsageDescription = SIRI_USAGE;
+    cfg.modResults.CFBundleDisplayName = DISPLAY_NAME;
+    cfg.modResults.INAlternativeAppNames = ALTERNATIVE_APP_NAMES;
     return cfg;
   });
 }
@@ -169,9 +184,12 @@ function withPantryIntents(config) {
   config.ios.infoPlist = {
     ...(config.ios.infoPlist ?? {}),
     NSSiriUsageDescription: SIRI_USAGE,
+    CFBundleDisplayName: DISPLAY_NAME,
+    INAlternativeAppNames: ALTERNATIVE_APP_NAMES,
   };
   config.ios.entitlements = {
     ...(config.ios.entitlements ?? {}),
+    'com.apple.developer.siri': true,
     'com.apple.security.application-groups': [
       ...new Set([
         ...((config.ios.entitlements ?? {})['com.apple.security.application-groups'] ?? []),
