@@ -94,7 +94,7 @@ Both `domainStore` and `uiStore` use **mst-persist** with AsyncStorage. Treat pe
 
 ### `types`
 
-TypeScript types that do not belong inside a single component or store file—especially React Navigation param lists (`AppNavTypes`, `ListNavTypes`, `GroupNavTypes`, `LocationNavTypes`, `SettingsNavTypes`), MST navigation enums (`NavMSTTypes`), and shared function argument types.
+TypeScript types that do not belong inside a single component or store file—especially React Navigation param lists (`AppNavTypes`, `ListNavTypes`, `GroupNavTypes`, `LocationNavTypes`, `SettingsNavTypes`, `HelpNavTypes`), MST navigation enums (`NavMSTTypes`), and shared function argument types.
 
 ## Practical Guidelines
 
