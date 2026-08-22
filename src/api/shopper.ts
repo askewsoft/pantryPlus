@@ -110,17 +110,25 @@ const getPurchasedItems = async ({
     user,
     lookBackDays = 365,
     cohortId,
+    listId,
 }: {
     user: Shopper;
     lookBackDays?: number;
     cohortId?: string | null;
+    listId?: string | null;
 }): Promise<Array<Item>> => {
     const configuration = await getApiConfiguration();
     const shopperApi = new ShoppersApi(configuration);
     const xAuthUser = user.email!;
     const shopperId = user.id!;
     try {
-        const response = await shopperApi.getPurchasedItems(xAuthUser, shopperId, lookBackDays, cohortId ?? undefined);
+        const response = await shopperApi.getPurchasedItems(
+            xAuthUser,
+            shopperId,
+            lookBackDays,
+            cohortId ?? undefined,
+            listId ?? undefined,
+        );
         return response.data;
     } catch (error) {
         console.error('Unable to get purchased items:', error);

@@ -7,6 +7,8 @@ export type TypeaheadEntry = {
   upc?: string;
   /** Alternate names from ITEM_ALIAS / purchase snapshots, excluding `name`. */
   aliases: string[];
+  /** Category on target list from API or list hints; omitted when unknown */
+  categoryId?: string;
 };
 
 /** Minimal list shape for resolving which category an item belongs to. */
@@ -52,7 +54,7 @@ function allSearchNames(entry: TypeaheadEntry): string[] {
  * the item is on a household list.
  */
 export function buildTypeaheadCorpus(
-  items: Array<{ id: string; name: string; upc?: string }>,
+  items: Array<{ id: string; name: string; upc?: string; categoryId?: string }>,
   preferredNames: TypeaheadNameHint[] = [],
 ): TypeaheadEntry[] {
   const preferredById = new Map<string, string>();
@@ -63,13 +65,18 @@ export function buildTypeaheadCorpus(
     }
   }
 
-  const byId = new Map<string, { firstName: string; aliases: string[]; upc?: string }>();
+  const byId = new Map<string, { firstName: string; aliases: string[]; upc?: string; categoryId?: string }>();
   for (const item of items) {
     const name = displayItemName(item.name);
     if (!name) continue;
     const existing = byId.get(item.id);
     if (!existing) {
-      byId.set(item.id, { firstName: name, aliases: [], upc: item.upc });
+      byId.set(item.id, {
+        firstName: name,
+        aliases: [],
+        upc: item.upc,
+        categoryId: item.categoryId,
+      });
       continue;
     }
     const nameNorm = normalizeItemName(name);
@@ -81,6 +88,9 @@ export function buildTypeaheadCorpus(
     }
     if (!existing.upc && item.upc) {
       existing.upc = item.upc;
+    }
+    if (!existing.categoryId && item.categoryId) {
+      existing.categoryId = item.categoryId;
     }
   }
 
@@ -100,6 +110,7 @@ export function buildTypeaheadCorpus(
       name: canonical,
       upc: group.upc,
       aliases,
+      categoryId: group.categoryId,
     };
   });
 }

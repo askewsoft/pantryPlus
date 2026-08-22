@@ -121,6 +121,7 @@ export async function refreshTypeaheadCorpusForSiri() {
       user,
       lookBackDays: TYPEAHEAD_LOOKBACK_DAYS,
       cohortId,
+      listId: currentList.id,
     });
     const preferredNames = householdLists.flatMap((list) => [
       ...list.items.map((item) => ({ id: item.id, name: item.name })),

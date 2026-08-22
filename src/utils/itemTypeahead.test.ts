@@ -14,6 +14,16 @@ const milkId = 'milk-id';
 }
 
 {
+  const dairyId = 'dairy-id';
+  const corpus = buildTypeaheadCorpus([
+    { id: milkId, name: 'Milk', categoryId: dairyId },
+    { id: milkId, name: '1 milk' },
+  ]);
+  assert.strictEqual(corpus.length, 1);
+  assert.strictEqual(corpus[0].categoryId, dairyId);
+}
+
+{
   const corpus = buildTypeaheadCorpus(
     [
       { id: milkId, name: 'Milk' },
