@@ -24,6 +24,7 @@ let package = Package(
       ],
       sources: [
         "IntentModels.swift",
+        "SpokenFollowUp.swift",
         "TypeaheadMatcher.swift",
       ]
     ),

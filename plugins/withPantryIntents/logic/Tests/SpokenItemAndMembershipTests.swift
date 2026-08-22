@@ -106,6 +106,39 @@ final class HouseholdCategoryHintTests: XCTestCase {
   }
 }
 
+final class SpokenFollowUpTests: XCTestCase {
+  func testStopPhrases() {
+    XCTAssertTrue(SpokenFollowUp.isStopPhrase("all done"))
+    XCTAssertTrue(SpokenFollowUp.isStopPhrase("That's All"))
+    XCTAssertTrue(SpokenFollowUp.isStopPhrase("nothing else"))
+    XCTAssertTrue(SpokenFollowUp.isStopPhrase("no"))
+    XCTAssertTrue(SpokenFollowUp.isStopPhrase("stop"))
+    XCTAssertTrue(SpokenFollowUp.isStopPhrase("  "))
+    XCTAssertTrue(SpokenFollowUp.isStopPhrase("that's all for now"))
+  }
+
+  func testItemNamesAreNotStopPhrases() {
+    XCTAssertFalse(SpokenFollowUp.isStopPhrase("eggs"))
+    XCTAssertFalse(SpokenFollowUp.isStopPhrase("ground beef"))
+    XCTAssertFalse(SpokenFollowUp.isStopPhrase("notebook"))
+  }
+
+  func testFormatAddedSummary() {
+    XCTAssertEqual(
+      SpokenFollowUp.formatAddedSummary(itemNames: ["bread"], listName: "Grocery"),
+      "Added bread to Grocery. All set."
+    )
+    XCTAssertEqual(
+      SpokenFollowUp.formatAddedSummary(itemNames: ["bread", "eggs"], listName: "Grocery"),
+      "Added bread and eggs to Grocery. All set."
+    )
+    XCTAssertEqual(
+      SpokenFollowUp.formatAddedSummary(itemNames: ["bread", "eggs", "ground beef"], listName: "Grocery"),
+      "Added bread, eggs, and ground beef to Grocery. All set."
+    )
+  }
+}
+
 final class TypeaheadCorpusCanonicalTests: XCTestCase {
   func testFirstSeenNameIsTitleNotLongestAlias() {
     let corpus = TypeaheadMatcher.buildCorpus(items: [

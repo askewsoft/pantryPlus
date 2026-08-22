@@ -1,6 +1,6 @@
 # Siri App Intents — manual smoke test
 
-Manual test matrix for Phase 5 add/check intents ([#168](https://github.com/askewsoft/pantryPlus/issues/168), [#169](https://github.com/askewsoft/pantryPlus/issues/169)). Parent epic: [#93](https://github.com/askewsoft/pantryPlus/issues/93).
+Manual test matrix for Phase 5 add/check intents ([#168](https://github.com/askewsoft/pantryPlus/issues/168), [#169](https://github.com/askewsoft/pantryPlus/issues/169), [#171](https://github.com/askewsoft/pantryPlus/issues/171)). Parent epic: [#93](https://github.com/askewsoft/pantryPlus/issues/93).
 
 Related docs:
 
@@ -13,8 +13,9 @@ Logic tests (disambiguation + inform-and-skip, no Simulator): `npm run test:inte
 
 | Test | Intent | Pass criteria |
 | --- | --- | --- |
-| Add new item | `AddItemToListIntent` | Success dialog; item appears once on the list in the app |
-| Add duplicate | `AddItemToListIntent` | “Already on …” dialog; **no** second list row |
+| Add new item | `AddItemToListIntent` | “Anything else?” after first add; say **all done**; summary dialog; item appears once |
+| Add several items | `AddItemToListIntent` | First add → follow-ups → **all done**; summary lists all names; list sticky |
+| Add duplicate | `AddItemToListIntent` | First-item duplicate: “Already on …” and **no** loop; in-loop duplicate: inform and keep asking |
 | Check on list | `IsItemOnListIntent` | “Yes, … is on …” (with category when known) |
 | Check off list | `IsItemOnListIntent` | “No, … is not on …” |
 
@@ -59,30 +60,49 @@ Shortcuts provides a form UI — no Siri voice required. That is ideal for smoke
 
 ---
 
-## Test 1 — Add a new item
+## Test 1 — Add a new item (then stop)
 
 1. Run **Add Item to List**.
 2. Set **Item** to something unique, e.g. `SmokeTest Bread`.
 3. Set **List** to your test list.
 4. Leave **Category** empty unless you are testing category picking.
 5. Run.
+6. When prompted **“Anything else?”**, reply **`all done`** (Shortcuts text field or Siri).
 
 **Pass if:**
 
-- Shortcuts shows a success message like **“Added SmokeTest Bread to Grocery”** (or with category if you picked one).
+- After the first add, Siri/Shortcuts asks **Anything else?** (not a final summary yet).
+- After **all done**, closing dialog like **“Added SmokeTest Bread to Grocery. All set.”**
 - In Pantry Plus, open that list — the item appears **once**.
 
-If **“Which category?”** appears, pick a category or **No Category**. That is expected for new items on lists that have categories and no household category hint.
+If **“Which category?”** appears on the first item, pick a category or **No Category**. That is expected for new items on lists that have categories and no household category hint. Follow-up items should **not** re-prompt for category (hint or uncategorized).
+
+---
+
+## Test 1b — Multi-item “Anything else?” loop (#171)
+
+1. Run **Add Item to List** with **Item** `SmokeTest Eggs` and the same list.
+2. At **Anything else?**, enter `SmokeTest Ground Beef`.
+3. At the next prompt, enter `all done`.
+
+**Pass if:**
+
+- List context stays the same (no second “Which list?”).
+- Final dialog lists both names, e.g. **“Added SmokeTest Eggs and SmokeTest Ground Beef to Grocery. All set.”**
+- Both items appear on the list once.
+
+Optional: during the loop, re-enter an item already on the list — expect an **already on …** prompt, then another **Anything else?** (do not exit).
 
 ---
 
 ## Test 2 — Add duplicate (inform only, no re-add)
 
-1. Run the **same** shortcut again with the **same item name** and **same list**.
+1. Run the **same** shortcut again with the **same item name** as Test 1 and the **same list**.
 
 **Pass if:**
 
 - Message like **“SmokeTest Bread is already on Grocery …”** (with category name or “uncategorized”).
+- Intent ends there (**no** “Anything else?” loop) when the *first* item is a duplicate.
 - **No second row** in Pantry Plus for that item.
 - Intent completes without an API failure dialog.
 
@@ -116,8 +136,9 @@ If **“Which category?”** appears, pick a category or **No Category**. That i
 
 | Step | Action | Expected |
 | --- | --- | --- |
-| 1 | Add `SmokeTest Bread` | Added … |
-| 2 | Add `SmokeTest Bread` again | Already on …; no duplicate row |
+| 1 | Add `SmokeTest Bread` → `all done` | Anything else? then summary; item on list |
+| 1b | Add eggs → ground beef → `all done` | Summary lists both; list sticky |
+| 2 | Add `SmokeTest Bread` again | Already on …; no loop; no duplicate row |
 | 3 | Check `SmokeTest Bread` | Yes, … is on … |
 | 4 | Check `SmokeTest Unicorn Flour` | No, … is not on … |
 
@@ -157,12 +178,12 @@ Run after a **native** rebuild (App Intents are not OTA). Open Pantry Plus once 
 
 | Surface | What to try | Pass |
 | --- | --- | --- |
-| **Simulator Shortcuts** | Tests 1–4 above | Add / duplicate inform / check on / check off |
+| **Simulator Shortcuts** | Tests 1–4 above (incl. 1b multi-add) | Add / multi-add / duplicate inform / check on / check off |
 | **iPhone Shortcuts** | Same as Simulator | Same dialogs; list picker includes recently used list first |
-| **iPhone Siri** | “Add milk to the Grocery list in Pantry Plus”; “Is milk on the Grocery list in Pantry Plus?” | Item added or yes/no with category |
+| **iPhone Siri** | “Add milk to the Grocery list in Pantry Plus”; follow with eggs / “all done”; “Is milk on the Grocery list in Pantry Plus?” | Multi-add summary or yes/no with category |
 | **Siri disambiguation** | Two lists, omit the list name; or two similar item names (“almond milk” vs “oat milk”) | Siri asks which list / which item |
 | **Signed out** | Sign out, run add or check | “Open Pantry Plus to sign in.” |
-| **HomePod Mini** | Personal Requests on, same Wi‑Fi, Recognize My Voice; then the add/check phrases | Spoken result on HomePod; list updated on the routed iPhone |
+| **HomePod Mini** | Personal Requests on; multi-add session ending with “all done”; add/check phrases | Spoken prompts on HomePod; items on the routed iPhone list |
 
 HomePod setup: [SIRI_AND_HOMEPOD.md](./SIRI_AND_HOMEPOD.md#setup-checklist-homepod).
 
@@ -172,4 +193,4 @@ HomePod setup: [SIRI_AND_HOMEPOD.md](./SIRI_AND_HOMEPOD.md#setup-checklist-homep
 
 ## Cleanup
 
-Remove test items (`SmokeTest Bread`, etc.) from the list in the app when finished.
+Remove test items (`SmokeTest Bread`, `SmokeTest Eggs`, `SmokeTest Ground Beef`, etc.) from the list in the app when finished.

@@ -24,6 +24,10 @@ struct AddItemToListIntent: AppIntent {
   @Parameter(title: "Suggested Item")
   var suggestedItem: ItemSuggestionEntity?
 
+  /// Follow-up item names collected via `requestValue` during the "Anything else?" loop.
+  @Parameter(title: "Next Item")
+  var nextItem: String?
+
   func perform() async throws -> some IntentResult & ProvidesDialog {
     guard SharedIntentStore.loadSession() != nil else {
       throw PantryIntentError.needsAuthentication
@@ -39,27 +43,119 @@ struct AddItemToListIntent: AppIntent {
     try? await ensureRoster(snapshot)
     await ensureCorpus(cohortId: snapshot.groupId)
 
-    let resolved = try await resolveItem(spokenName: trimmed)
-    let candidate = catalogCandidate(from: resolved, spokenName: trimmed)
+    let first = try await addOneItem(
+      spokenName: trimmed,
+      list: resolvedList,
+      snapshot: snapshot,
+      categoryMode: .promptIfNeeded
+    )
 
-    var membership = ListMembershipChecker.bySpokenName(trimmed, listId: resolvedList.id)
+    guard case .added(let firstName, _) = first else {
+      if case .alreadyOnList(let dialog) = first {
+        return .result(dialog: IntentDialog(LocalizedStringResource(stringLiteral: dialog)))
+      }
+      return .result(dialog: IntentDialog(LocalizedStringResource(stringLiteral: "All set.")))
+    }
+
+    var addedNames = [firstName]
+    donateSticky(list: resolvedList, itemName: firstName)
+
+    var nextPrompt =
+      "Added \(firstName) to \(resolvedList.name). Anything else? Say an item name, or say all done."
+
+    for _ in 0..<SpokenFollowUp.maxFollowUpTurns {
+      let spoken: String
+      do {
+        spoken = try await $nextItem.requestValue(
+          IntentDialog(LocalizedStringResource(stringLiteral: nextPrompt))
+        )
+      } catch {
+        // User cancelled / session ended — close with summary of what we did add.
+        break
+      }
+
+      if SpokenFollowUp.isStopPhrase(spoken) {
+        break
+      }
+
+      let followUpName = TypeaheadMatcher.displayItemName(spoken)
+      if followUpName.isEmpty {
+        nextPrompt = "Anything else? Say an item name, or say all done."
+        continue
+      }
+
+      let outcome = try await addOneItem(
+        spokenName: followUpName,
+        list: resolvedList,
+        snapshot: snapshot,
+        categoryMode: .hintOrUncategorized
+      )
+
+      switch outcome {
+      case .alreadyOnList(let dialog):
+        nextPrompt = "\(dialog). Anything else?"
+      case .added(let name, _):
+        addedNames.append(name)
+        donateSticky(list: resolvedList, itemName: name)
+        nextPrompt = "Added \(name). Anything else?"
+      }
+    }
+
+    let summary = SpokenFollowUp.formatAddedSummary(itemNames: addedNames, listName: resolvedList.name)
+    return .result(dialog: IntentDialog(LocalizedStringResource(stringLiteral: summary)))
+  }
+
+  private enum CategoryMode {
+    /// First item: may use explicit category param and disambiguate when no household hint.
+    case promptIfNeeded
+    /// Follow-ups: ignore explicit category; use hint when known, otherwise uncategorized (no prompt).
+    case hintOrUncategorized
+  }
+
+  private enum AddOutcome {
+    case added(name: String, category: CategoryEntity?)
+    case alreadyOnList(dialog: String)
+  }
+
+  private enum ResolvedSpokenItem {
+    case catalog(IntentTypeaheadEntry)
+    case newItem(name: String)
+
+    var catalogId: String? {
+      switch self {
+      case .catalog(let entry): return entry.id
+      case .newItem: return nil
+      }
+    }
+  }
+
+  /// Resolve item → duplicate check → category → API write → roster upsert.
+  private func addOneItem(
+    spokenName: String,
+    list: ShoppingListEntity,
+    snapshot: IntentListSnapshot,
+    categoryMode: CategoryMode
+  ) async throws -> AddOutcome {
+    let resolved = try await resolveItem(spokenName: spokenName)
+    let candidate = catalogCandidate(from: resolved, spokenName: spokenName)
+
+    var membership = ListMembershipChecker.bySpokenName(spokenName, listId: list.id)
     if !membership.onList {
-      membership = await ListMembershipChecker.byItemId(itemId: candidate.id, listId: resolvedList.id)
+      membership = await ListMembershipChecker.byItemId(itemId: candidate.id, listId: list.id)
     }
     if membership.onList {
-      return .result(
-        dialog: IntentDialog(LocalizedStringResource(stringLiteral: ListMembershipChecker.dialogAlreadyOnList(
-          itemName: candidate.name,
-          listName: resolvedList.name,
-          membership: membership
-        )))
-      )
+      return .alreadyOnList(dialog: ListMembershipChecker.dialogAlreadyOnList(
+        itemName: candidate.name,
+        listName: list.name,
+        membership: membership
+      ))
     }
 
     let resolvedCategory = try await resolveCategory(
       for: snapshot,
-      list: resolvedList,
-      itemId: resolved.catalogId
+      list: list,
+      itemId: resolved.catalogId,
+      mode: categoryMode
     )
 
     let saved: CatalogItem
@@ -75,22 +171,20 @@ struct AddItemToListIntent: AppIntent {
       throw PantryIntentError.apiFailure
     }
 
-    let afterCreate = await ListMembershipChecker.byItemId(itemId: saved.id, listId: resolvedList.id)
+    let afterCreate = await ListMembershipChecker.byItemId(itemId: saved.id, listId: list.id)
     if afterCreate.onList {
-      return .result(
-        dialog: IntentDialog(LocalizedStringResource(stringLiteral: ListMembershipChecker.dialogAlreadyOnList(
-          itemName: saved.name,
-          listName: resolvedList.name,
-          membership: afterCreate
-        )))
-      )
+      return .alreadyOnList(dialog: ListMembershipChecker.dialogAlreadyOnList(
+        itemName: saved.name,
+        listName: list.name,
+        membership: afterCreate
+      ))
     }
 
     do {
       if let resolvedCategory, resolvedCategory.id != CategoryEntity.uncategorizedId {
         try await PantryApiClient.shared.addItemToCategory(categoryId: resolvedCategory.id, itemId: saved.id)
       } else {
-        try await PantryApiClient.shared.addItemToList(listId: resolvedList.id, itemId: saved.id)
+        try await PantryApiClient.shared.addItemToList(listId: list.id, itemId: saved.id)
       }
     } catch PantryApiError.needsAuthentication {
       throw PantryIntentError.needsAuthentication
@@ -98,32 +192,29 @@ struct AddItemToListIntent: AppIntent {
       throw PantryIntentError.apiFailure
     }
 
+    let categoryId = resolvedCategory?.id == CategoryEntity.uncategorizedId ? nil : resolvedCategory?.id
+    let categoryName = resolvedCategory?.id == CategoryEntity.uncategorizedId ? nil : resolvedCategory?.name
     SharedIntentStore.upsertRosterItem(
-      listId: resolvedList.id,
+      listId: list.id,
       item: IntentRosterItem(
         id: saved.id,
         name: saved.name,
-        categoryId: resolvedCategory?.id == CategoryEntity.uncategorizedId ? nil : resolvedCategory?.id,
-        categoryName: resolvedCategory?.id == CategoryEntity.uncategorizedId ? nil : resolvedCategory?.name
+        categoryId: categoryId,
+        categoryName: categoryName
       )
     )
 
-    let dialog: String
-    if let resolvedCategory, resolvedCategory.id != CategoryEntity.uncategorizedId {
-      dialog = "Added \(saved.name) to \(resolvedCategory.name) on \(resolvedList.name)"
-    } else {
-      dialog = "Added \(saved.name) to \(resolvedList.name)"
-    }
+    return .added(name: saved.name, category: resolvedCategory)
+  }
 
-    let donated = self
-    donated.list = resolvedList
-    donated.itemName = saved.name
-    donated.category = resolvedCategory
+  private func donateSticky(list: ShoppingListEntity, itemName: String) {
+    var donated = self
+    donated.list = list
+    donated.itemName = itemName
+    donated.nextItem = nil
     Task {
       try? await donated.donate()
     }
-
-    return .result(dialog: IntentDialog(LocalizedStringResource(stringLiteral: dialog)))
   }
 
   private func resolveList() async throws -> ShoppingListEntity {
@@ -136,18 +227,6 @@ struct AddItemToListIntent: AppIntent {
       return last
     }
     return try await $list.requestDisambiguation(among: options, dialog: "Which list?")
-  }
-
-  private enum ResolvedSpokenItem {
-    case catalog(IntentTypeaheadEntry)
-    case newItem(name: String)
-
-    var catalogId: String? {
-      switch self {
-      case .catalog(let entry): return entry.id
-      case .newItem: return nil
-      }
-    }
   }
 
   private func resolveItem(spokenName: String) async throws -> ResolvedSpokenItem {
@@ -181,9 +260,10 @@ struct AddItemToListIntent: AppIntent {
   private func resolveCategory(
     for snapshot: IntentListSnapshot,
     list: ShoppingListEntity,
-    itemId: String?
+    itemId: String?,
+    mode: CategoryMode
   ) async throws -> CategoryEntity? {
-    if let category {
+    if mode == .promptIfNeeded, let category {
       return category
     }
 
@@ -194,6 +274,10 @@ struct AddItemToListIntent: AppIntent {
       if let match = snapshot.categories.first(where: { $0.id == hinted }) {
         return CategoryEntity(id: match.id, name: match.name, listId: list.id)
       }
+    }
+
+    if mode == .hintOrUncategorized {
+      return CategoryEntity.uncategorized(listId: list.id)
     }
 
     if snapshot.categories.isEmpty {
