@@ -21,40 +21,43 @@ const PHRASE_GROUPS: PhraseGroup[] = [
   },
   {
     title: 'Add an item',
-    tip: 'Say the list name, then the word “list” (lists are named “Grocery”, not “Grocery list”). “Pantry” works as a short name for the app.',
+    tip: 'Apple’s App Shortcut phrases can only lock onto your list name (not the product). Siri will usually ask “What item?” next — answer with the product name. List titles do not include the word “list”; say it after the name. “Pantry” works as a short app name.',
     phrases: [
-      'Add well salt to Home Improvement list with Pantry',
-      'Add well salt to Grocery list in Pantry Plus',
-      'Put well salt on Home Improvement list with Pantry',
+      'Add an item to Home Improvement list with Pantry',
+      'Add something to Grocery list in Pantry Plus',
+      'Put something on Home Improvement list with Pantry',
     ],
   },
   {
     title: 'Check the list',
+    tip: 'Same pattern: start the check, then say the item when Siri asks.',
     phrases: [
-      'Is well salt on Grocery list with Pantry',
-      'Is well salt on Home Improvement list in Pantry Plus',
+      'Is an item on Grocery list with Pantry',
+      'Check Home Improvement list in Pantry Plus',
     ],
   },
   {
     title: 'Purchase (check off)',
-    tip: 'Pick a store in the app first (within about 30 minutes), or Siri will ask which store.',
+    tip: 'Pick a store in the app first (within about 30 minutes), or Siri will ask which store. Expect a follow-up for the item name.',
     phrases: [
-      'I bought well salt with Pantry',
-      'Purchase well salt from Grocery list with Pantry',
+      'I bought something with Pantry',
+      'Purchase an item from Grocery list with Pantry',
     ],
   },
   {
     title: 'Remove (no purchase)',
+    tip: 'Expect a follow-up for the item name.',
     phrases: [
-      'Remove well salt from Grocery list with Pantry',
-      'Remove well salt from Home Improvement list in Pantry Plus',
+      'Remove an item from Grocery list with Pantry',
+      'Remove something from Home Improvement list in Pantry Plus',
     ],
   },
   {
     title: 'Move category',
+    tip: 'Phrase may bind the category or the list; Siri will ask for the item (and any missing piece).',
     phrases: [
-      'Move well salt to Hardware with Pantry',
-      'Move well salt to No Category on Grocery list with Pantry',
+      'Move an item to Hardware with Pantry',
+      'Move something on Grocery list with Pantry',
     ],
   },
 ];
@@ -64,9 +67,10 @@ const SiriTips = () => {
     <ScrollView contentContainerStyle={styles.scrollContent}>
       <Text style={styles.intro}>
         First time: say “Hey Siri, turn on Pantry Plus shortcuts” (or enable Siri for
-        Pantry Plus in the Shortcuts app). Apple requires the app name in voice
-        triggers — “with Pantry” is enough (shorter than “Pantry Plus”). Include the
-        item name in the same sentence so Siri does not ask “What item?” again.
+        Pantry Plus in the Shortcuts app). Voice triggers come from App Shortcuts, which
+        Apple limits to one list/category parameter — not free-text item names. End with
+        “with Pantry” (or “Pantry Plus”). When Siri asks “What item?”, say the product
+        name. In the Shortcuts app you can also type the item in the form UI.
       </Text>
 
       {PHRASE_GROUPS.map((group) => (

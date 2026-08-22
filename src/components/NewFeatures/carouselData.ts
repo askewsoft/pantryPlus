@@ -6,6 +6,6 @@ export const carouselData = [
     id: 4,
     title: 'Ask Siri',
     description:
-      'Say “Turn on Pantry Plus shortcuts,” then “Add milk to Grocery list with Pantry.” Use your list name plus the word “list.” More under Help → Siri Voice Tips.',
+      'Say “Turn on Pantry Plus shortcuts,” then “Add an item to Grocery list with Pantry.” Siri will ask for the item name next. More under Help → Siri Voice Tips.',
   },
 ];

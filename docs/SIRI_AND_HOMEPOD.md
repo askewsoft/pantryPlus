@@ -189,9 +189,12 @@ Copy-ready for release notes / help. From [Apple’s voice recognition / Persona
 
 **Example**
 
-> “Hey Siri, add milk to the Grocery list with Pantry.”
+> “Hey Siri, add an item to the Grocery list with Pantry.”
+> Siri: “What item?” → “milk”
 
-Pattern: **{item} + {list name} + “list” + “with Pantry”**. List titles do not include the word “list”; say it after the name. Apple requires an app-name token in App Shortcut phrases — the synonym **Pantry** is shorter than “Pantry Plus.”
+**Why the two-step item name?** Siri discovers third-party actions through **App Shortcuts** phrases we declare in the app. Apple only allows **one** `AppEntity` / `AppEnum` parameter per phrase (for us, usually the list). Free-text item names are `String` parameters, so they **cannot** appear in the App Shortcut phrase template. Siri therefore asks for the item after the shortcut matches. (The Shortcuts app form UI can still type the item in one shot.)
+
+Pattern: **“Add an item to {list name} list with Pantry”**, then answer the item prompt. List titles do not include the word “list”; say it after the name. Apple requires an app-name token — the synonym **Pantry** is shorter than “Pantry Plus.”
 
 Suggested phrases live in the app under **Help → Siri Voice Tips**.
 
@@ -217,8 +220,8 @@ First use may prompt on the iPhone to allow Siri to use Pantry Plus. Guests with
 | Symptom | Likely cause |
 | --- | --- |
 | HomePod does nothing useful / generic Siri answer | Voice not recognized; Personal Requests off; app name not in the phrase |
-| Siri asks “Reminders or Pantry Plus?” | Phrase too close to Reminders. Prefer “{item} to {list} list with Pantry” and keep the item in the same sentence |
-| After picking the app, Siri asks “What item?” | Spoken item was not bound (disambiguation or phrase without item). Repeat the item, or use “Add {item} to {list} list with Pantry” in one breath |
+| Siri asks “Reminders or Pantry Plus?” | Phrase too close to Reminders. Prefer “Add an item to {list} list with Pantry” |
+| After picking the app, Siri asks “What item?” | Expected. App Shortcut phrases can only bind one entity (usually the list), not free-text item names — answer with the product name |
 | Request hits the wrong person’s lists | Voice matched the other Home member (or two accounts share one voice) |
 | Works on iPhone Siri, fails on HomePod | Phone not on that Wi‑Fi, Find My location is another device, phone asleep/off |
 | “Open Pantry Plus to sign in” | No/expired App Group token; user never opened the app after login |

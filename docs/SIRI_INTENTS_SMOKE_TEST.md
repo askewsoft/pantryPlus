@@ -47,9 +47,9 @@ Tip: use a list **without categories** for the first add test to keep the flow s
 2. Search **Pantry Plus**, **Add Item**, or **Check List**.
 3. Tap a shortcut to run it, or add it to **My Shortcuts**.
 
-Donated phrases look like “Add well salt to Grocery list with Pantry” (item + list name + static “list”; “Pantry” is an app-name synonym).
+Donated App Shortcut phrases look like “Add an item to Grocery list with Pantry” (list entity + static “list”; “Pantry” is an app-name synonym). Apple does **not** allow free-text item names in those phrases, so Siri will usually ask **What item?** — answer with the product name. For a one-shot form (no voice), use the Shortcuts app action and fill **Item** there.
 
-See **Help → Siri Voice Tips** in the app for more examples.
+See **Help → Siri Voice Tips** in the app for spoken examples.
 
 ### Option B — Build a test shortcut (most reliable)
 
@@ -218,9 +218,9 @@ If no store was selected recently and multiple stores exist, expect **“Which s
 After Shortcuts passes, try voice (lower priority):
 
 1. Enable Siri in **Settings → Apple Intelligence & Siri**.
-2. Example: *“Hey Siri, add smoke test bread to the Grocery list in Pantry Plus”*
+2. Example: *“Hey Siri, add an item to the Grocery list with Pantry”* → when asked, *“smoke test bread”*
 
-Voice is flakier than Shortcuts forms. **Shortcuts success is sufficient for #168.**
+Voice is flakier than Shortcuts forms (and App Shortcut phrases cannot bind free-text item names). **Shortcuts success is sufficient for #168.**
 
 ---
 
@@ -232,7 +232,7 @@ Run after a **native** rebuild (App Intents are not OTA). Open Pantry Plus once 
 | --- | --- | --- |
 | **Simulator Shortcuts** | Tests 1–4 above (incl. 1b multi-add) | Add / multi-add / duplicate inform / check on / check off |
 | **iPhone Shortcuts** | Same as Simulator | Same dialogs; list picker includes recently used list first |
-| **iPhone Siri** | “Add milk to the Grocery list in Pantry Plus”; follow with eggs / “all done”; “Is milk on the Grocery list in Pantry Plus?” | Multi-add summary or yes/no with category |
+| **iPhone Siri** | “Add an item to the Grocery list with Pantry” → answer item; follow-ups / “all done”; “Is an item on the Grocery list…” → answer item | Multi-add summary or yes/no with category |
 | **Siri disambiguation** | Two lists, omit the list name; or two similar item names (“almond milk” vs “oat milk”) | Siri asks which list / which item |
 | **Signed out** | Sign out, run add or check | “Open Pantry Plus to sign in.” |
 | **HomePod Mini** | Personal Requests on; multi-add session ending with “all done”; add/check phrases | Spoken prompts on HomePod; items on the routed iPhone list |

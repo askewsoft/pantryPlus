@@ -5,17 +5,19 @@ struct PantryAppShortcuts: AppShortcutsProvider {
   // Must use App Shortcuts *builder* syntax only (no `return`, arrays, or other statements).
   // Side effects here break App Intents metadata export and fail EAS/Xcode builds.
   //
-  // Apple requires \(.applicationName) in every phrase (synonyms like “Pantry” count).
+  // Apple rules for App Shortcut phrases (Siri voice triggers):
+  // - Every phrase needs \(.applicationName) (synonyms like “Pantry” count).
+  // - At most ONE AppEntity/AppEnum parameter per phrase.
+  // - String parameters (itemName) are not allowed in phrases — Siri asks “What item?” after match.
   // Put static “list” after \(\.$list) — list names are not “Grocery list”, just “Grocery”.
-  // Include \(\.$itemName) so the spoken product is more likely to survive routing.
   static var appShortcuts: [AppShortcut] {
     AppShortcut(
       intent: AddItemToListIntent(),
       phrases: [
-        "Add \(\.$itemName) to \(\.$list) list with \(.applicationName)",
-        "Add \(\.$itemName) to \(\.$list) list in \(.applicationName)",
-        "Put \(\.$itemName) on \(\.$list) list with \(.applicationName)",
-        "Add \(\.$itemName) with \(.applicationName)",
+        "Add an item to \(\.$list) list with \(.applicationName)",
+        "Add something to \(\.$list) list in \(.applicationName)",
+        "Put something on \(\.$list) list with \(.applicationName)",
+        "Add an item with \(.applicationName)",
       ],
       shortTitle: "Add to Pantry",
       systemImageName: "plus.circle"
@@ -23,9 +25,9 @@ struct PantryAppShortcuts: AppShortcutsProvider {
     AppShortcut(
       intent: IsItemOnListIntent(),
       phrases: [
-        "Is \(\.$itemName) on \(\.$list) list in \(.applicationName)",
-        "Is \(\.$itemName) on \(\.$list) list with \(.applicationName)",
-        "Check if \(\.$itemName) is on \(\.$list) list in \(.applicationName)",
+        "Is an item on \(\.$list) list in \(.applicationName)",
+        "Check \(\.$list) list with \(.applicationName)",
+        "Check my list in \(.applicationName)",
       ],
       shortTitle: "Check List",
       systemImageName: "checkmark.circle"
@@ -33,9 +35,9 @@ struct PantryAppShortcuts: AppShortcutsProvider {
     AppShortcut(
       intent: PurchaseItemIntent(),
       phrases: [
-        "I bought \(\.$itemName) with \(.applicationName)",
-        "Purchase \(\.$itemName) from \(\.$list) list with \(.applicationName)",
-        "I bought \(\.$itemName) on \(\.$list) list in \(.applicationName)",
+        "I bought something with \(.applicationName)",
+        "Purchase an item from \(\.$list) list with \(.applicationName)",
+        "I bought something on \(\.$list) list in \(.applicationName)",
       ],
       shortTitle: "Purchase Item",
       systemImageName: "cart.fill"
@@ -43,8 +45,8 @@ struct PantryAppShortcuts: AppShortcutsProvider {
     AppShortcut(
       intent: RemoveItemFromListIntent(),
       phrases: [
-        "Remove \(\.$itemName) from \(\.$list) list with \(.applicationName)",
-        "Remove \(\.$itemName) from \(\.$list) list in \(.applicationName)",
+        "Remove an item from \(\.$list) list with \(.applicationName)",
+        "Remove something from \(\.$list) list in \(.applicationName)",
       ],
       shortTitle: "Remove Item",
       systemImageName: "minus.circle"
@@ -52,8 +54,8 @@ struct PantryAppShortcuts: AppShortcutsProvider {
     AppShortcut(
       intent: MoveItemToCategoryIntent(),
       phrases: [
-        "Move \(\.$itemName) to \(\.$category) with \(.applicationName)",
-        "Move \(\.$itemName) to \(\.$category) on \(\.$list) list with \(.applicationName)",
+        "Move an item to \(\.$category) with \(.applicationName)",
+        "Move something on \(\.$list) list with \(.applicationName)",
       ],
       shortTitle: "Move Category",
       systemImageName: "folder"
