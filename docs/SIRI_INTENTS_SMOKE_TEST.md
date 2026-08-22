@@ -1,6 +1,6 @@
 # Siri App Intents — manual smoke test
 
-Manual test matrix for Phase 5 add/check intents ([#168](https://github.com/askewsoft/pantryPlus/issues/168), [#169](https://github.com/askewsoft/pantryPlus/issues/169), [#171](https://github.com/askewsoft/pantryPlus/issues/171)). Parent epic: [#93](https://github.com/askewsoft/pantryPlus/issues/93).
+Manual test matrix for Phase 5 intents ([#168](https://github.com/askewsoft/pantryPlus/issues/168), [#169](https://github.com/askewsoft/pantryPlus/issues/169), [#170](https://github.com/askewsoft/pantryPlus/issues/170), [#171](https://github.com/askewsoft/pantryPlus/issues/171)). Parent epic: [#93](https://github.com/askewsoft/pantryPlus/issues/93).
 
 Related docs:
 
@@ -18,6 +18,9 @@ Logic tests (disambiguation + inform-and-skip, no Simulator): `npm run test:inte
 | Add duplicate | `AddItemToListIntent` | First-item duplicate: “Already on …” and **no** loop; in-loop duplicate: inform and keep asking |
 | Check on list | `IsItemOnListIntent` | “Yes, … is on …” (with category when known) |
 | Check off list | `IsItemOnListIntent` | “No, … is not on …” |
+| Purchase item | `PurchaseItemIntent` | Item purchased at store and removed from list (uses recent store ≤30 min, else asks which store) |
+| Remove item | `RemoveItemFromListIntent` | Item removed without purchase history |
+| Move category | `MoveItemToCategoryIntent` | Item moves to chosen category or **No Category** |
 
 Shortcuts app on **iOS Simulator or a physical device** is the fastest path. Siri voice is optional follow-up testing.
 
@@ -44,7 +47,9 @@ Tip: use a list **without categories** for the first add test to keep the flow s
 2. Search **Pantry Plus**, **Add Item**, or **Check List**.
 3. Tap a shortcut to run it, or add it to **My Shortcuts**.
 
-Donated phrases look like “Add an item to {list} list in Pantry Plus” (list entity only; item name is entered at run time).
+Donated phrases look like “Add well salt to Grocery list with Pantry” (item + list name + static “list”; “Pantry” is an app-name synonym).
+
+See **Help → Siri Voice Tips** in the app for more examples.
 
 ### Option B — Build a test shortcut (most reliable)
 
@@ -54,7 +59,7 @@ Donated phrases look like “Add an item to {list} list in Pantry Plus” (list 
 4. Tap **List** and pick your test list.
 5. Name the shortcut (e.g. “PP Add Item Test”) and save.
 
-Repeat for **Is Item on List** (second shortcut).
+Repeat for **Is Item on List**, **Purchase Item**, **Remove Item from List**, and **Move Item to Category** as needed.
 
 Shortcuts provides a form UI — no Siri voice required. That is ideal for smoke testing.
 
@@ -132,6 +137,49 @@ Optional: during the loop, re-enter an item already on the list — expect an **
 
 ---
 
+## Test 5 — Purchase item (check-off)
+
+1. In Pantry Plus, **select a store** (or let GPS select one) within the last 30 minutes.
+2. Ensure `SmokeTest Bread` is on the list (re-add if needed).
+3. Run **Purchase Item**.
+4. **Item:** `SmokeTest Bread`. **List:** test list. Leave **Store** empty to exercise recent-store reuse (or pick a store explicitly).
+
+**Pass if:**
+
+- Dialog like **“Purchased SmokeTest Bread at … Removed from Grocery.”**
+- Item is **gone** from the list.
+- Purchase history for that store includes the item (if you check history in-app).
+
+If no store was selected recently and multiple stores exist, expect **“Which store?”**.
+
+---
+
+## Test 6 — Remove item (no purchase)
+
+1. Add `SmokeTest Remove Me` to the list.
+2. Run **Remove Item from List** with that item and list.
+
+**Pass if:**
+
+- **“Removed SmokeTest Remove Me from …”**
+- Item gone from list.
+- **No** new purchase history row for that remove.
+
+---
+
+## Test 7 — Move item to category / no category
+
+1. On a list **with categories**, add `SmokeTest Move Me` (any category or none).
+2. Run **Move Item to Category**.
+3. Pick a different category (or **No Category**).
+
+**Pass if:**
+
+- Dialog confirms the move (or “already in …”).
+- Item appears under the target category (or uncategorized section).
+
+---
+
 ## Quick checklist
 
 | Step | Action | Expected |
@@ -141,6 +189,9 @@ Optional: during the loop, re-enter an item already on the list — expect an **
 | 2 | Add `SmokeTest Bread` again | Already on …; no loop; no duplicate row |
 | 3 | Check `SmokeTest Bread` | Yes, … is on … |
 | 4 | Check `SmokeTest Unicorn Flour` | No, … is not on … |
+| 5 | Purchase `SmokeTest Bread` (store selected recently) | Purchased at …; removed from list |
+| 6 | Remove `SmokeTest Remove Me` | Removed; no purchase |
+| 7 | Move `SmokeTest Move Me` | Under new category or uncategorized |
 
 ---
 
@@ -157,7 +208,8 @@ Optional: during the loop, re-enter an item already on the list — expect an **
 | **Pantry Plus not in Shortcuts (Simulator)** | Open the app once after install; use **Add Action** and search **Pantry Plus**. |
 | **Siri: “I don’t see an app for that” / Search the App Store** | Missing `com.apple.developer.siri` entitlement (or provisioning profile without Siri). Enable **Siri** on the App ID, rebuild native (not OTA). Also check **Shortcuts → Pantry Plus** — actions should appear. If they appear in Shortcuts but not via Siri, open the app’s Shortcuts “i” page and turn **Siri** on, or say “Turn on Pantry Plus shortcuts.” |
 | **Siri offers to install Pantry Plus (already installed)** | Display name / phrasing mismatch, or same as above (shortcuts never registered). Prefer `CFBundleDisplayName` = **Pantry Plus**. |
-| **Category prompt on every new item** | Expected on categorized lists without a household category hint for that catalog item. |
+| **“Open Pantry Plus and pick a store first.”** | Open Locations, select a store (or enable GPS), then retry **Purchase Item**. |
+| **Purchase asks “Which store?” every time** | Selected store older than 30 minutes, or none synced — pick a store in-app and retry within 30 minutes. |
 
 ---
 

@@ -1,7 +1,7 @@
 import AppIntents
 import Foundation
 
-struct AddItemToListIntent: AppIntent {
+struct AddItemToListIntent: AppIntent, PredictableIntent {
   static var title: LocalizedStringResource = "Add Item to List"
   static var description = IntentDescription("Adds an item to a Pantry Plus shopping list")
   static var openAppWhenRun = false
@@ -9,6 +9,24 @@ struct AddItemToListIntent: AppIntent {
   static var parameterSummary: some ParameterSummary {
     Summary("Add \(\.$itemName) to \(\.$list)") {
       \.$category
+    }
+  }
+
+  static var predictionConfiguration: some IntentPredictionConfiguration {
+    IntentPrediction(parameters: (\Self.$itemName, \Self.$list)) { itemName, list in
+      DisplayRepresentation(
+        title: "Add \(itemName) to \(list.name)"
+      )
+    }
+    IntentPrediction(parameters: (\Self.$list)) { list in
+      DisplayRepresentation(
+        title: "Add an item to \(list.name)"
+      )
+    }
+    IntentPrediction(parameters: (\Self.$itemName)) { itemName in
+      DisplayRepresentation(
+        title: "Add \(itemName) to a list"
+      )
     }
   }
 

@@ -177,6 +177,7 @@ Copy-ready for release notes / help. From [Apple’s voice recognition / Persona
 - Install Pantry Plus and **sign in**
 - Open the app once so lists sync (Siri uses that cache)
 - Siri enabled, **Allow Siri When Locked**
+- Tell Siri **“Turn on Pantry Plus shortcuts”** (or enable Siri for the app in Shortcuts → Pantry Plus)
 - Find My → **Share My Location**, **My Location** = **This Device**
 
 **On each HomePod**
@@ -188,7 +189,11 @@ Copy-ready for release notes / help. From [Apple’s voice recognition / Persona
 
 **Example**
 
-> “Hey Siri, add milk to the Grocery list in Pantry Plus.”
+> “Hey Siri, add milk to the Grocery list with Pantry.”
+
+Pattern: **{item} + {list name} + “list” + “with Pantry”**. List titles do not include the word “list”; say it after the name. Apple requires an app-name token in App Shortcut phrases — the synonym **Pantry** is shorter than “Pantry Plus.”
+
+Suggested phrases live in the app under **Help → Siri Voice Tips**.
 
 HomePod relays to the recognized person’s iPhone; Siri speaks the result on the HomePod.
 
@@ -212,6 +217,8 @@ First use may prompt on the iPhone to allow Siri to use Pantry Plus. Guests with
 | Symptom | Likely cause |
 | --- | --- |
 | HomePod does nothing useful / generic Siri answer | Voice not recognized; Personal Requests off; app name not in the phrase |
+| Siri asks “Reminders or Pantry Plus?” | Phrase too close to Reminders. Prefer “{item} to {list} list with Pantry” and keep the item in the same sentence |
+| After picking the app, Siri asks “What item?” | Spoken item was not bound (disambiguation or phrase without item). Repeat the item, or use “Add {item} to {list} list with Pantry” in one breath |
 | Request hits the wrong person’s lists | Voice matched the other Home member (or two accounts share one voice) |
 | Works on iPhone Siri, fails on HomePod | Phone not on that Wi‑Fi, Find My location is another device, phone asleep/off |
 | “Open Pantry Plus to sign in” | No/expired App Group token; user never opened the app after login |

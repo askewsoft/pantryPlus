@@ -21,6 +21,7 @@ let package = Package(
         "PantryIntentsConfig.swift",
         "PantryIntentsDiscovery.swift",
         "SharedIntentStore.swift",
+        "IntentListResolver.swift",
       ],
       sources: [
         "IntentModels.swift",

@@ -52,7 +52,7 @@
       "infoPlist": {
         "CFBundleDisplayName": "Pantry Plus",
         "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to use your location to automatically sort the items in your shopping lists.",
-        "NSSiriUsageDescription": "Pantry Plus uses Siri to add items to your shopping lists and check whether an item is already on a list.",
+        "NSSiriUsageDescription": "Pantry Plus uses Siri to add, purchase, remove, and organize items on your shopping lists.",
         "ITSAppUsesNonExemptEncryption": false,
         "INAlternativeAppNames": [
           {

@@ -4,28 +4,59 @@ import Foundation
 struct PantryAppShortcuts: AppShortcutsProvider {
   // Must use App Shortcuts *builder* syntax only (no `return`, arrays, or other statements).
   // Side effects here break App Intents metadata export and fail EAS/Xcode builds.
+  //
+  // Apple requires \(.applicationName) in every phrase (synonyms like “Pantry” count).
+  // Put static “list” after \(\.$list) — list names are not “Grocery list”, just “Grocery”.
+  // Include \(\.$itemName) so the spoken product is more likely to survive routing.
   static var appShortcuts: [AppShortcut] {
     AppShortcut(
       intent: AddItemToListIntent(),
       phrases: [
-        "Add an item in \(.applicationName)",
-        "Add something with \(.applicationName)",
-        "Add an item to \(\.$list) list in \(.applicationName)",
-        "Add something to \(\.$list) list in \(.applicationName)",
+        "Add \(\.$itemName) to \(\.$list) list with \(.applicationName)",
+        "Add \(\.$itemName) to \(\.$list) list in \(.applicationName)",
+        "Put \(\.$itemName) on \(\.$list) list with \(.applicationName)",
+        "Add \(\.$itemName) with \(.applicationName)",
       ],
-      shortTitle: "Add Item",
+      shortTitle: "Add to Pantry",
       systemImageName: "plus.circle"
     )
     AppShortcut(
       intent: IsItemOnListIntent(),
       phrases: [
-        "Check my list in \(.applicationName)",
-        "Is an item on my list in \(.applicationName)",
-        "Is an item on \(\.$list) list in \(.applicationName)",
-        "Check \(\.$list) list in \(.applicationName)",
+        "Is \(\.$itemName) on \(\.$list) list in \(.applicationName)",
+        "Is \(\.$itemName) on \(\.$list) list with \(.applicationName)",
+        "Check if \(\.$itemName) is on \(\.$list) list in \(.applicationName)",
       ],
       shortTitle: "Check List",
       systemImageName: "checkmark.circle"
+    )
+    AppShortcut(
+      intent: PurchaseItemIntent(),
+      phrases: [
+        "I bought \(\.$itemName) with \(.applicationName)",
+        "Purchase \(\.$itemName) from \(\.$list) list with \(.applicationName)",
+        "I bought \(\.$itemName) on \(\.$list) list in \(.applicationName)",
+      ],
+      shortTitle: "Purchase Item",
+      systemImageName: "cart.fill"
+    )
+    AppShortcut(
+      intent: RemoveItemFromListIntent(),
+      phrases: [
+        "Remove \(\.$itemName) from \(\.$list) list with \(.applicationName)",
+        "Remove \(\.$itemName) from \(\.$list) list in \(.applicationName)",
+      ],
+      shortTitle: "Remove Item",
+      systemImageName: "minus.circle"
+    )
+    AppShortcut(
+      intent: MoveItemToCategoryIntent(),
+      phrases: [
+        "Move \(\.$itemName) to \(\.$category) with \(.applicationName)",
+        "Move \(\.$itemName) to \(\.$category) on \(\.$list) list with \(.applicationName)",
+      ],
+      shortTitle: "Move Category",
+      systemImageName: "folder"
     )
   }
 }

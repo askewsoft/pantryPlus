@@ -174,3 +174,32 @@ final class TypeaheadCorpusCanonicalTests: XCTestCase {
     XCTAssertEqual(ranked[0].matchedAlias, "1 milk")
   }
 }
+
+final class LocationFreshnessTests: XCTestCase {
+  func testRecentLocationWithinWindow() {
+    let now = Date(timeIntervalSince1970: 1_700_000_000)
+    let selectedAtMs = (now.timeIntervalSince1970 - 10 * 60) * 1000
+    let id = LocationFreshness.recentLocationId(
+      selectedId: "store-1",
+      selectedAtMs: selectedAtMs,
+      now: now
+    )
+    XCTAssertEqual(id, "store-1")
+  }
+
+  func testStaleLocationRequiresDisambiguation() {
+    let now = Date(timeIntervalSince1970: 1_700_000_000)
+    let selectedAtMs = (now.timeIntervalSince1970 - 31 * 60) * 1000
+    let id = LocationFreshness.recentLocationId(
+      selectedId: "store-1",
+      selectedAtMs: selectedAtMs,
+      now: now
+    )
+    XCTAssertNil(id)
+  }
+
+  func testMissingSelectionIsNotRecent() {
+    XCTAssertNil(LocationFreshness.recentLocationId(selectedId: nil, selectedAtMs: Date().timeIntervalSince1970 * 1000))
+    XCTAssertNil(LocationFreshness.recentLocationId(selectedId: "store-1", selectedAtMs: nil))
+  }
+}

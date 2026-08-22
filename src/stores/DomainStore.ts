@@ -42,6 +42,8 @@ const DomainStoreModel = t
         locationExplicitlyDisabled: t.optional(t.boolean, false),
         nearestKnownLocation: t.maybeNull(LocationModel),
         selectedKnownLocationId: t.maybeNull(t.string),
+        /** Epoch ms when selectedKnownLocationId was last set (for Siri purchase freshness). */
+        selectedKnownLocationAt: t.maybeNull(t.number),
         /** When true, GPS nearest-store updates also set selectedKnownLocationId. Manual pick sets this false. */
         locationSelectionFollowsGps: t.optional(t.boolean, true),
     })
@@ -73,6 +75,7 @@ const DomainStoreModel = t
             self.locations.spliceWithArray(0, self.locations.length, []);
             self.nearestKnownLocation = null;
             self.selectedKnownLocationId = null;
+            self.selectedKnownLocationAt = null;
             self.locationSelectionFollowsGps = true;
         },
         setLocationEnabled: (locationEnabled: boolean) => {
@@ -277,19 +280,24 @@ const DomainStoreModel = t
             );
             self.locations.replace(locations);
             uiStore.setLocationsLoaded(true);
+            scheduleIntentCacheSync();
         }),
         setNearestKnownLocation(nearestKnownLocation: LocationType | null) {
             self.nearestKnownLocation = nearestKnownLocation ? LocationModel.create(nearestKnownLocation) : null;
         },
         setSelectedKnownLocationId(selectedKnownLocationId: string | null) {
             self.selectedKnownLocationId = selectedKnownLocationId;
+            self.selectedKnownLocationAt = selectedKnownLocationId ? Date.now() : null;
+            scheduleIntentCacheSync();
         },
         setLocationSelectionFollowsGps(locationSelectionFollowsGps: boolean) {
             self.locationSelectionFollowsGps = locationSelectionFollowsGps;
         },
         selectKnownLocation(locationId: string | null) {
             self.selectedKnownLocationId = locationId;
+            self.selectedKnownLocationAt = locationId ? Date.now() : null;
             self.locationSelectionFollowsGps = locationId === null;
+            scheduleIntentCacheSync();
         },
         updateLocationName: flow(function* ({ locationId, name }: { locationId: string; name: string }) {
             const xAuthUser = self.user?.email;

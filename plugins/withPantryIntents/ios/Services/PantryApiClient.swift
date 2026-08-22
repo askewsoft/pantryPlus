@@ -38,6 +38,30 @@ struct PantryApiClient {
     )
   }
 
+  /// Unlink from category only; item remains on the shopping list.
+  func unlinkItemFromCategory(categoryId: String, itemId: String) async throws {
+    try await sendVoid(
+      method: "DELETE",
+      path: "categories/\(categoryId.lowercased())/items/\(itemId.lowercased())/link"
+    )
+  }
+
+  func removeItemFromList(listId: String, itemId: String) async throws {
+    try await sendVoid(
+      method: "DELETE",
+      path: "lists/\(listId.lowercased())/items/\(itemId.lowercased())"
+    )
+  }
+
+  /// Records a purchase at `locationId` and removes the item from the list (server-side).
+  func purchaseItem(listId: String, itemId: String, locationId: String) async throws {
+    try await sendVoid(
+      method: "POST",
+      path: "lists/\(listId.lowercased())/items/\(itemId.lowercased())/purchase",
+      locationId: locationId
+    )
+  }
+
   func isOnList(listId: String, itemId: String) async throws -> Bool {
     struct OnListResponse: Codable { let onList: Bool }
     let response: OnListResponse = try await send(
@@ -100,7 +124,12 @@ struct PantryApiClient {
     return roster
   }
 
-  private func makeRequest(method: String, path: String, body: Data? = nil) throws -> URLRequest {
+  private func makeRequest(
+    method: String,
+    path: String,
+    body: Data? = nil,
+    locationId: String? = nil
+  ) throws -> URLRequest {
     guard let session = SharedIntentStore.loadSession() else {
       throw PantryApiError.needsAuthentication
     }
@@ -115,6 +144,9 @@ struct PantryApiClient {
     request.httpMethod = method
     request.setValue("Bearer \(session.accessToken)", forHTTPHeaderField: "Authorization")
     request.setValue(session.email, forHTTPHeaderField: "X-Auth-User")
+    if let locationId, !locationId.isEmpty {
+      request.setValue(locationId.lowercased(), forHTTPHeaderField: "X-Auth-Location")
+    }
     request.setValue("application/json", forHTTPHeaderField: "Accept")
     if let body {
       request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -127,9 +159,10 @@ struct PantryApiClient {
     method: String,
     path: String,
     body: Encodable? = nil,
+    locationId: String? = nil,
     decode: T.Type
   ) async throws -> T {
-    let data = try await sendData(method: method, path: path, body: body)
+    let data = try await sendData(method: method, path: path, body: body, locationId: locationId)
     do {
       return try JSONDecoder().decode(T.self, from: data)
     } catch {
@@ -137,16 +170,26 @@ struct PantryApiClient {
     }
   }
 
-  private func sendVoid(method: String, path: String, body: Encodable? = nil) async throws {
-    _ = try await sendData(method: method, path: path, body: body)
+  private func sendVoid(
+    method: String,
+    path: String,
+    body: Encodable? = nil,
+    locationId: String? = nil
+  ) async throws {
+    _ = try await sendData(method: method, path: path, body: body, locationId: locationId)
   }
 
-  private func sendData(method: String, path: String, body: Encodable?) async throws -> Data {
+  private func sendData(
+    method: String,
+    path: String,
+    body: Encodable?,
+    locationId: String? = nil
+  ) async throws -> Data {
     var payload: Data?
     if let body {
       payload = try JSONEncoder().encode(AnyEncodable(body))
     }
-    let request = try makeRequest(method: method, path: path, body: payload)
+    let request = try makeRequest(method: method, path: path, body: payload, locationId: locationId)
     let (data, response) = try await URLSession.shared.data(for: request)
     let status = (response as? HTTPURLResponse)?.statusCode ?? 0
     guard (200...299).contains(status) else {

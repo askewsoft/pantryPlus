@@ -19,7 +19,9 @@ struct CategoryEntityQuery: EntityStringQuery {
     let lastId = SharedIntentStore.loadLastUsedListId()
     let target = lists.first(where: { $0.id == lastId }) ?? lists.first
     guard let target else { return [] }
-    return target.categories.map { CategoryEntity(id: $0.id, name: $0.name, listId: target.id) }
+    var entities = target.categories.map { CategoryEntity(id: $0.id, name: $0.name, listId: target.id) }
+    entities.insert(CategoryEntity.uncategorized(listId: target.id), at: 0)
+    return entities
   }
 
   private func allCategories() -> [CategoryEntity] {

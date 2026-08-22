@@ -34,7 +34,15 @@ enum SharedIntentStore {
       let data = try? Data(contentsOf: url),
       let cache = try? decoder.decode(IntentCache.self, from: data)
     else {
-      return IntentCache(lists: [], rosters: [:], typeaheadCorpus: [], lastUsedListId: nil)
+      return IntentCache(
+        lists: [],
+        rosters: [:],
+        typeaheadCorpus: [],
+        lastUsedListId: nil,
+        locations: [],
+        selectedLocationId: nil,
+        selectedLocationAt: nil
+      )
     }
     return cache
   }
@@ -75,6 +83,15 @@ enum SharedIntentStore {
     loadCache().typeaheadCorpus
   }
 
+  static func loadLocations() -> [IntentLocationSnapshot] {
+    loadCache().locations
+  }
+
+  static func loadSelectedLocation() -> (id: String?, atMs: Double?) {
+    let cache = loadCache()
+    return (cache.selectedLocationId, cache.selectedLocationAt)
+  }
+
   static func replaceRoster(listId: String, items: [IntentRosterItem]) {
     var cache = loadCache()
     cache.rosters[listId] = items
@@ -86,6 +103,14 @@ enum SharedIntentStore {
     var roster = cache.rosters[listId] ?? []
     roster.removeAll { $0.id.compare(item.id, options: .caseInsensitive) == .orderedSame }
     roster.append(item)
+    cache.rosters[listId] = roster
+    saveCache(cache)
+  }
+
+  static func removeRosterItem(listId: String, itemId: String) {
+    var cache = loadCache()
+    var roster = cache.rosters[listId] ?? []
+    roster.removeAll { $0.id.compare(itemId, options: .caseInsensitive) == .orderedSame }
     cache.rosters[listId] = roster
     saveCache(cache)
   }

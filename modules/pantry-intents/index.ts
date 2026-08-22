@@ -36,11 +36,20 @@ export type IntentTypeaheadEntry = {
   upc?: string;
 };
 
+export type IntentLocationSnapshot = {
+  id: string;
+  name: string;
+};
+
 export type IntentCachePayload = {
   lists: IntentListSnapshot[];
   rosters: Record<string, IntentRosterItem[]>;
   typeaheadCorpus: IntentTypeaheadEntry[];
   lastUsedListId: string | null;
+  locations: IntentLocationSnapshot[];
+  selectedLocationId: string | null;
+  /** Epoch ms when selectedLocationId was last set. */
+  selectedLocationAt: number | null;
 };
 
 type PantryIntentsNativeModule = {

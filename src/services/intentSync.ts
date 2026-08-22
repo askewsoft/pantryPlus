@@ -60,11 +60,23 @@ async function flushIntentCache() {
       rosters[list.id] = snapshotRoster(list);
     }
 
+    const locationById = new Map<string, { id: string; name: string }>();
+    for (const location of domainStore.locations) {
+      locationById.set(location.id, { id: location.id, name: location.name });
+    }
+    const nearest = domainStore.nearestKnownLocation;
+    if (nearest && !locationById.has(nearest.id)) {
+      locationById.set(nearest.id, { id: nearest.id, name: nearest.name });
+    }
+
     const payload: IntentCachePayload = {
       lists,
       rosters,
       typeaheadCorpus: latestCorpus,
       lastUsedListId: uiStore.selectedShoppingList,
+      locations: Array.from(locationById.values()),
+      selectedLocationId: domainStore.selectedKnownLocationId,
+      selectedLocationAt: domainStore.selectedKnownLocationAt,
     };
     await syncIntentCache(payload);
   } catch (error) {

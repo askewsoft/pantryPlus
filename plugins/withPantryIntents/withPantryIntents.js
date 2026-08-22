@@ -19,7 +19,7 @@ const PLUGIN_IOS_DIR = path.join(__dirname, 'ios');
 const APP_GROUP_ID = 'group.com.askewsoft.pantryplus';
 const DEPLOYMENT_TARGET = '16.0';
 const SIRI_USAGE =
-  'Pantry Plus uses Siri to add items to your shopping lists and check whether an item is already on a list.';
+  'Pantry Plus uses Siri to add, purchase, remove, and organize items on your shopping lists.';
 const DISPLAY_NAME = 'Pantry Plus';
 const ALTERNATIVE_APP_NAMES = [
   {
