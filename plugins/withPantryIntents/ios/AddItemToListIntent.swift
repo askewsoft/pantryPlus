@@ -15,12 +15,12 @@ struct AddItemToListIntent: AppIntent, PredictableIntent {
   static var predictionConfiguration: some IntentPredictionConfiguration {
     IntentPrediction(parameters: (\Self.$itemName, \Self.$list)) { itemName, list in
       DisplayRepresentation(
-        title: "Add \(itemName) to \(list.name)"
+        title: "Add \(itemName) to \(list?.name ?? "a list")"
       )
     }
     IntentPrediction(parameters: (\Self.$list)) { list in
       DisplayRepresentation(
-        title: "Add an item to \(list.name)"
+        title: "Add an item to \(list?.name ?? "a list")"
       )
     }
     IntentPrediction(parameters: (\Self.$itemName)) { itemName in
