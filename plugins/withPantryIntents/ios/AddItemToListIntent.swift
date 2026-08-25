@@ -147,7 +147,7 @@ struct AddItemToListIntent: AppIntent, PredictableIntent {
     }
   }
 
-  /// Resolve item → duplicate check → category → API write → roster upsert.
+  /// Resolve item → duplicate check → create → category (using saved id) → membership → roster upsert.
   private func addOneItem(
     spokenName: String,
     list: ShoppingListEntity,
@@ -168,13 +168,6 @@ struct AddItemToListIntent: AppIntent, PredictableIntent {
         membership: membership
       ))
     }
-
-    let resolvedCategory = try await resolveCategory(
-      for: snapshot,
-      list: list,
-      itemId: resolved.catalogId,
-      mode: categoryMode
-    )
 
     let saved: CatalogItem
     do {
@@ -198,10 +191,19 @@ struct AddItemToListIntent: AppIntent, PredictableIntent {
       ))
     }
 
+    let resolvedCategory = try await resolveCategory(
+      for: snapshot,
+      list: list,
+      itemId: saved.id,
+      mode: categoryMode
+    )
+
     do {
       if let resolvedCategory, resolvedCategory.id != CategoryEntity.uncategorizedId {
         try await PantryApiClient.shared.addItemToCategory(categoryId: resolvedCategory.id, itemId: saved.id)
       } else {
+        // Uncategorized: clear any leftover same-list category links, then add membership.
+        try? await PantryApiClient.shared.clearItemCategories(listId: list.id, itemId: saved.id)
         try await PantryApiClient.shared.addItemToList(listId: list.id, itemId: saved.id)
       }
     } catch PantryApiError.needsAuthentication {
@@ -283,6 +285,16 @@ struct AddItemToListIntent: AppIntent, PredictableIntent {
   ) async throws -> CategoryEntity? {
     if mode == .promptIfNeeded, let category {
       return category
+    }
+
+    // Server-side exclusivity: 1 → use it; >1 → clear all then prompt; 0 → prompt / uncategorized.
+    if let itemId {
+      let links = (try? await PantryApiClient.shared.getItemCategories(listId: list.id, itemId: itemId)) ?? []
+      if links.count > 1 {
+        try? await PantryApiClient.shared.clearItemCategories(listId: list.id, itemId: itemId)
+      } else if links.count == 1, let only = links.first {
+        return CategoryEntity(id: only.id, name: only.name, listId: list.id)
+      }
     }
 
     if let itemId, let hinted = TypeaheadMatcher.findCategoryId(itemId: itemId, currentList: snapshot) {

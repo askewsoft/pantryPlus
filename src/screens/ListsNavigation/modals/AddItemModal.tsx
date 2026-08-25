@@ -351,16 +351,24 @@ const AddItemModal = () => {
     if (originalCategoryId) {
       const originalCategory = currentList.categories.find(c => c.id === originalCategoryId);
       const found = originalCategory?.items.find(i => i.id === itemId);
-      if (found && originalCategory) {
+      if (found) {
         itemSnapshot = { id: found.id, name: found.name, upc: found.upc };
-        await api.category.unlinkCategoryItem({ categoryId: originalCategoryId, itemId, xAuthUser });
-        await originalCategory.removeItem({ itemId, xAuthUser });
       }
     } else {
       const found = currentList.items.find(i => i.id === itemId);
       if (found) {
         itemSnapshot = { id: found.id, name: found.name, upc: found.upc };
-        currentList.detachLocalItem(itemId);
+      }
+    }
+
+    // Also search other folders if rename moved the row
+    if (!itemSnapshot) {
+      for (const category of currentList.categories) {
+        const found = category.items.find(i => i.id === itemId);
+        if (found) {
+          itemSnapshot = { id: found.id, name: found.name, upc: found.upc };
+          break;
+        }
       }
     }
 
@@ -368,10 +376,12 @@ const AddItemModal = () => {
 
     if (newCategoryId && newCategoryId !== '') {
       await api.category.associateCategoryItem({ categoryId: newCategoryId, itemId, xAuthUser });
+      currentList.categories.forEach(category => category.detachLocalItem(itemId));
+      currentList.detachLocalItem(itemId);
       const newCategory = currentList.categories.find(c => c.id === newCategoryId);
       newCategory?.attachLocalItem(itemSnapshot);
     } else {
-      currentList.attachLocalItem(itemSnapshot);
+      await currentList.clearItemCategories({ itemId, xAuthUser });
     }
 
     currentList.loadUnpurchasedItemsCount({ xAuthUser });

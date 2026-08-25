@@ -48,6 +48,7 @@ enum TypeaheadMatcher {
   }
 
   /// Mirrors Add Item typeahead: exact → unique strong match → disambiguate → new item.
+  /// Short queries (length 1) never auto-bind to catalog — ASR fragments like "x" must not become "Xyzal".
   static func resolveSpokenItem(
     _ corpus: [IntentTypeaheadEntry],
     rawName: String,
@@ -55,6 +56,12 @@ enum TypeaheadMatcher {
   ) -> SpokenItemResolution {
     if let exact = matchExact(corpus, rawName: rawName) {
       return .catalog(exact)
+    }
+
+    let query = normalizeItemName(rawName)
+    // Weak / short ASR fragments: treat as a new item rather than a silent catalog hit.
+    if query.count <= 1 {
+      return .newItem
     }
 
     let ranked = search(corpus, rawQuery: rawName, limit: limit)
@@ -79,6 +86,11 @@ enum TypeaheadMatcher {
     if let exact = matchExact(corpus, rawName: rawName),
        let hit = roster.first(where: { $0.id == exact.id }) {
       return hit
+    }
+
+    let query = normalizeItemName(rawName)
+    if query.count <= 1 {
+      return nil
     }
 
     let ranked = search(corpus, rawQuery: rawName, limit: 3)

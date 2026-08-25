@@ -39,6 +39,18 @@ final class SpokenItemResolutionTests: XCTestCase {
     let result = TypeaheadMatcher.resolveSpokenItem(corpus, rawName: "unicorn flour")
     XCTAssertEqual(result, .newItem)
   }
+
+  func testSingleLetterPrefixDoesNotBindToCatalog() {
+    let xyzal = IntentTypeaheadEntry(id: "xyzal", name: "Xyzal", aliases: [], upc: nil)
+    let result = TypeaheadMatcher.resolveSpokenItem([xyzal], rawName: "x")
+    XCTAssertEqual(result, .newItem)
+  }
+
+  func testExactEggsDoesNotBindToXyzal() {
+    let xyzal = IntentTypeaheadEntry(id: "xyzal", name: "Xyzal", aliases: [], upc: nil)
+    let result = TypeaheadMatcher.resolveSpokenItem([xyzal], rawName: "Eggs")
+    XCTAssertEqual(result, .newItem)
+  }
 }
 
 final class InformAndSkipTests: XCTestCase {

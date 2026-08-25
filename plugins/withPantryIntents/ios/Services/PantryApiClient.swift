@@ -10,6 +10,11 @@ enum PantryApiError: Error {
 struct PantryApiClient {
   static let shared = PantryApiClient()
 
+  struct CategoryLink: Codable, Equatable {
+    let id: String
+    let name: String
+  }
+
   func createItem(id: String, name: String, upc: String?) async throws -> CatalogItem {
     let body: [String: String] = [
       "id": id.lowercased(),
@@ -35,6 +40,23 @@ struct PantryApiClient {
     try await sendVoid(
       method: "POST",
       path: "categories/\(categoryId.lowercased())/items/\(itemId.lowercased())"
+    )
+  }
+
+  /// Category links for an item on a list (0 or 1 after exclusivity).
+  func getItemCategories(listId: String, itemId: String) async throws -> [CategoryLink] {
+    try await send(
+      method: "GET",
+      path: "lists/\(listId.lowercased())/items/\(itemId.lowercased())/categories",
+      decode: [CategoryLink].self
+    )
+  }
+
+  /// Clears all category associations for an item on a list; keeps list membership.
+  func clearItemCategories(listId: String, itemId: String) async throws {
+    try await sendVoid(
+      method: "DELETE",
+      path: "lists/\(listId.lowercased())/items/\(itemId.lowercased())/categories"
     )
   }
 
