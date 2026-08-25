@@ -1,4 +1,4 @@
-import { flow, Instance, t, isAlive } from 'mobx-state-tree';
+import { flow, Instance, t, isAlive, getParent } from 'mobx-state-tree';
 import { randomUUID } from 'expo-crypto';
 
 import { api } from '@/api';
@@ -42,6 +42,21 @@ export const CategoryModel = t.model('CategoryModel', {
                 yield api.category.associateCategoryItem({ categoryId: self.id, itemId: saved.id, xAuthUser });
                 const newItem = ItemModel.create({ id: saved.id, name: saved.name, upc: saved.upc });
                 self.items.push(newItem);
+            }
+            // Exclusive on this list: drop from sibling folders / uncategorized locally
+            try {
+                const parentList = getParent(self, 2) as {
+                    categories?: Array<{ id: string; detachLocalItem?: (id: string) => void }>;
+                    detachLocalItem?: (id: string) => void;
+                };
+                parentList.categories?.forEach(category => {
+                    if (category.id !== self.id) {
+                        category.detachLocalItem?.(saved.id);
+                    }
+                });
+                parentList.detachLocalItem?.(saved.id);
+            } catch {
+                // Category may be detached during tests
             }
 
             scheduleIntentCacheSync();
@@ -99,8 +114,8 @@ export const CategoryModel = t.model('CategoryModel', {
     }),
     unCategorizeItem: flow(function*({ itemId, xAuthUser, onItemRemoved }: { itemId: string, xAuthUser: string, onItemRemoved?: () => void }): Generator<any, any, any> {
         try {
-            // disassociate the item from the category and remove the item from the shopping list
-            yield api.category.removeCategoryItem({ categoryId: self.id, itemId, xAuthUser });
+            // Clear this category link only; caller keeps list membership via clear-all or attach.
+            yield api.category.unlinkCategoryItem({ categoryId: self.id, itemId, xAuthUser });
             const index = self.items?.findIndex(i => i.id === itemId);
             if (index !== undefined && index >= 0) {
                 self.items!.splice(index, 1);
@@ -108,7 +123,6 @@ export const CategoryModel = t.model('CategoryModel', {
 
             scheduleIntentCacheSync();
 
-            // Notify parent that an item was removed so it can update its count
             if (onItemRemoved) {
                 onItemRemoved();
             }

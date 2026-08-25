@@ -43,6 +43,26 @@ function applyLocalItemReplace(
     }
 }
 
+/** Local-only: drop an uncategorized item from the list array without an API delete. */
+function detachLocalUncategorizedItem(list: Pick<ListType, 'items'>, itemId: string) {
+    const index = list.items.findIndex(i => i.id === itemId);
+    if (index >= 0) {
+        list.items.splice(index, 1);
+        scheduleIntentCacheSync();
+    }
+}
+
+/** Local-only: append an uncategorized item already known to be on the list server-side. */
+function attachLocalUncategorizedItem(
+    list: Pick<ListType, 'items'>,
+    item: { id: string; name: string; upc?: string },
+) {
+    if (!list.items.some(i => i.id === item.id)) {
+        list.items.push(ItemModel.create({ id: item.id, name: item.name, upc: item.upc }));
+        scheduleIntentCacheSync();
+    }
+}
+
 export const ListModel = t.model('ListModel', {
     id: t.identifier,
     name: t.string,
@@ -331,19 +351,61 @@ export const ListModel = t.model('ListModel', {
             if (!saved) {
                 throw new Error('find-or-create item returned no result');
             }
-            const alreadyOnList = self.items.some(i => i.id === saved.id);
-            if (!alreadyOnList) {
-                const newItem = ItemModel.create({ id: saved.id, name: saved.name, upc: saved.upc });
-                yield api.list.associateListItem({ listId: self.id, itemId: saved.id, xAuthUser });
-                self.items.push(newItem);
+
+            // Re-add policy: 1 → keep ICR; >1 → clear all (prompt / uncategorized); 0 → uncategorized.
+            const existingCategories: Array<{ id?: string; name?: string }> =
+                yield api.list.getItemCategories({ listId: self.id, itemId: saved.id, xAuthUser });
+            if (existingCategories.length > 1) {
+                yield api.list.clearItemCategories({ listId: self.id, itemId: saved.id, xAuthUser });
+                self.categories.forEach(category => category.detachLocalItem(saved.id));
             }
-            // Update the count after adding an item
+
+            const alreadyOnList = self.items.some(i => i.id === saved.id)
+                || self.categories.some(c => c.items.some(i => i.id === saved.id));
+            if (!alreadyOnList) {
+                yield api.list.associateListItem({ listId: self.id, itemId: saved.id, xAuthUser });
+            }
+
+            const linksAfter: Array<{ id?: string; name?: string }> =
+                existingCategories.length === 1
+                    ? existingCategories
+                    : yield api.list.getItemCategories({ listId: self.id, itemId: saved.id, xAuthUser });
+
+            if (linksAfter.length === 1 && linksAfter[0].id) {
+                const category = self.categories.find(c => c.id === linksAfter[0].id);
+                if (category && !category.items.some(i => i.id === saved.id)) {
+                    category.attachLocalItem({ id: saved.id, name: saved.name, upc: saved.upc });
+                }
+                // Ensure not also shown as uncategorized
+                detachLocalUncategorizedItem(self, saved.id);
+            } else if (!self.items.some(i => i.id === saved.id)) {
+                self.items.push(ItemModel.create({ id: saved.id, name: saved.name, upc: saved.upc }));
+            }
+
             const count = yield api.list.getListItemsCount({ listId: self.id, xAuthUser });
             self.unpurchasedItemsCount = count;
             scheduleIntentCacheSync();
         } catch (error) {
             console.error(`Error adding item to list: ${error}`);
         }
+    }),
+    /** Clear all category links for an item on this list; keep membership and show uncategorized. */
+    clearItemCategories: flow(function*({
+        itemId,
+        xAuthUser,
+    }: {
+        itemId: string;
+        xAuthUser: string;
+    }): Generator<any, any, any> {
+        const found =
+            self.items.find(i => i.id === itemId) ??
+            self.categories.flatMap(c => c.items).find(i => i.id === itemId);
+        yield api.list.clearItemCategories({ listId: self.id, itemId, xAuthUser });
+        self.categories.forEach(category => category.detachLocalItem(itemId));
+        if (found && !self.items.some(i => i.id === itemId)) {
+            attachLocalUncategorizedItem(self, { id: found.id, name: found.name, upc: found.upc });
+        }
+        scheduleIntentCacheSync();
     }),
     removeItem: flow(function*({ itemId, xAuthUser }: { itemId: string, xAuthUser: string }): Generator<any, any, any> {
         try {
@@ -370,18 +432,11 @@ export const ListModel = t.model('ListModel', {
     }),
     /** Local-only: drop an uncategorized item from the list array without an API delete. */
     detachLocalItem(itemId: string) {
-        const index = self.items.findIndex(i => i.id === itemId);
-        if (index >= 0) {
-            self.items.splice(index, 1);
-            scheduleIntentCacheSync();
-        }
+        detachLocalUncategorizedItem(self, itemId);
     },
     /** Local-only: append an uncategorized item already known to be on the list server-side. */
     attachLocalItem(item: { id: string; name: string; upc?: string }) {
-        if (!self.items.some(i => i.id === item.id)) {
-            self.items.push(ItemModel.create({ id: item.id, name: item.name, upc: item.upc }));
-            scheduleIntentCacheSync();
-        }
+        attachLocalUncategorizedItem(self, item);
     },
     /** Swap an item on this list after rename (same id = casing/in-place; new id = find/fork). */
     replaceLocalItem(fromId: string, toItem: { id: string; name: string; upc?: string }) {
