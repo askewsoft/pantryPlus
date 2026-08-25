@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { buildTypeaheadCorpus, searchTypeaheadCorpus } from './itemTypeahead';
+import { buildTypeaheadCorpus, searchTypeaheadCorpus, resolveSpokenItem } from './itemTypeahead';
 
 const milkId = 'milk-id';
 
@@ -45,6 +45,13 @@ const milkId = 'milk-id';
   assert.ok(hits.length >= 1);
   assert.strictEqual(hits[0].entry.name, 'Milk');
   assert.strictEqual(hits[0].matchedAlias, '1 milk');
+}
+
+{
+  const corpus = buildTypeaheadCorpus([{ id: 'xyzal', name: 'Xyzal' }]);
+  assert.deepStrictEqual(resolveSpokenItem(corpus, 'x'), { kind: 'newItem' });
+  assert.deepStrictEqual(resolveSpokenItem(corpus, 'Eggs'), { kind: 'newItem' });
+  assert.strictEqual(resolveSpokenItem(corpus, 'Xyzal').kind, 'catalog');
 }
 
 console.log('itemTypeahead tests passed');

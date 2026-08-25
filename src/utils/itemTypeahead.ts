@@ -178,3 +178,41 @@ export function matchTypeaheadEntry(
     allSearchNames(entry).some(name => normalizeItemName(name) === query),
   );
 }
+
+export type SpokenItemResolution =
+  | { kind: 'catalog'; entry: TypeaheadEntry }
+  | { kind: 'ambiguous'; entries: TypeaheadEntry[] }
+  | { kind: 'newItem' };
+
+/**
+ * Siri-style resolve: exact → unique strong match → disambiguate → new item.
+ * Length-1 queries never auto-bind to catalog (avoids "x" → "Xyzal").
+ */
+export function resolveSpokenItem(
+  corpus: TypeaheadEntry[],
+  rawName: string,
+  limit = 5,
+): SpokenItemResolution {
+  const exact = matchTypeaheadEntry(corpus, rawName);
+  if (exact) return { kind: 'catalog', entry: exact };
+
+  const query = normalizeItemName(rawName);
+  if (query.length <= 1) return { kind: 'newItem' };
+
+  const ranked = searchTypeaheadCorpus(corpus, rawName, limit);
+  const top = ranked[0];
+  if (
+    top &&
+    top.score >= 200 &&
+    (ranked.length === 1 || top.score - (ranked[1]?.score ?? 0) >= 50)
+  ) {
+    return { kind: 'catalog', entry: top.entry };
+  }
+
+  const strong = ranked.filter(r => r.score >= 100);
+  if (strong.length === 1) return { kind: 'catalog', entry: strong[0].entry };
+  if (strong.length > 1) {
+    return { kind: 'ambiguous', entries: strong.slice(0, 5).map(r => r.entry) };
+  }
+  return { kind: 'newItem' };
+}
