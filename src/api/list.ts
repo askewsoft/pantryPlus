@@ -88,6 +88,46 @@ const associateListItem= async ({ listId, itemId, xAuthUser }: { listId: string,
     }
 }
 
+const getItemCategories = async ({
+    listId,
+    itemId,
+    xAuthUser,
+}: {
+    listId: string;
+    itemId: string;
+    xAuthUser: string;
+}): Promise<Array<{ id?: string; name?: string }>> => {
+    const configuration = await getApiConfiguration();
+    const listsApi = new ListsApi(configuration);
+    try {
+        const response = await listsApi.getItemCategories(xAuthUser, listId, itemId);
+        return response.data ?? [];
+    } catch (error) {
+        console.error(`Failed to getItemCategories in DB: ${error}`);
+        return [];
+    }
+};
+
+/** Clear all category links for an item on this list; keep list membership. */
+const clearItemCategories = async ({
+    listId,
+    itemId,
+    xAuthUser,
+}: {
+    listId: string;
+    itemId: string;
+    xAuthUser: string;
+}): Promise<void> => {
+    const configuration = await getApiConfiguration();
+    const listsApi = new ListsApi(configuration);
+    try {
+        await listsApi.clearItemCategories(xAuthUser, listId, itemId);
+    } catch (error) {
+        console.error(`Failed to clearItemCategories in DB: ${error}`);
+        throw error;
+    }
+};
+
 const removeListItem = async ({ listId, itemId, xAuthUser }: { listId?: string, itemId?: string, xAuthUser: string }) => {
     const configuration = await getApiConfiguration();
     const listsApi = new ListsApi(configuration);
@@ -154,6 +194,8 @@ export default {
     getListItems,
     getListItemsCount,
     associateListItem,
+    getItemCategories,
+    clearItemCategories,
     removeListItem,
     updateList,
     removeList,

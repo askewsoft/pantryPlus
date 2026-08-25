@@ -34,15 +34,10 @@ export const useItemActions = ({
   }, [currList, itemId, xAuthUser]);
 
   const onUncategorizeItem = useCallback(async () => {
-    if (categoryId) {
-      await currCategory?.unCategorizeItem({
-        itemId,
-        xAuthUser,
-        onItemRemoved: () => currList?.loadUnpurchasedItemsCount({ xAuthUser })
-      });
-      await currList?.removeItem({ itemId, xAuthUser });
-    }
-  }, [categoryId, currCategory, currList, itemId, xAuthUser]);
+    // Clear all same-list category links; keep list membership (uncategorized).
+    await currList?.clearItemCategories({ itemId, xAuthUser });
+    await currList?.loadUnpurchasedItemsCount({ xAuthUser });
+  }, [currList, itemId, xAuthUser]);
 
   const handlePurchase = useCallback(async () => {
     const xAuthLocation = domainStore.selectedKnownLocationId ?? '';

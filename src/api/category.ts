@@ -14,11 +14,7 @@ const updateCategory = async ({ categoryId, name, ordinal, xAuthUser, xAuthLocat
 const associateCategoryItem = async ({ categoryId, itemId, xAuthUser }: { categoryId: string, itemId: string, xAuthUser: string }): Promise<void> => {
     const configuration = await getApiConfiguration();
     const categoriesApi = new CategoriesApi(configuration);
-    try {
-        await categoriesApi.addItemToCategory(xAuthUser, categoryId, itemId);
-    } catch (error) {
-        console.error(`Error adding category item: ${error}`);
-    }
+    await categoriesApi.addItemToCategory(xAuthUser, categoryId, itemId);
 }
 
 const loadCategoryItems = async ({ categoryId, xAuthUser }: { categoryId: string, xAuthUser: string }): Promise<Array<Item>> => {
@@ -51,11 +47,7 @@ const removeCategoryItem = async ({ categoryId, itemId, xAuthUser }: { categoryI
 const unlinkCategoryItem = async ({ categoryId, itemId, xAuthUser }: { categoryId: string, itemId: string, xAuthUser: string }): Promise<void> => {
     const configuration = await getApiConfiguration();
     const categoriesApi = new CategoriesApi(configuration);
-    try {
-        await categoriesApi.unlinkItemFromCategory(xAuthUser, categoryId, itemId);
-    } catch (error) {
-        console.error(`Error unlinking category item: ${error}`);
-    }
+    await categoriesApi.unlinkItemFromCategory(xAuthUser, categoryId, itemId);
 }
 
 export default {
