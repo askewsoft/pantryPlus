@@ -14,10 +14,15 @@ struct PantryAppShortcuts: AppShortcutsProvider {
     AppShortcut(
       intent: AddItemToListIntent(),
       phrases: [
-        "Add an item to \(\.$list) list with \(.applicationName)",
-        "Add something to \(\.$list) list in \(.applicationName)",
-        "Put something on \(\.$list) list with \(.applicationName)",
-        "Add an item with \(.applicationName)",
+        "Add to \(.applicationName)",
+        "Add item to \(.applicationName)",
+        "Add item in \(.applicationName)",
+        "Add an item to \(\.$list) list in \(.applicationName)",
+        "Add an item to the \(\.$list) list in \(.applicationName)",
+        "Add an item to the \(\.$list) list on \(.applicationName)",
+        "Add something to the \(\.$list) list in \(.applicationName)",
+        "Add to the \(\.$list) list in \(.applicationName)",
+        "Put something on the \(\.$list) list in \(.applicationName)",
       ],
       shortTitle: "Add to Pantry",
       systemImageName: "plus.circle"
@@ -25,9 +30,15 @@ struct PantryAppShortcuts: AppShortcutsProvider {
     AppShortcut(
       intent: IsItemOnListIntent(),
       phrases: [
-        "Is an item on \(\.$list) list in \(.applicationName)",
-        "Check \(\.$list) list with \(.applicationName)",
-        "Check my list in \(.applicationName)",
+        "Check list in \(.applicationName)",
+        "Check \(.applicationName) for something",
+        "Check \(.applicationName) for an item",
+        "Check for item in \(.applicationName)",
+        "Check for item on the \(\.$list) list in \(.applicationName)",
+        "Check \(\.$list) list in \(.applicationName)",
+        "Check the \(\.$list) list in \(.applicationName)",
+        "Check if an item is on the \(\.$list) list in \(.applicationName)",
+        "Is an item on the \(\.$list) list in \(.applicationName)",
       ],
       shortTitle: "Check List",
       systemImageName: "checkmark.circle"
@@ -35,9 +46,15 @@ struct PantryAppShortcuts: AppShortcutsProvider {
     AppShortcut(
       intent: PurchaseItemIntent(),
       phrases: [
-        "I bought something with \(.applicationName)",
-        "Purchase an item from \(\.$list) list with \(.applicationName)",
-        "I bought something on \(\.$list) list in \(.applicationName)",
+        "I bought something in \(.applicationName)",
+        "Mark item purchased in \(.applicationName)",
+        "Mark item as purchased in \(.applicationName)",
+        "Check off an item in \(.applicationName)",
+        "Mark item as purchased on the \(\.$list) list in \(.applicationName)",
+        "I bought something on the \(\.$list) list in \(.applicationName)",
+        "Purchase an item on the \(\.$list) list in \(.applicationName)",
+        "Mark an item as purchased on the \(\.$list) list in \(.applicationName)",
+        "Check off an item from the \(\.$list) list in \(.applicationName)",
       ],
       shortTitle: "Purchase Item",
       systemImageName: "cart.fill"
@@ -45,7 +62,10 @@ struct PantryAppShortcuts: AppShortcutsProvider {
     AppShortcut(
       intent: RemoveItemFromListIntent(),
       phrases: [
-        "Remove an item from \(\.$list) list with \(.applicationName)",
+        "Remove an item in \(.applicationName)",
+        "Remove item from \(\.$list) list in \(.applicationName)",
+        "Take item off of the \(\.$list) list in \(.applicationName)",
+        "Remove an item from the \(\.$list) list in \(.applicationName)",
         "Remove something from \(\.$list) list in \(.applicationName)",
       ],
       shortTitle: "Remove Item",
@@ -54,8 +74,10 @@ struct PantryAppShortcuts: AppShortcutsProvider {
     AppShortcut(
       intent: MoveItemToCategoryIntent(),
       phrases: [
-        "Move an item to \(\.$category) with \(.applicationName)",
-        "Move something on \(\.$list) list with \(.applicationName)",
+        "Move an item in \(.applicationName)",
+        "Move an item to \(\.$category) in \(.applicationName)",
+        "Move item on the \(\.$list) list in \(.applicationName)",
+        "Move something on the \(\.$list) list in \(.applicationName)",
       ],
       shortTitle: "Move Category",
       systemImageName: "folder"
