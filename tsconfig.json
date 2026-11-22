@@ -8,7 +8,8 @@
       "@/*": ["src/*"],
       "pantry-intents": ["modules/pantry-intents/index.ts"]
     },
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "customConditions": ["react-native", "react-native-legacy-deep-imports"]
   },
   "include": [
     "App.tsx",

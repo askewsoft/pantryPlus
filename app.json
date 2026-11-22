@@ -30,7 +30,8 @@
       "expo-asset",
       "expo-font",
       "./plugins/withFmtPodfile.js",
-      "./plugins/withPantryIntents/withPantryIntents.js"
+      "./plugins/withPantryIntents/withPantryIntents.js",
+      "expo-status-bar"
     ],
     "ios": {
       "appleTeamId": "QCCN3A2ZNS",
