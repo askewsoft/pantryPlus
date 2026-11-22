@@ -391,6 +391,10 @@ const AddItemModal = () => {
     if (itemName.trim() !== '') {
       await handleAddItem();
     }
+    // Defer focus so the Next tap's blur settles before restoring the keyboard.
+    setTimeout(() => {
+      textInputRef.current?.focus();
+    }, 0);
   };
 
   const handleDone = async () => {
@@ -418,52 +422,56 @@ const AddItemModal = () => {
     wasCategoryOpenRef.current = categoryOpen;
   }, [categoryOpen, categoryExpanded]);
 
+  const openCategoryPicker = () => {
+    setCategoryExpanded(true);
+    setCategoryOpen(true);
+  };
+
   const renderCategorySection = () => {
     if (isAdding) {
-      return (
-        <>
-          <Pressable
-            style={styles.categoryChip}
-            onPress={() => setCategoryExpanded(true)}
-            accessibilityRole="button"
-            accessibilityLabel={`Category: ${selectedCategoryLabel}. Tap to change.`}
+      // Compact chip until tapped; then replace with an already-open picker
+      // so the user sees category options in one tap (not a nested second dropdown).
+      return categoryExpanded ? (
+        <View style={styles.dropdownContainer}>
+          <DropDownPicker
+            open={categoryOpen}
+            value={selectedCategoryId}
+            items={categoryItems}
+            setOpen={setCategoryOpen}
+            setValue={handleCategoryValueChange}
+            placeholder="Select Category (Optional)"
+            style={styles.dropdown}
+            dropDownContainerStyle={styles.dropdownList}
+            textStyle={styles.dropdownText}
+            placeholderStyle={styles.dropdownPlaceholder}
+            zIndex={3000}
+            zIndexInverse={1000}
+            listMode="SCROLLVIEW"
+            scrollViewProps={{
+              nestedScrollEnabled: true,
+            }}
+          />
+        </View>
+      ) : (
+        <Pressable
+          style={styles.categoryChip}
+          onPress={openCategoryPicker}
+          accessibilityRole="button"
+          accessibilityLabel={`Category: ${selectedCategoryLabel}. Tap to change.`}
+        >
+          <Text
+            style={styles.categoryChipText}
+            numberOfLines={1}
+            ellipsizeMode="tail"
           >
-            <Text
-              style={styles.categoryChipText}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              Category: {selectedCategoryLabel}
-            </Text>
-            <MaterialIcons
-              name="expand-more"
-              size={iconSize.rowIconSize}
-              color={colors.brandColor}
-            />
-          </Pressable>
-          {categoryExpanded && (
-            <View style={styles.dropdownContainer}>
-              <DropDownPicker
-                open={categoryOpen}
-                value={selectedCategoryId}
-                items={categoryItems}
-                setOpen={setCategoryOpen}
-                setValue={handleCategoryValueChange}
-                placeholder="Select Category (Optional)"
-                style={styles.dropdown}
-                dropDownContainerStyle={styles.dropdownList}
-                textStyle={styles.dropdownText}
-                placeholderStyle={styles.dropdownPlaceholder}
-                zIndex={3000}
-                zIndexInverse={1000}
-                listMode="SCROLLVIEW"
-                scrollViewProps={{
-                  nestedScrollEnabled: true,
-                }}
-              />
-            </View>
-          )}
-        </>
+            Category: {selectedCategoryLabel}
+          </Text>
+          <MaterialIcons
+            name="expand-more"
+            size={iconSize.rowIconSize}
+            color={colors.brandColor}
+          />
+        </Pressable>
       );
     }
 
