@@ -28,7 +28,7 @@
       "ios": {
         "simulator": false,
         "buildConfiguration": "Release",
-        "image": "macos-sequoia-15.6-xcode-26.2"
+        "image": "macos-tahoe-26.6-xcode-27.2"
       }
     },
     "prod": {
@@ -39,7 +39,7 @@
       "ios": {
         "simulator": false,
         "buildConfiguration": "Release",
-        "image": "macos-sequoia-15.6-xcode-26.2"
+        "image": "macos-tahoe-26.6-xcode-27.2"
       }
     }
   },
