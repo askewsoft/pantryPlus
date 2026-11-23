@@ -232,6 +232,15 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
     uiStore.setAddItemModalVisible(true);
   };
 
+  const displayCategories = currentList
+    ? toJS(currentList.categories)
+        .filter(category => uiStore.showEmptyFolders || category.items.length > 0)
+        .sort(sortByOrdinal)
+    : [];
+  if (uiStore.isCategoryOrderReversed(listId)) {
+    displayCategories.reverse();
+  }
+
   return (
     <ErrorBoundary>
             <View style={styles.container}>
@@ -241,9 +250,7 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
           <FlatList
             ref={scrollViewRef}
             style={styles.flatListStyle}
-            data={toJS(currentList.categories)
-              .filter(category => uiStore.showEmptyFolders || category.items.length > 0)
-              .sort(sortByOrdinal)}
+            data={displayCategories}
             renderItem={renderCategoryElement}
             keyExtractor={category => category.id}
             ListHeaderComponent={<ListItems listId={listId!} />}

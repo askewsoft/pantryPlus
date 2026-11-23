@@ -76,6 +76,14 @@ const ListsNavigation = ({navigation}: {navigation: any}) => {
         onToggleCategoryLabels={() => {
           uiStore.setShowCategoryLabels(!uiStore.showCategoryLabels);
         }}
+        onToggleReverseCategoryOrder={() => {
+          const listId = uiStore.selectedShoppingList;
+          if (!listId) return;
+          uiStore.setCategoryOrderReversed(
+            listId,
+            !uiStore.isCategoryOrderReversed(listId),
+          );
+        }}
       />
     );
   }

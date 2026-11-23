@@ -13,6 +13,11 @@ const OpenCategory = t.model('OpenCategory', {
     open: t.boolean,
 });
 
+const ReversedCategoryList = t.model('ReversedCategoryList', {
+    id: t.identifier,
+    reversed: t.boolean,
+});
+
 export const UIStoreModel = t.model('UIStoreModel', {
     addCategoryModalVisible: false,
     addGroupModalVisible: false,
@@ -31,6 +36,8 @@ export const UIStoreModel = t.model('UIStoreModel', {
     listsLoaded: false,
     locationsLoaded: false,
     openCategories: t.map(OpenCategory),
+    /** Per-list UI preference: reverse category display order (does not change DB ordinals) */
+    reversedCategoryLists: t.map(ReversedCategoryList),
     pickLocationPromptVisible: false,
     purchaseHistoryLookbackDays: t.optional(t.number, 90),
     selectedLocation: t.maybeNull(t.string),
@@ -74,6 +81,7 @@ export const UIStoreModel = t.model('UIStoreModel', {
         self.listsLoaded = false;
         self.locationsLoaded = false;
         self.openCategories.clear();
+        self.reversedCategoryLists.clear();
         self.recentlyRemovedItems.clear();
         self.pickLocationPromptVisible = false;
         self.purchaseHistoryLookbackDays = 90;
@@ -138,6 +146,13 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setOpenCategory(categoryId: string, open: boolean) {
         self.openCategories.put({ id: categoryId, open });
+    },
+    setCategoryOrderReversed(listId: string, reversed: boolean) {
+        self.reversedCategoryLists.put({ id: listId, reversed });
+    },
+    isCategoryOrderReversed(listId: string | null): boolean {
+        if (!listId) return false;
+        return self.reversedCategoryLists.get(listId)?.reversed === true;
     },
     setAddItemToCategoryID(categoryID: string | null) {
         self.addItemToCategoryID = categoryID;

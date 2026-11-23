@@ -15,6 +15,7 @@ type ShoppingListContextMenuProps = {
   onToggleAllFolders: () => void;
   onReorderCategories: () => void;
   onToggleCategoryLabels: () => void;
+  onToggleReverseCategoryOrder: () => void;
 };
 
 const ShoppingListContextMenu = observer(({
@@ -22,11 +23,13 @@ const ShoppingListContextMenu = observer(({
   onToggleAllFolders,
   onReorderCategories,
   onToggleCategoryLabels,
+  onToggleReverseCategoryOrder,
 }: ShoppingListContextMenuProps) => {
   // Get the current list to display the count
   const currentList = domainStore.lists.find(list => list.id === uiStore.selectedShoppingList);
   const unpurchasedItemsCount = currentList?.unpurchasedItemsCount ?? 0;
   const categoriesCount = currentList?.categories?.length ?? 0;
+  const categoryOrderReversed = uiStore.isCategoryOrderReversed(uiStore.selectedShoppingList);
 
   // Single source of truth for actions and their handlers
   // Note: Add Item and Add Category have been moved to the bottom action bar
@@ -36,6 +39,12 @@ const ShoppingListContextMenu = observer(({
       systemIcon: 'arrow.up.arrow.down',
       handler: onReorderCategories,
       showWhen: categoriesCount > 1, // Only show when there are multiple categories to reorder
+    },
+    {
+      title: categoryOrderReversed ? 'Normal Category Order' : 'Reverse Category Order',
+      systemIcon: categoryOrderReversed ? 'arrow.down.to.line' : 'arrow.uturn.up',
+      handler: onToggleReverseCategoryOrder,
+      showWhen: categoriesCount > 1,
     },
     {
       title: uiStore.showEmptyFolders ? 'Hide Empty Categories' : 'Show Empty Categories',
