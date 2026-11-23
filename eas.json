@@ -7,7 +7,7 @@
     "base": {
       "autoIncrement": true,
       "credentialsSource": "remote",
-      "node": "22.6.0",
+      "node": "22.22.0",
       "channel": "base"
     },
     "development": {
