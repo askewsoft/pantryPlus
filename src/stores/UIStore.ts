@@ -62,6 +62,12 @@ export const UIStoreModel = t.model('UIStoreModel', {
     // Key: itemId, Value: timestamp when item was removed
     recentlyRemovedItems: t.optional(t.map(t.number), {}),
 })
+.views(self => ({
+    isCategoryOrderReversed(listId: string | null): boolean {
+        if (!listId) return false;
+        return self.reversedCategoryLists.get(listId)?.reversed === true;
+    },
+}))
 .actions(self => ({
     initialize: () => {
         // self.lastUsedVersion = '1.0.0'; // intentionally not resetting this
@@ -149,10 +155,6 @@ export const UIStoreModel = t.model('UIStoreModel', {
     },
     setCategoryOrderReversed(listId: string, reversed: boolean) {
         self.reversedCategoryLists.put({ id: listId, reversed });
-    },
-    isCategoryOrderReversed(listId: string | null): boolean {
-        if (!listId) return false;
-        return self.reversedCategoryLists.get(listId)?.reversed === true;
     },
     setAddItemToCategoryID(categoryID: string | null) {
         self.addItemToCategoryID = categoryID;

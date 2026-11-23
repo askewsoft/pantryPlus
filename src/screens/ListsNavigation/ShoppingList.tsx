@@ -232,12 +232,13 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
     uiStore.setAddItemModalVisible(true);
   };
 
+  const categoryOrderReversed = uiStore.isCategoryOrderReversed(listId);
   const displayCategories = currentList
     ? toJS(currentList.categories)
         .filter(category => uiStore.showEmptyFolders || category.items.length > 0)
         .sort(sortByOrdinal)
     : [];
-  if (uiStore.isCategoryOrderReversed(listId)) {
+  if (categoryOrderReversed) {
     displayCategories.reverse();
   }
 
@@ -251,6 +252,7 @@ const ShoppingList = observer(({ navigation }: { navigation: any }) => {
             ref={scrollViewRef}
             style={styles.flatListStyle}
             data={displayCategories}
+            extraData={categoryOrderReversed}
             renderItem={renderCategoryElement}
             keyExtractor={category => category.id}
             ListHeaderComponent={<ListItems listId={listId!} />}
